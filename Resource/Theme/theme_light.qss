@@ -1,0 +1,18 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+Navigation QPushButton {
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+}
+Navigation QPushButton::hover {
+    background-color: #dde;
+}
+Navigation QPushButton::checked {
+    background: #ccd;
+}
