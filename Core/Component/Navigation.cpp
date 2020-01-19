@@ -1,4 +1,4 @@
-#include "Navigation.h"
+﻿#include "Navigation.h"
 
 #include <QPushButton>
 #include <QButtonGroup>
@@ -25,6 +25,7 @@ Navigation::Navigation(EAlignment alignment, EOrientation orientation, QWidget *
 
 void Navigation::init()
 {
+//    this->setObjectName("navigation");
     setMinimumSize(NAV_BUTTON_BASE_SIZE, NAV_BUTTON_BASE_SIZE);
     mButtonGroup = new QButtonGroup(this);
     mButtonGroup->setExclusive(true);
@@ -36,11 +37,15 @@ void Navigation::init()
     scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     mNavContents = new QWidget();
+    mNavContents->setObjectName("navBtnsContents");
 
-    if (EOrientation::Vertical == mOrientation) {
+    if (EOrientation::Vertical == mOrientation)
+    {
         layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
         navBtnsLayout = new QBoxLayout(QBoxLayout::TopToBottom, mNavContents);
-    } else {
+    }
+    else
+    {
         layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
         navBtnsLayout = new QBoxLayout(QBoxLayout::LeftToRight, mNavContents);
     }
@@ -48,7 +53,7 @@ void Navigation::init()
 //    navScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 //    navScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    navBtnsLayout->setSpacing(10);
+    navBtnsLayout->setSpacing(ESpacing::Wide);
     navBtnsLayout->setMargin(0);
     layout->setSpacing(0);
     layout->setMargin(0);
@@ -73,16 +78,17 @@ void Navigation::setPadding(int left, int top, int right, int bottom)
     this->layout()->setContentsMargins(left, top, right, bottom);
 }
 
-void Navigation::addNavButton(const QString& text, const QIcon& icon)
+void Navigation::addNavButton(const QString &text, const QIcon &icon)
 {
     QPushButton *btn = new QPushButton(icon, text, mNavContents);
 
     btn->setCheckable(true);
-    btn->setFixedSize(NAV_BUTTON_BASE_SIZE, NAV_BUTTON_BASE_SIZE);
+//    btn->setFixedSize(NAV_BUTTON_BASE_SIZE, NAV_BUTTON_BASE_SIZE);
     btn->setToolTip(btn->text());
 
     const auto layout = static_cast<QBoxLayout *>(mNavContents->layout());
-    switch (mNavButtonsAlignment) {
+    switch (mNavButtonsAlignment)
+    {
     case EAlignment::Top:
         break;
     case EAlignment::Center:
@@ -97,14 +103,15 @@ void Navigation::addNavButton(const QString& text, const QIcon& icon)
 
 void Navigation::setNavButtonSize(const QSize &size)
 {
-    for (auto i : mButtonGroup->buttons()) {
+    for (auto i : mButtonGroup->buttons())
+    {
         i->setFixedSize(size);
     }
 
     resizeNavButtonContents();
 }
 
-void Navigation::setNavButtonsSpacing(int spacing)
+void Navigation::setNavButtonSpacing(int spacing)
 {
     mNavContents->layout()->setSpacing(spacing);
 }
@@ -126,12 +133,14 @@ int Navigation::getCurrentNavigationIndex()
 
 void Navigation::setNavButtonsAlignment(const EAlignment &alignment)
 {
-    if(mNavButtonsAlignment == alignment) {
+    if (mNavButtonsAlignment == alignment)
+    {
         return;
     }
 
     const auto layout = static_cast<QBoxLayout *>(mNavContents->layout());
-    switch (alignment) {
+    switch (alignment)
+    {
     case EAlignment::Top:
     case EAlignment::Left:
         layout->setStretch(0, 0);
@@ -143,7 +152,6 @@ void Navigation::setNavButtonsAlignment(const EAlignment &alignment)
         layout->setStretch(layout->count() - 1, 0);
         break;
     case EAlignment::Center:
-    default:
         layout->setStretch(0, 0);
         layout->setStretch(layout->count() - 1, 0);
         break;
@@ -153,7 +161,8 @@ void Navigation::setNavButtonsAlignment(const EAlignment &alignment)
 void Navigation::resizeNavButtonContents()
 {
     int h = 0;
-    for(auto i : mButtonGroup->buttons()) {
+    for (auto i : mButtonGroup->buttons())
+    {
         h += i->height();
     }
     h += mNavContents->layout()->spacing() * mButtonGroup->buttons().length();

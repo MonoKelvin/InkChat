@@ -1,9 +1,9 @@
-#include "MainWindow.h"
+﻿#include "MainWindow.h"
 #include "ui_mainwindow.h"
 
-#include "Core/Navigation.h"
+#include "Core/Component/Navigation.h"
+#include "Core/Component/AdvancedList.h"
 
-#include <QPushButton>
 #include <QLayout>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,13 +13,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     Navigation *nav = new Navigation(this);
-
     nav->addNavButton("Message");
     nav->addNavButton("Friend");
     nav->addNavButton("Mine");
     nav->addNavButton("Settings");
 
-    this->layout()->addWidget(nav);
+    AdvancedList *adl = new AdvancedList(this);
+
+    layout()->addWidget(nav);
+    layout()->addWidget(adl);
 }
 
 MainWindow::~MainWindow()

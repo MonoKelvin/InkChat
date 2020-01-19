@@ -1,18 +1,25 @@
+/* Light Style for InkChat */
 
 * {
     margin: 0;
     padding: 0;
-    outline: none;
+    /* outline: none; */
+    /* border: none; */
 }
-
-Navigation QPushButton {
-    border: none;
-    border-radius: 4px;
+/* Navigation */
+/* Navigation {
+    color: #c0c0c0;
+    background: #0d0d0d;
+}
+#navBtnsContents QPushButton {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
     background-color: transparent;
 }
-Navigation QPushButton::hover {
-    background-color: #dde;
+#navBtnsContents QPushButton::hover {
+    background-color: #292929;
 }
-Navigation QPushButton::checked {
-    background: #ccd;
-}
+#navBtnsContents QPushButton::checked {
+    background: #474747;
+} */

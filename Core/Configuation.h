@@ -1,4 +1,4 @@
-#ifndef CONFIGUATION_H
+﻿#ifndef CONFIGUATION_H
 #define CONFIGUATION_H
 
 #include <QDebug>
@@ -19,5 +19,14 @@ enum class EOrientation
 };
 
 #define NAV_BUTTON_BASE_SIZE 45
+
+enum ESpacing
+{
+    Tiny = 5,
+    Narrow = 10,
+    Std = 15,
+    Wide = 20,
+    Large = 25,
+};
 
 #endif // CONFIGUATION_H

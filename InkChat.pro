@@ -16,13 +16,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Core/Navigation.cpp \
+    Core/Component/AdvancedList.cpp \
+    Core/Component/Navigation.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
+    Core/Component/AdvancedList.h \
     Core/Configuation.h \
-    Core/Navigation.h \
+    Core/Component/Navigation.h \
     MainWindow.h
 
 FORMS += \
