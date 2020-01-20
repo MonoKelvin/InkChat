@@ -1,6 +1,7 @@
 ﻿#include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include "Core/User.h"
 #include "Core/Component/Navigation.h"
 #include "Core/Widget/MessageList.h"
 
@@ -22,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    User::DestroyMe();
     delete ui;
 }
 

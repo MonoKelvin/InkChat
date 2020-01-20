@@ -18,7 +18,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Core/Component/AdvancedList.cpp \
     Core/Component/Navigation.cpp \
+    Core/LoginWithQQMail.cpp \
     Core/User.cpp \
+    Core/Utility/HttpRequest.cpp \
     Core/Utility/Utility.cpp \
     Core/Widget/Avatar.cpp \
     Core/Widget/Badge.cpp \
@@ -26,6 +28,7 @@ SOURCES += \
     Core/Widget/ChatListView.cpp \
     Core/Widget/MessageItem.cpp \
     Core/Widget/MessageList.cpp \
+    Core/Widget/PromptWidget.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -33,7 +36,10 @@ HEADERS += \
     Core/Component/AdvancedList.h \
     Core/Configuation.h \
     Core/Component/Navigation.h \
+    Core/LoginWithQQMail.h \
     Core/User.h \
+    Core/Utility/HttpRequest.h \
+    Core/Utility/ILoginOperation.h \
     Core/Utility/Utility.h \
     Core/Widget/Avatar.h \
     Core/Widget/Badge.h \
@@ -41,6 +47,7 @@ HEADERS += \
     Core/Widget/ChatListView.h \
     Core/Widget/MessageItem.h \
     Core/Widget/MessageList.h \
+    Core/Widget/PromptWidget.h \
     MainWindow.h
 
 FORMS += \
