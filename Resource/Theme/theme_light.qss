@@ -3,17 +3,103 @@
 * {
     margin: 0;
     padding: 0;
-    /* outline: none; */
-    /* border: none; */
+    font-size: 14px;
+    font-family: '微软雅黑';
+    outline: none;
+    border: none;
 }
+
+/* LineEdit */
+QLineEdit {
+    height: 40px;
+    border-radius: 20px;
+    background: rgba(50, 50, 80, 15);
+    padding-left: 16px;
+    padding-right: 16px;
+}
+QLineEdit:hover,
+QLineEdit:focus {
+    background: rgba(50, 50, 80, 30);
+}
+
+/* ToolTip */
+QToolTip {
+    color: rgb(30, 40, 70);
+    border: 1px solid rgba(180, 180, 180, 100);
+    padding: 5px;
+    border-radius: 4px;
+    opacity: 150;
+}
+
+/* Label */
+QLabel {
+    background-color: transparent;
+}
+
+/* List View */
+QListView::item {
+    padding: 15px;
+    height: 60px;
+}
+QListView::item:hover {
+    background-color: #1d1d1d;
+}
+QListView::item:selected {
+    background-color: #292929;
+}
+QListView::item:hover:!selected {
+    background-color: #1d1d1d;
+}
+
+/* ScrollBar Vertical */
+QScrollBar:vertical {
+    background: white;
+    width: 10px;
+}
+QScrollBar::handle:vertical {
+    background: rgb(224, 227, 241);
+    min-height: 10px;
+}
+QScrollBar::handle:hover {
+    background: rgb(187, 200, 228);
+}
+QScrollBar::add-line:vertical {
+    height: 0;
+}
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+/* ScrollBar Horizontal */
+QScrollBar:horizontal {
+    background: white;
+    height: 10px;
+}
+QScrollBar::handle:horizontal {
+    background: rgb(224, 227, 241);
+    min-width: 10px;
+}
+QScrollBar::horizontal:hover {
+    background: rgb(187, 200, 228);
+}
+QScrollBar::add-line:horizontal {
+    width: 0;
+}
+QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
 /* Navigation */
-/* Navigation {
+Navigation QWidget {
     color: #c0c0c0;
     background: #0d0d0d;
+    min-width: 80px;
 }
 #navBtnsContents QPushButton {
-    width: 48px;
-    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 48px;
+    max-height: 48px;
     border-radius: 10px;
     background-color: transparent;
 }
@@ -22,4 +108,62 @@
 }
 #navBtnsContents QPushButton::checked {
     background: #474747;
-} */
+}
+
+/* AdvancedList */
+AdvancedList QWidget {
+    background-color: #191919;
+}
+AdvancedList #backTopBtn {
+    background-color: #474747;
+    max-width: 48px;
+    max-height: 48px;
+    border-radius: 24px;
+}
+
+/* Message Item */
+MessageItem #name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #b0b0b0;
+    margin-top: 10px;
+    background: transparent;
+}
+MessageItem #message {
+    color: #474747;
+    margin-bottom: 10px;
+    background: transparent;
+}
+
+/* Avatar */
+Avatar{
+    background: #474747;
+    border-radius: 24px;
+    min-width: 48px;
+    min-height: 48px;
+    /* max-width: 48px; */
+    /* max-height: 48px; */
+}
+
+/* Badge */
+Badge {
+    font-size: 12px;
+    color: white;
+    border-radius: 10px;
+    min-width: 20px;
+    min-height: 20px;
+}
+#numberNotice {
+    max-height: 20px;
+}
+#badge {
+    border-radius: 12px;
+    padding: 2px 10px;
+}
+#dotNotice {
+    border-radius: 5px;
+    min-width: 10px;
+    min-height: 10px;
+    max-width: 10px;
+    max-height: 10px;
+}

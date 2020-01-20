@@ -2,9 +2,10 @@
 #include "ui_mainwindow.h"
 
 #include "Core/Component/Navigation.h"
-#include "Core/Component/AdvancedList.h"
+#include "Core/Widget/MessageList.h"
 
 #include <QLayout>
+#include <QStandardItemModel>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -12,16 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Navigation *nav = new Navigation(this);
-    nav->addNavButton("Message");
-    nav->addNavButton("Friend");
-    nav->addNavButton("Mine");
-    nav->addNavButton("Settings");
+    ui->navigation->addNavButton("Message");
+    ui->navigation->addNavButton("Friend");
+    ui->navigation->addNavButton("Mine");
+    ui->navigation->addNavButton("Settings");
 
-    AdvancedList *adl = new AdvancedList(this);
-
-    layout()->addWidget(nav);
-    layout()->addWidget(adl);
 }
 
 MainWindow::~MainWindow()

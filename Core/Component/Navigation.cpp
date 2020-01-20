@@ -27,6 +27,8 @@ void Navigation::init()
 {
 //    this->setObjectName("navigation");
     setMinimumSize(NAV_BUTTON_BASE_SIZE, NAV_BUTTON_BASE_SIZE);
+//    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     mButtonGroup = new QButtonGroup(this);
     mButtonGroup->setExclusive(true);
 
@@ -37,7 +39,7 @@ void Navigation::init()
     scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     mNavContents = new QWidget();
-    mNavContents->setObjectName("navBtnsContents");
+    mNavContents->setObjectName(QLatin1String("navBtnsContents"));
 
     if (EOrientation::Vertical == mOrientation)
     {
@@ -50,8 +52,8 @@ void Navigation::init()
         navBtnsLayout = new QBoxLayout(QBoxLayout::LeftToRight, mNavContents);
     }
 
-//    navScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    navScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     navBtnsLayout->setSpacing(ESpacing::Wide);
     navBtnsLayout->setMargin(0);
@@ -83,8 +85,10 @@ void Navigation::addNavButton(const QString &text, const QIcon &icon)
     QPushButton *btn = new QPushButton(icon, text, mNavContents);
 
     btn->setCheckable(true);
-//    btn->setFixedSize(NAV_BUTTON_BASE_SIZE, NAV_BUTTON_BASE_SIZE);
+
+#ifndef QT_NO_TOOLTIP
     btn->setToolTip(btn->text());
+#endif
 
     const auto layout = static_cast<QBoxLayout *>(mNavContents->layout());
     switch (mNavButtonsAlignment)

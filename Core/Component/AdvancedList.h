@@ -3,11 +3,14 @@
 
 #include "../Configuation.h"
 
-#include <QListView>
+#include <QListWidget>
 #include <QMenu>
 
 class QPushButton;
 
+/**
+ * @brief 高级列表类，提供可搜索的列表容器，可添加自定义菜单动作、回到顶部按钮等。
+ */
 class AdvancedList : public QWidget
 {
     Q_OBJECT
@@ -20,11 +23,13 @@ public:
 
     void setMenuVisiable(bool enabled);
 
-    void setMenu(const QMenu &menu);
+#if QT_CONFIG(menu)
+    void setToolMenu(QMenu *menu);
 
-    void addActionToMenu(const QAction &action);
+    void addActionToToolMenu(const QAction &action);
+#endif
 
-    void addWidgetToTopContainer(QWidget *widget);
+    void addWidgetToTool(QWidget *widget);
 
     /*****************************/
     /******* 回到顶部相关方法 *******/
@@ -36,19 +41,19 @@ public:
      * @note 该对齐方式只有底部左边、底部中间和底部右边三种，分别对应：
      * EAlignment::Left、EAlignment::Center和EAlignment::Right
      */
-    void setBackToTopAlignment(EAlignment alignment);
+    void setBackTopAlignment(EAlignment alignment);
 
-    void setCanBackToTop(bool enabled);
+    void setBackTopVisiable(bool enabled);
 
     /*****************************/
     /******* 列表视图相关方法 *******/
     /*****************************/
 
-    inline QListView *getListView(void) const { return mListView; }
+    inline const QListWidget *getListWidget(void) const { return mListWidget; }
 
-Q_SIGNALS:
-    void onSearched(const QString &text);
-    void onBackToTop();
+    void addListItem(QWidget *widget);
+
+    void clearList(void);
 
 protected slots:
     void closeSearchBox(void);
@@ -62,19 +67,24 @@ protected:
 
 protected:
     /** 列表显示控件 */
-    QListView *mListView;
+    QListWidget *mListWidget;
 
     /** 搜索栏 */
     QLineEdit *mSearchBox;
 
+    /** 刷新按钮 */
+    QPushButton *mBtnRefresh;
+
+#if QT_CONFIG(menu)
     /** 菜单按钮 */
     QPushButton *mBtnMenu;
+#endif
 
     /** 回到顶部按钮 */
-    QPushButton *mBtnBackToTop;
+    QPushButton *mBtnBackTop;
 
-    /** 点击菜单按钮显示的菜单 */
-    QMenu mMenu;
+    /** 回到顶部按钮对齐方式 */
+    EAlignment mBackTopAlignment;
 
 private:
     /** 顶部搜索框和菜单等控件的容器 */

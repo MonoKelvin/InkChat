@@ -18,6 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Core/Component/AdvancedList.cpp \
     Core/Component/Navigation.cpp \
+    Core/User.cpp \
+    Core/Utility/Utility.cpp \
+    Core/Widget/Avatar.cpp \
+    Core/Widget/Badge.cpp \
+    Core/Widget/ChatItem.cpp \
+    Core/Widget/ChatListView.cpp \
+    Core/Widget/MessageItem.cpp \
+    Core/Widget/MessageList.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -25,6 +33,14 @@ HEADERS += \
     Core/Component/AdvancedList.h \
     Core/Configuation.h \
     Core/Component/Navigation.h \
+    Core/User.h \
+    Core/Utility/Utility.h \
+    Core/Widget/Avatar.h \
+    Core/Widget/Badge.h \
+    Core/Widget/ChatItem.h \
+    Core/Widget/ChatListView.h \
+    Core/Widget/MessageItem.h \
+    Core/Widget/MessageList.h \
     MainWindow.h
 
 FORMS += \
@@ -34,3 +50,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Resource/resources.qrc

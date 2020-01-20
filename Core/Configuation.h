@@ -18,8 +18,6 @@ enum class EOrientation
     Horizontal,
 };
 
-#define NAV_BUTTON_BASE_SIZE 45
-
 enum ESpacing
 {
     Tiny = 5,
@@ -28,5 +26,22 @@ enum ESpacing
     Wide = 20,
     Large = 25,
 };
+
+enum class EBorderStyle
+{
+    Rectangle,
+    Circle,
+    Rounded
+};
+
+#define NAV_BUTTON_BASE_SIZE 45
+
+#define AVATAR_BASE_SIZE 48
+
+#define ONLINE_STATE_COLOR "#0bdd4b"
+
+#define OFFLINE_STATE_COLOR "#b0b0b0"
+
+#define BUSY_STATE_COLOR "#ddb80b"
 
 #endif // CONFIGUATION_H
