@@ -14,17 +14,17 @@ class HttpRequest : public QObject
 public:
     explicit HttpRequest(QObject *parent = nullptr);
 
-    enum class HttpRequestType
+    enum HttpRequestType
     {
         POST,
         GET
     };
 
-    void sendRequest(const QString& strUrl, HttpRequestType type = HttpRequestType::GET, const QString &postParams = QString());
+    void sendRequest(const QString &strUrl, HttpRequestType type = GET, const QString &postParams = QString());
 
 signals:
     // http请求
-    void request(bool bSuccess, const QByteArray& strResult);
+    void request(bool bSuccess, const QByteArray &strResult);
 
 private slots:
     // http请求结束
@@ -35,13 +35,13 @@ private slots:
 
 private:
     //网络管理类
-    QNetworkAccessManager* mNetworkManager;
+    QNetworkAccessManager *mNetworkManager;
 
     //封装请求返回信息
-    QNetworkReply* mNetworkReply;
+    QNetworkReply *mNetworkReply;
 
     //请求超时计时器
-    QTimer* mTimer;
+    QTimer *mTimer;
 };
 
 #endif // HTTPREQUEST_H

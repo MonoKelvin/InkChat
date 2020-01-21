@@ -1,10 +1,11 @@
 ﻿#include "LoginWithQQMail.h"
 
+#include "User.h"
 #include "Utility/HttpRequest.h"
-#include "Utility/BookStudyAPI.h"
+#include "InkChatApi.h"
 #include "Widget/PromptWidget.h"
 
-#include <QDebug>
+#include <QMap>
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -17,7 +18,7 @@ LoginWithQQMail::LoginWithQQMail(QObject *parent)
 
 }
 
-UserModel *LoginWithQQMail::parse(const QString &jsonData)
+QSharedPointer<User> LoginWithQQMail::parse(const QString &jsonData)
 {
     QJsonParseError jsonError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData.toUtf8(), &jsonError);
@@ -25,13 +26,14 @@ UserModel *LoginWithQQMail::parse(const QString &jsonData)
     if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonObject jsonObj = jsonDoc.object();
-        UserModel *user = new UserModel;
+
+        auto user = QSharedPointer<User>(new User);
 
         user->setID(unsigned(jsonObj.value("id").toString().toInt()));
-        user->setName(jsonObj.value("name").toString());
+        user->setNickName(jsonObj.value("name").toString());
         user->setAccount(jsonObj.value("account").toString());
 //        user->setPassword(jsonObj.value("password").toString());
-        user->setAvatarUrl(jsonObj.value("avatar").toString());
+//        user->setAvatarUrl(jsonObj.value("avatar").toString());
         user->setMD5(jsonObj.value("md5").toString());
 
         return user;
@@ -44,14 +46,14 @@ void LoginWithQQMail::verify(const QMap<QString, QString> &mapping)
 {
     HttpRequest *request = new HttpRequest;
 
-    QString postData = "type=login&account=" + mapping["account"] + "&password=" + mapping["password"];
-    request->sendRequest(UserLogInOut, HttpRequest::HttpRequestType::POST, postData);
+    QString postData = "account=" + mapping["account"] + "&password=" + mapping["password"];
+    request->sendRequest(UserLoginUrl, HttpRequest::POST, postData);
 
     connect(request, &HttpRequest::request, [ = ](bool success, const QByteArray & jsonData)
     {
         if (success)
         {
-            mUser = QSharedPointer<UserModel>(parse(QString(jsonData)));
+            mUser = parse(QString(jsonData));
             emit logedin();
         }
         else
@@ -72,7 +74,7 @@ void LoginWithQQMail::signup(const QMap<QString, QString> &mapping)
     QString postData = "name=" + mapping["name"]
                        + "&account=" + mapping["account"]
                        + "&password=" + mapping["password"];
-    request->sendRequest(UserSignup, HttpRequest::HttpRequestType::POST, postData);
+    request->sendRequest(UserSignupUrl, HttpRequest::POST, postData);
     connect(request, &HttpRequest::request, [ = ](bool success, const QByteArray & jsonData)
     {
         QJsonParseError jsonError;

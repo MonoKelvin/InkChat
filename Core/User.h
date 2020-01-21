@@ -1,7 +1,6 @@
 ﻿#ifndef USER_H
 #define USER_H
 
-#include <QString>
 #include <QPixmap>
 #include <thread>
 #include <mutex>
@@ -46,6 +45,16 @@ public:
             }
         }
     }
+
+    void setID(unsigned int id) { mUID = id; }
+    void setNickName(const QString &name) { mNickName = name; }
+    void setMD5(const QString &md5) { mMD5 = md5; }
+    void setAccount(const QString &account) { mAccount = account; }
+    void setAvatar(const QPixmap &pixmap) { mAvatar = pixmap; }
+
+    inline unsigned int getUID(void) const { return mUID; }
+    inline const QString getNickName(void) const { return mNickName; }
+    inline const QPixmap getAvatar(void) const { return mAvatar; }
 
 private:
     Q_DISABLE_COPY(User)

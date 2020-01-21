@@ -9,7 +9,7 @@
 #define HTTP_TIMEOUT 6000
 
 HttpRequest::HttpRequest(QObject *parent)
-    :QObject (parent)
+    : QObject(parent)
 {
     mNetworkManager = new QNetworkAccessManager(this);
     mNetworkReply = nullptr;
@@ -25,18 +25,22 @@ void HttpRequest::sendRequest(const QString &strUrl, HttpRequestType type, const
     netRequest.setUrl(QUrl(strUrl));
 
     // https请求，需ssl支持(下载openssl拷贝libeay32.dll和ssleay32.dll文件至Qt bin目录或程序运行目录)
-    if (strUrl.toLower().startsWith("https")) {
+    if (strUrl.toLower().startsWith("https"))
+    {
         QSslConfiguration sslConfig;
         sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
         sslConfig.setProtocol(QSsl::TlsV1_1);
         netRequest.setSslConfiguration(sslConfig);
     }
 
-    if (type == HttpRequestType::POST) {
+    if (type == POST)
+    {
         // 发起post请求
         netRequest.setHeader(QNetworkRequest::ContentLengthHeader, postParams.length());
         mNetworkReply = mNetworkManager->post(netRequest, postParams.toUtf8());
-    } else {
+    }
+    else
+    {
         // 发起get请求
         mNetworkReply = mNetworkManager->get(netRequest);
     }
@@ -63,9 +67,12 @@ void HttpRequest::requestFinished()
     int nHttpCode = mNetworkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     // 返回状态码为200表示成功
-    if (nHttpCode == 200) {
+    if (nHttpCode == 200)
+    {
         emit request(true, strResult); //请求成功
-    } else {
+    }
+    else
+    {
         emit request(false, strResult); //请求失败
     }
 

@@ -12,6 +12,9 @@ public:
     ChatListView(QWidget *parent = nullptr);
 
     void addChatItem(ChatItem *chat);
+
+protected:
+    void resizeEvent(QResizeEvent *e) override;
 };
 
 #endif // CHATLISTVIEW_H

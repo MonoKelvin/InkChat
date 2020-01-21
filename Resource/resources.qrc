@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/App">
         <file>Icons/default_avatar.png</file>
+        <file>Icons/loading_200x.png</file>
+        <file>Icons/loading_15x.gif</file>
     </qresource>
 </RCC>

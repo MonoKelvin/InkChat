@@ -9,7 +9,7 @@ Avatar::Avatar(QWidget *parent)
     , mOnlineState(User::Offline)
 {
     setDefaultAvatar();
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 }
 
 Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
@@ -17,7 +17,7 @@ Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
     , mOnlineState(User::Offline)
 {
     setAvatar(pixmap);
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 }
 
 Avatar::~Avatar()
@@ -47,6 +47,7 @@ void Avatar::mousePressEvent(QMouseEvent *event)
 
 void Avatar::paintEvent(QPaintEvent *event)
 {
+    QWidget::paintEvent(event);
     QPainter painter(this);
     if (!mAvatar.isNull())
     {
@@ -80,5 +81,4 @@ void Avatar::paintEvent(QPaintEvent *event)
         painter.drawEllipse(rt);
     }
 
-    return QWidget::paintEvent(event);
 }

@@ -32,14 +32,20 @@
    <item>
     <widget class="Navigation" name="navigation" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>70</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>70</width>
        <height>16777215</height>
       </size>
      </property>
@@ -74,24 +80,18 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>360</width>
+           <width>300</width>
            <height>16777215</height>
           </size>
          </property>
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+        <layout class="QVBoxLayout" name="chatViewLayout">
+         <item>
+          <widget class="ChatListView" name="chatView" native="true"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -111,6 +111,12 @@
    <class>MessageList</class>
    <extends>QWidget</extends>
    <header location="global">Core/Widget/MessageList.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChatListView</class>
+   <extends>QWidget</extends>
+   <header location="global">Core/Widget/ChatListView.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

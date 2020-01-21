@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
         }
     });
 
+    btn.click();
     a.exec();
 
     delete w;

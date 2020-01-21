@@ -1,4 +1,5 @@
-QT       += core gui
+QT  += core gui
+QT  += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,6 +37,7 @@ HEADERS += \
     Core/Component/AdvancedList.h \
     Core/Configuation.h \
     Core/Component/Navigation.h \
+    Core/InkChatApi.h \
     Core/LoginWithQQMail.h \
     Core/User.h \
     Core/Utility/HttpRequest.h \
