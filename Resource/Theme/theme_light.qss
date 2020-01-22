@@ -95,43 +95,37 @@ Navigation QWidget {
     background: #474747;
 }
 
-/* AdvancedList */
-AdvancedList QWidget {
+
+/* Message Item */
+MessageList {
     background-color: #191919;
 }
-/* List View */
-AdvancedList QListView::item {
-    padding: 15px;
-    height: 60px;
+MessageList QListView::item {
+    height: 50px;
+    padding: 10px;
 }
-AdvancedList QListView::item:hover {
+MessageList QListView::item:hover {
     background-color: #1d1d1d;
 }
-AdvancedList QListView::item:selected {
+MessageList QListView::item:selected {
     background-color: #292929;
 }
-AdvancedList QListView::item:hover:!selected {
+MessageList QListView::item:hover:!selected {
     background-color: #1d1d1d;
 }
-AdvancedList #backTopBtn {
+MessageList #backTopBtn {
     background-color: #474747;
     max-width: 48px;
     max-height: 48px;
     border-radius: 24px;
 }
-
-/* Message Item */
 MessageItem #name {
     font-weight: bold;
     font-size: 16px;
     color: #b0b0b0;
-    margin-top: 10px;
-    background: transparent;
 }
 MessageItem #message {
     color: #474747;
-    margin-bottom: 10px;
-    background: transparent;
 }
 
 /* Avatar */
@@ -145,7 +139,6 @@ Avatar {
 /** Chat Item */
 ChatListView::item {
     background: transparent;
-    border: 1px solid red;
 }
 ChatItem {
     border: 1px solid blue;

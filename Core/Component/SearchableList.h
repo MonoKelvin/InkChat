@@ -3,19 +3,20 @@
 
 #include "../Configuation.h"
 
-#include <QListWidget>
 #include <QMenu>
 
+class QListView;
 class QPushButton;
+class QLineEdit;
 
 /**
  * @brief 高级列表类，提供可搜索的列表容器，可添加自定义菜单动作、回到顶部按钮等。
  */
-class AdvancedList : public QWidget
+class SearchableList : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AdvancedList(QWidget *parent = nullptr);
+    explicit SearchableList(QWidget *parent = nullptr);
 
     /****************************/
     /******* 工具栏相关方法 *******/
@@ -49,15 +50,14 @@ public:
     /******* 列表视图相关方法 *******/
     /*****************************/
 
-    inline const QListWidget *getListWidget(void) const { return mListWidget; }
+    inline void setListWidget(QListView *list) { mList = list; }
 
-    void addListItem(QWidget *widget);
-
-    void clearList(void);
+    inline const QListView *getListWidget(void) const { return mList; }
 
 protected slots:
     void closeSearchBox(void);
     void expandSearchBox(void);
+    void clearList(void);
 
     virtual void search(const QString &key, bool isRealTime = false);
     virtual bool refresh();
@@ -67,7 +67,7 @@ protected:
 
 protected:
     /** 列表显示控件 */
-    QListWidget *mListWidget;
+    QListView *mList;
 
     /** 搜索栏 */
     QLineEdit *mSearchBox;

@@ -1,13 +1,18 @@
 ﻿#ifndef MESSAGELIST_H
 #define MESSAGELIST_H
 
-#include "../Component/AdvancedList.h"
+#include <QListWidget>
 
-class MessageList : public AdvancedList
+class MessageItem;
+
+class MessageList : public QListWidget
 {
     Q_OBJECT
 public:
     explicit MessageList(QWidget *parent = nullptr);
+
+    void addMessage(MessageItem *msg);
+
 };
 
 #endif // MESSAGELIST_H

@@ -21,8 +21,8 @@ enum class EOrientation
 enum ESpacing
 {
     Tiny = 5,
-    Narrow = 10,
-    Std = 15,
+    Narrow = 8,
+    Std = 10,
     Wide = 20,
     Large = 25,
 };
@@ -36,7 +36,7 @@ enum class EBorderStyle
 
 #define NAV_BUTTON_BASE_SIZE 45
 
-#define AVATAR_BASE_SIZE 48
+#define AVATAR_BASE_SIZE 45
 
 #define ONLINE_STATE_COLOR "#0bdd4b"
 

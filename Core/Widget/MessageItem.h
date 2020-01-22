@@ -35,10 +35,10 @@ private:
     Avatar *mAvatar;
 
     /** 显示的名称，如果是用户则为昵称或备注名，如果是群则为群名 */
-    QString mName;
+    QLabel *mName;
 
     /** 显示的消息概要，超过item长度以...的形式结尾 */
-    QString mMessage;
+    QLabel *mMessage;
 
     /** 未读消息数量 */
     unsigned int mMessageNumber;
