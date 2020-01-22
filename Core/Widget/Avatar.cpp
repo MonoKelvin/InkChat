@@ -9,7 +9,9 @@ Avatar::Avatar(QWidget *parent)
     , mOnlineState(User::Offline)
 {
     setDefaultAvatar();
-    setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+//    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setFixedSize(AVATAR_BASE_SIZE, AVATAR_BASE_SIZE);
+    setCursor(Qt::PointingHandCursor);
 }
 
 Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
@@ -17,7 +19,9 @@ Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
     , mOnlineState(User::Offline)
 {
     setAvatar(pixmap);
-    setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+//    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setFixedSize(AVATAR_BASE_SIZE, AVATAR_BASE_SIZE);
+    setCursor(Qt::PointingHandCursor);
 }
 
 Avatar::~Avatar()
@@ -41,20 +45,21 @@ void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pix
 
 void Avatar::mousePressEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event)
+
     emit onClick();
-    return QWidget::mousePressEvent(event);
+//    return QWidget::mousePressEvent(event);
 }
 
 void Avatar::paintEvent(QPaintEvent *event)
 {
-    QWidget::paintEvent(event);
     QPainter painter(this);
     if (!mAvatar.isNull())
     {
         Avatar::DrawAvatar(&painter, rect(), mAvatar);
     }
 
-    if (mOnlineState != User::None)
+    if (mOnlineState != User::NoneState)
     {
         qreal d = 10.0;
         qreal offset = 0.8535 * width() - 0.5 * d;
@@ -81,4 +86,5 @@ void Avatar::paintEvent(QPaintEvent *event)
         painter.drawEllipse(rt);
     }
 
+    return QWidget::paintEvent(event);
 }

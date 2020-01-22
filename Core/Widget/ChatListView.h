@@ -3,7 +3,7 @@
 
 #include <QListWidget>
 
-class ChatItem;
+class IChatWidget;
 
 class ChatListView : public QListWidget
 {
@@ -11,10 +11,21 @@ class ChatListView : public QListWidget
 public:
     ChatListView(QWidget *parent = nullptr);
 
-    void addChatItem(ChatItem *chat);
+    /**
+     * @brief 添加一条聊天控件
+     * @param chat 聊天控件
+     * @param isScrollToBottom 添加完后是否滚动到最底部
+     */
+    void addChatWidget(IChatWidget *chat, bool isScrollToBottom = true);
 
 protected:
     void resizeEvent(QResizeEvent *e) override;
+
+private:
+    /**
+     * @brief 更新可见视图内的所有item
+     */
+    void updateViewportItems(void);
 };
 
 #endif // CHATLISTVIEW_H

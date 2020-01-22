@@ -15,7 +15,9 @@ public:
         Online,
         Offline,
         Busy,
-        None,
+
+        // 不显示左下角的状态
+        NoneState,
     };
 
     static User *GetMe(void)

@@ -4,6 +4,7 @@
 #include "Avatar.h"
 #include "ChatItem.h"
 
+#include <QScrollBar>
 #include <QPushButton>
 #include <QListWidgetItem>
 
@@ -14,8 +15,7 @@ ChatListView::ChatListView(QWidget *parent)
     setVerticalScrollMode(QListView::ScrollPerPixel);
     setEditTriggers(QListView::NoEditTriggers);
     setResizeMode(QListWidget::Adjust);
-    setSpacing(ESpacing::Std);
-
+    setSpacing(ESpacing::Narrow);
 
     QSharedPointer<User> u = QSharedPointer<User>(new User);
     u->setNickName("Tony Stack");
@@ -24,47 +24,89 @@ ChatListView::ChatListView(QWidget *parent)
     /// 测试
     QPushButton *btn = new QPushButton("添加对话", this->parentWidget());
     srand(unsigned(time(nullptr)));
-    connect(btn, &QPushButton::clicked, [ = ]
+    connect(btn,
+            &QPushButton::clicked,
+            [ = ]
     {
         QString s("a");
         int i = 0;
-        while (i++ < rand() % 100)
+        const int r = rand() % 50 + 1;
+        while (i++ < r)
         {
             s += "a";
-            if (rand() % 100 < 20 == 0)
+            if (rand() % 100 < 50)
             {
-                s += " ";
+                s += ' ';
+            }
+            if (rand() % 100 < 40)
+            {
+                s += 'I';
+            }
+            if (rand() % 100 < 30)
+            {
+                s += "秀";
+            }
+            if (rand() % 100 < 20)
+            {
+                s += "纛";
             }
         }
-        addChatItem(new ChatItem(u, s));
+        addChatWidget(new ChatItem(u, s, IChatWidget::ESender::Ta));
+        addChatWidget(new ChatItem(u, s));
+    });
+
+    // 每次滚动时，更新items
+    connect(verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            [ = ]
+    {
+        updateViewportItems();
     });
 }
 
-void ChatListView::addChatItem(ChatItem *chat)
+void ChatListView::addChatWidget(IChatWidget *chat, bool isScrollToBottom)
 {
     if (chat)
     {
         chat->setParent(this);
         QListWidgetItem *item = new QListWidgetItem;
-        item->setSizeHint(chat->size());
+
         addItem(item);
         setItemWidget(item, chat);
+
+        if (isScrollToBottom)
+        {
+            scrollToBottom();
+        }
+
+        updateViewportItems();
     }
+    // TODO: else { throw error }
 }
 
 void ChatListView::resizeEvent(QResizeEvent *e)
 {
     Q_UNUSED(e)
 
-    const int items = count();
-    for (int index = 0; index < items; index++)
-    {
-        QListWidgetItem *i = item(index);
-        ChatItem *ci = static_cast<ChatItem *>(itemWidget(i));
+    updateViewportItems();
+}
 
-        ci->updateHeight();
-        ci->setFixedWidth(width());
-        i->setSizeHint(ci->size());
-//        setItemWidget(i, ci);
+void ChatListView::updateViewportItems()
+{
+    // 垂直扫描item并更新它们的尺寸
+    for (int scan = 1; scan <= height();)
+    {
+        const auto i = (itemAt(width() / 2, scan));
+        const auto chat = static_cast<IChatWidget *>(itemWidget(i));
+
+        if (chat)
+        {
+            chat->setFixedWidth(width());
+            chat->updateContents();
+            i->setSizeHint(chat->size());
+        }
+
+        // 每次增加1个间隔，再-1是为了确保一定能命中一个item
+        scan += this->spacing() - 1;
     }
 }

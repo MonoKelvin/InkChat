@@ -27,6 +27,7 @@ SOURCES += \
     Core/Widget/Badge.cpp \
     Core/Widget/ChatItem.cpp \
     Core/Widget/ChatListView.cpp \
+    Core/Widget/IChatWidget.cpp \
     Core/Widget/MessageItem.cpp \
     Core/Widget/MessageList.cpp \
     Core/Widget/PromptWidget.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     Core/Widget/Badge.h \
     Core/Widget/ChatItem.h \
     Core/Widget/ChatListView.h \
+    Core/Widget/IChatWidget.h \
     Core/Widget/MessageItem.h \
     Core/Widget/MessageList.h \
     Core/Widget/PromptWidget.h \

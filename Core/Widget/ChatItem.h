@@ -1,43 +1,19 @@
 ﻿#ifndef CHATITEM_H
 #define CHATITEM_H
 
-#include <QWidget>
+#include "IChatWidget.h"
 
 class QLabel;
 class Avatar;
 class User;
 
-class ChatItem : public QWidget
+class ChatItem : public IChatWidget
 {
     Q_OBJECT
 
     friend class ChatListView;
 public:
-
-    /**
-     * @brief 发送聊天消息的发送方枚举
-     */
-    enum class ESender
-    {
-        System, // 系统
-        Me, // 自己
-        Ta, // ta（他或她，一个人）
-        Other, // 其他人（针对群聊天）
-    };
-
-    /**
-     * @brief 聊天消息发送状态枚举
-     */
-    enum class ESendState
-    {
-        Sending, // 正在发送
-        Succeed, // 发送成功
-        Failed, // 发送失败
-        Withdraw, // 撤回
-    };
-
-public:
-    explicit ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender = ESender::Ta, QWidget *parent = nullptr);
+    explicit ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender = ESender::Me, QWidget *parent = nullptr);
 
     /**
      * @brief 设置聊天内容
@@ -51,23 +27,26 @@ public:
      */
     void setTime(const QString &time);
 
+    /**
+     * @brief 设置发送者类型
+     * @param sender 发送者枚举类型
+     * @note 只有设置为ESender::Me，气泡在聊天视图中才显示在右边，其他的都是在左边
+     */
+    void setSender(ESender sender) override;
+
     inline const QString getMessage(void) const;
 
     inline const QString getTime(void) const;
 
-    inline ESender getUserType() { return mSender; }
-
-private:
-    void init();
-
-    void updateHeight();
+protected:
+    void updateContents() override;
 
 private:
     /** 消息发送者的头像 */
     Avatar *mAvatar;
 
-    /** 消息发送者的名称 */
-    QString mName;
+    /** 消息发送者的名称控件，只有群聊才有内容，否则只是空的占位 */
+    QLabel *mName;
 
     /** 发送的消息控件 */
     QLabel *mMessage;
@@ -75,14 +54,9 @@ private:
     /** 消息发送并接收到的时间控件 */
     QLabel *mTime;
 
-    /** 发送消息的对象类型 */
-    ESender mSender;
-
     /** 发送状态控件 */
     QLabel *mSendStateLabel;
 
-    /** 消息发送状态 */
-    ESendState mSendState;
 };
 
 #endif // CHATITEM_H
