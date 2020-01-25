@@ -95,7 +95,7 @@ void ChatItem::updateContents()
 
     mMessage->adjustSize();
 
-    const int sp = ESpacing::Std; // 标准间隔
+    const int sp = ESpacing::Narrow; // 标准间隔
 
     // 计算消息气泡的宽高
     {

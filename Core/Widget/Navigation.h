@@ -33,6 +33,27 @@ public:
     explicit Navigation(QWidget *parent = nullptr);
     explicit Navigation(EAlignment alignment, EOrientation orientation, QWidget *parent = nullptr);
 
+    /**
+     * @brief 按钮样式定制枚举
+     */
+    enum ENavButtonStyle
+    {
+        IconsAndText,
+        IconsOnly,
+        TextOnly,
+    }; // TODO: 下个版本加入
+
+    /**
+     * @brief 按钮选择时样式枚举
+     */
+    enum ENavSelectionStyle
+    {
+        BarMoving,
+        BackgroundMoving,
+        BarChange,
+        BackgroundChange,
+    }; // TODO: 下个版本加入
+
     /********************************/
     /*********** 导航类方法 ***********/
     /********************************/

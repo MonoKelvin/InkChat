@@ -1,10 +1,65 @@
 /* Light Style for InkChat */
+/**
+ * - 亮色主题配色表 -
+ * 背景色：#ffffff
+ * 主蓝色：#4D7BF5
+ * 次蓝色：#D9E8FF
+ * 主橘色：#FDAA2A
+ * 次橘色：#FFEDD5
+ * 主红色：#FE2A52
+ * 次红色：#FFD6DE
+ * 主字色：#3B4151
+ * 次字色：#A7ADBD
+ * 浅蓝色：#F5F6FA
+ * 主绿色：#2AFE75
+ *
+ * - 字体 -
+ * 字体： 微软雅黑
+ * 主要字体样式：14px 主字色
+ * 次要字体样式：12px 次字色
+ * 标题字体样式：16px 次字色 加粗
+ * 用户名样式：16px 主字色
+ *
+ * !间距全用奇数，控件大小全部偶数
+ *
+ * - 间距 -
+ * 小间距：5px
+ * 窄间距：10px
+ * 标准间距：15px
+ * 大间距：20px
+ *
+ * - 头像 -
+ * 尺寸：46px * 46px
+ *
+ * - 按钮 -
+ * 圆形按钮：40px * 40px
+ * 长方形按钮：auto * 36px
+ * 导航按钮：40px * 40px
+ *
+ * - 图标 -
+ * 标准图标：16px * 16px
+ * 消息控件中特殊图标：26px * 26px
+ *
+ * - 图标样式 -
+ * 未激活样式：次字色
+ * 激活样式：主蓝色
+ * 圆形图标按钮激活：原有色加深
+ *
+ * - 圆角 -
+ * 标准圆角：6px
+ * 聊天气泡圆角：10px
+ *
+ * !设置固定宽使用：min-width + max-width = x
+ * !单纯使用width无效，height也是一样
+ *
+ */
 
 * {
     margin: 0;
     padding: 0;
     font-size: 14px;
     font-family: '微软雅黑';
+    background: white;
     outline: none;
     border: none;
 }
@@ -75,65 +130,69 @@ QScrollBar::sub-line:horizontal {
 }
 
 /* Navigation */
-Navigation QWidget {
-    color: #c0c0c0;
-    background: #0d0d0d;
-    min-width: 80px;
+Navigation {
+    color: #a7adbd;
+    min-width: 70px;
+    max-width: 70px;
+    border-right: 1px solid #d9e8ff;
 }
-#navBtnsContents QPushButton {
-    min-width: 48px;
-    min-height: 48px;
-    max-width: 48px;
-    max-height: 48px;
-    border-radius: 10px;
-    background-color: transparent;
+#navBtnsContents #navButton {
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    border-radius: 6px;
+    background: transparent;
 }
-#navBtnsContents QPushButton::hover {
-    background-color: #292929;
-}
-#navBtnsContents QPushButton::checked {
-    background: #474747;
+/* #navBtnsContents #navButton::hover {
+    background: #292929;
+} */
+#navBtnsContents #navButton::checked {
+    background: #d9e8ff;
 }
 
-
-/* Message Item */
+/* Message List */
 MessageList {
-    background-color: #191919;
+    max-width: 270px;
+    border-right: 1px solid #d9e8ff;
 }
-MessageList QListView::item {
-    height: 50px;
-    padding: 10px;
+MessageList::item:hover {
+    background-color: #f5f6fa;
 }
-MessageList QListView::item:hover {
-    background-color: #1d1d1d;
+MessageList::item:selected {
+    background-color: #d9e8ff;
 }
-MessageList QListView::item:selected {
-    background-color: #292929;
-}
-MessageList QListView::item:hover:!selected {
-    background-color: #1d1d1d;
+MessageList::item:hover:!selected {
+    background-color: #f5f6fa;
 }
 MessageList #backTopBtn {
-    background-color: #474747;
-    max-width: 48px;
-    max-height: 48px;
+    background: #4d7bf5;
+    min-width: 40px;
+    max-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
     border-radius: 24px;
 }
+
+/* Message Item */
 MessageItem #name {
     font-weight: bold;
-    font-size: 16px;
-    color: #b0b0b0;
+    font-size: 14px;
+    color: #3b4151;
 }
 MessageItem #message {
-    color: #474747;
+    font-size: 12px;
+    color: #a7adbd;
 }
 
 /* Avatar */
 Avatar {
-    background: #474747;
-    /* border-radius: 24px; */
-    /* width: 48px; */
-    /* height: 48px; */
+    background: #d9e8ff;
+    border-radius: 23px;
+    min-width: 46px;
+    min-height: 46px;
+    max-width: 46px;
+    max-height: 46px;
 }
 
 /** Chat Item */
@@ -145,59 +204,55 @@ ChatItem {
 }
 ChatItem #message_ta {
     color: #ffffff;
-    background: #13c71c;
-    border-top-right-radius: 16px;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
+    background: #4d7bf5;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     padding: 8px;
 }
 ChatItem #message_me {
-    color: #cccccc;
-    background: #1f1f1f;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
+    color: #3b4151;
+    background: #f5f6fa;
+    border: 1px solid #d9e8ff;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     padding: 8px;
 }
-ChatItem #name {
-    font-weight: bold;
-    /* min-height: 10px; */
-}
+/* ChatItem #name {
+    min-height: 10px;
+} */
 ChatItem #time {
     font-size: 12px;
-    color: #474747;
+    color: #a7adbd;
 }
 
 /* Badge */
 Badge {
-    font-size: 12px;
-    color: white;
-    border-radius: 10px;
-    min-width: 20px;
-    min-height: 20px;
-}
-#numberNotice {
-    max-height: 20px;
+    padding: 0 6px;
 }
 #badge {
-    border-radius: 12px;
-    padding: 2px 10px;
+    font-size: 12px;
+    color: #fe2a52;
+    border-radius: 10px;
+    background: #ffd6de;
 }
-#dotNotice {
-    border-radius: 5px;
-    min-width: 10px;
-    min-height: 10px;
-    max-width: 10px;
-    max-height: 10px;
+#dotBadge {
+    min-width: 8px;
+    min-height: 8px;
+    max-width: 8px;
+    max-height: 8px;
+    border-radius: 4px;
+    background: #4d7bf6;
 }
 
 PromptWidget {
-    color: white;
+    color: #ffffff;
     border-radius: 4px;
 }
 #promptPrompt {
-    background: #5576bd;
+    background: #4d7bf6;
 }
 #promptAlert {
-    background: #dc3278;
+    background: #fe2a52;
 }

@@ -11,3 +11,15 @@ void attachShadowEffect(QWidget *widget, const QColor &color, qreal radius, qrea
     effect->setBlurRadius(radius);
     widget->setGraphicsEffect(effect);
 }
+
+const QString getElidedText(QString text, const QFont &font, int maxWidth)
+{
+    QFontMetrics fontWidth(font);
+
+    if (fontWidth.horizontalAdvance(text) >= maxWidth)
+    {
+        text = fontWidth.elidedText(text, Qt::ElideRight, maxWidth);
+    }
+
+    return text;
+}

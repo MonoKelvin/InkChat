@@ -1,5 +1,7 @@
 ﻿#include "Navigation.h"
 
+#include "../Utility/Utility.h"
+
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QBoxLayout>
@@ -25,22 +27,14 @@ Navigation::Navigation(EAlignment alignment, EOrientation orientation, QWidget *
 
 void Navigation::init()
 {
-//    this->setObjectName("navigation");
-    setMinimumSize(NAV_BUTTON_BASE_SIZE, NAV_BUTTON_BASE_SIZE);
-//    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
     mButtonGroup = new QButtonGroup(this);
     mButtonGroup->setExclusive(true);
 
-    QScrollArea *scrollArea;
-    QBoxLayout *layout;
-    QBoxLayout *navBtnsLayout;
-
-    scrollArea = new QScrollArea(this);
-    scrollArea->setWidgetResizable(true);
-    mNavContents = new QWidget();
+    mNavContents = new QWidget(this);
     mNavContents->setObjectName(QLatin1String("navBtnsContents"));
 
+    QBoxLayout *layout;
+    QBoxLayout *navBtnsLayout;
     if (EOrientation::Vertical == mOrientation)
     {
         layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
@@ -51,23 +45,25 @@ void Navigation::init()
         layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
         navBtnsLayout = new QBoxLayout(QBoxLayout::LeftToRight, mNavContents);
     }
-
-//    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    navBtnsLayout->setSpacing(ESpacing::Wide);
-    navBtnsLayout->setMargin(0);
     layout->setSpacing(0);
     layout->setMargin(0);
 
+    navBtnsLayout->setSpacing(ESpacing::Narrow);
+    navBtnsLayout->setMargin(0);
     navBtnsLayout->addStretch(1);
     navBtnsLayout->addStretch(1);
+
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     scrollArea->setWidget(mNavContents);
     layout->addWidget(scrollArea);
 
-    connect(mButtonGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
-            this, &Navigation::onNavigated);
+    connect(mButtonGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [=] {
+        emit onNavigated(mButtonGroup->checkedId());
+    });
 }
 
 void Navigation::setPadding(int margin)
@@ -85,6 +81,8 @@ void Navigation::addNavButton(const QString &text, const QIcon &icon)
     QPushButton *btn = new QPushButton(icon, text, mNavContents);
 
     btn->setCheckable(true);
+    btn->setObjectName(QLatin1String("navButton"));
+    btn->setCursor(Qt::PointingHandCursor);
 
 #ifndef QT_NO_TOOLTIP
     btn->setToolTip(btn->text());

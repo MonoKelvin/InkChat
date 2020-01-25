@@ -17,7 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Core/Component/Navigation.cpp \
+    Core/Widget/Navigation.cpp \
     Core/LoginWithQQMail.cpp \
     Core/User.cpp \
     Core/Utility/HttpRequest.cpp \
@@ -35,7 +35,7 @@ SOURCES += \
 
 HEADERS += \
     Core/Configuation.h \
-    Core/Component/Navigation.h \
+    Core/Widget/Navigation.h \
     Core/InkChatApi.h \
     Core/LoginWithQQMail.h \
     Core/User.h \

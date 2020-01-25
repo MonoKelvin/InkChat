@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>480</height>
+    <width>1080</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,18 +37,6 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>70</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>70</width>
-       <height>16777215</height>
-      </size>
-     </property>
     </widget>
    </item>
    <item>
@@ -73,14 +61,14 @@
        <item>
         <widget class="MessageList" name="messageList" native="true">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="maximumSize">
           <size>
-           <width>300</width>
+           <width>270</width>
            <height>16777215</height>
           </size>
          </property>
@@ -99,14 +87,10 @@
     </widget>
    </item>
   </layout>
+  <zorder>stackedWidget</zorder>
+  <zorder>navigation</zorder>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>Navigation</class>
-   <extends>QWidget</extends>
-   <header location="global">Core/Component/Navigation.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>MessageList</class>
    <extends>QWidget</extends>
@@ -117,6 +101,12 @@
    <class>ChatListView</class>
    <extends>QWidget</extends>
    <header location="global">Core/Widget/ChatListView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Navigation</class>
+   <extends>QWidget</extends>
+   <header location="global">Core/Widget/Navigation.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

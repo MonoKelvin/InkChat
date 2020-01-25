@@ -31,7 +31,7 @@ public:
         update();
     }
 
-    static void DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pixmap);
+    static void DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pixmap, User::EOnlineState state = User::NoneState);
 
     static const QPixmap GetDefaultPixmap()
     {
