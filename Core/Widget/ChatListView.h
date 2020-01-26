@@ -7,6 +7,7 @@ class IChatWidget;
 class QLabel;
 class QPushButton;
 class User;
+class ChatInputBox;
 
 class ChatListView : public QListWidget
 {
@@ -37,6 +38,9 @@ private:
 
     /** 顶部工具按钮 */
     QPushButton *mBtnTool;
+
+    /** 输入聊天消息控件 */
+    ChatInputBox *mChatInputer;
 };
 
 #endif // CHATLISTVIEW_H

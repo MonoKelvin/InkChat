@@ -3,6 +3,7 @@
 #include "../Configuation.h"
 #include "Avatar.h"
 #include "ChatItem.h"
+#include "ChatInputBox.h"
 
 #include <QLabel>
 #include <QScrollBar>
@@ -17,6 +18,8 @@ ChatListView::ChatListView(QWidget *parent)
     setEditTriggers(QListView::NoEditTriggers);
     setResizeMode(QListWidget::Adjust);
     setSpacing(ESpacing::Narrow);
+
+    mChatInputer = new ChatInputBox(this);
 
     mHeaderTitle = new QLabel("Tony Stack", this);
     mHeaderTitle->setAlignment(Qt::AlignCenter);
