@@ -2,14 +2,12 @@
 
 #include "../Configuation.h"
 #include "../Utility/Utility.h"
+#include "MessageList.h"
 #include "Avatar.h"
 #include "Badge.h"
 
-#include <QBoxLayout>
-#include <QLabel>
-
-MessageItem::MessageItem(unsigned int id, QWidget *parent)
-    : QWidget(parent)
+MessageItem::MessageItem(unsigned int id, MessageList *list)
+    : QWidget(list)
     , mBadge(nullptr)
     , mMessageNumber(0)
     , mID(id)
@@ -22,7 +20,15 @@ MessageItem::MessageItem(unsigned int id, QWidget *parent)
     mName->setObjectName(QLatin1String("name"));
     mMessage->setObjectName(QLatin1String("message"));
 
+    setParent(list);
     setFixedHeight(mAvatar->height() + ESpacing::Narrow + ESpacing::Narrow);
+
+    // 移动控件到相应的位置
+    mAvatar->move(ESpacing::Narrow, ESpacing::Narrow);
+    mName->move(mAvatar->geometry().right() + ESpacing::Narrow, ESpacing::Narrow);
+    mMessage->move(mName->x(), mName->geometry().bottom());
+
+    list->addMessage(this);
 }
 
 void MessageItem::setName(const QString &name)
@@ -66,30 +72,22 @@ void MessageItem::unreadMessage()
     {
         mIsRead = false;
 
-        layout()->addWidget(new Badge(int(mMessageNumber), this));
+        setBadge(QString::number(mMessageNumber));
     }
 }
 
 void MessageItem::updateContents()
 {
-    // 1. 移动控件到相应的位置
-    mAvatar->move(ESpacing::Narrow, ESpacing::Narrow);
-    mName->move(mAvatar->geometry().right() + ESpacing::Narrow, ESpacing::Narrow);
-    mMessage->move(mName->x(), mName->geometry().bottom() + ESpacing::Tiny);
-
-    // 2.设置控件的宽度
+    // 设置控件的宽度
     int dw = width() - ESpacing::Narrow;
     if (mBadge) {
         mBadge->move(width() - mBadge->width() - ESpacing::Narrow, (height() - mBadge->height()) / 2);
-        dw = mBadge->geometry().x();
+        dw = mBadge->geometry().x() - ESpacing::Tiny;
     }
     dw -= mName->x();
 
-    mName->setFixedWidth(dw);
-    mName->setText(getElidedText(mName->text(), mName->font(), dw));
-
-    mMessage->setFixedWidth(dw);
-    mMessage->setText(getElidedText(mMessage->text(), mMessage->font(), dw));
+    getElidedText(mName, dw);
+    getElidedText(mMessage, dw);
 }
 
 void MessageItem::setBadge(const QString &text)

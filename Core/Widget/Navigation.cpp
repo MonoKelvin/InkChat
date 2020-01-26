@@ -1,6 +1,8 @@
 ﻿#include "Navigation.h"
 
 #include "../Utility/Utility.h"
+#include "../User.h"
+#include "Avatar.h"
 
 #include <QPushButton>
 #include <QButtonGroup>
@@ -61,9 +63,13 @@ void Navigation::init()
     scrollArea->setWidget(mNavContents);
     layout->addWidget(scrollArea);
 
-    connect(mButtonGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [=] {
-        emit onNavigated(mButtonGroup->checkedId());
+#define BG_CAST void (QButtonGroup::*)(int)
+#define BG_SIGNAL(_Func_) static_cast<BG_CAST>(&QButtonGroup::_Func_)
+    connect(mButtonGroup, BG_SIGNAL(buttonClicked), [=](int i) {
+        emit onNavigated(i);
     });
+#undef BG_SIGNAL
+#undef BG_CAST
 }
 
 void Navigation::setPadding(int margin)
@@ -103,6 +109,13 @@ void Navigation::addNavButton(const QString &text, const QIcon &icon)
     resizeNavButtonContents();
 }
 
+void Navigation::navigate(int index)
+{
+    if (index < mButtonGroup->buttons().length()) {
+        mButtonGroup->button(index)->click();
+    }
+}
+
 void Navigation::setNavButtonSize(const QSize &size)
 {
     for (auto i : mButtonGroup->buttons())
@@ -126,6 +139,13 @@ void Navigation::setNavButtonsMargin(int margin)
 void Navigation::setNavButtonsMargin(int left, int top, int right, int bottom)
 {
     mNavContents->layout()->setContentsMargins(left, top, right, bottom);
+}
+
+void Navigation::setUser(QScopedPointer<User> user)
+{
+    Avatar *avatar = new Avatar(user->getAvatar(), this);
+    avatar->setOnlineState(user->getOnlineState());
+    this->layout()->addWidget(avatar);
 }
 
 int Navigation::getCurrentNavigationIndex()

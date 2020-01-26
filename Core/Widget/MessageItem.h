@@ -6,6 +6,7 @@
 class QLabel;
 class Avatar;
 class Badge;
+class MessageList;
 
 class MessageItem : public QWidget
 {
@@ -13,7 +14,7 @@ class MessageItem : public QWidget
 
     friend class MessageList;
 public:
-    explicit MessageItem(unsigned int id, QWidget *parent = nullptr);
+    explicit MessageItem(unsigned int id, MessageList *list = nullptr);
 
     void setName(const QString &name);
     void setMessage(const QString &message);

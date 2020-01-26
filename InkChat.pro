@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Core/Widget/ChatInputBox.cpp \
     Core/Widget/Navigation.cpp \
     Core/LoginWithQQMail.cpp \
     Core/User.cpp \
@@ -30,11 +31,13 @@ SOURCES += \
     Core/Widget/MessageItem.cpp \
     Core/Widget/MessageList.cpp \
     Core/Widget/PromptWidget.cpp \
+    Core/Widget/SearchableList.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
     Core/Configuation.h \
+    Core/Widget/ChatInputBox.h \
     Core/Widget/Navigation.h \
     Core/InkChatApi.h \
     Core/LoginWithQQMail.h \
@@ -50,6 +53,7 @@ HEADERS += \
     Core/Widget/MessageItem.h \
     Core/Widget/MessageList.h \
     Core/Widget/PromptWidget.h \
+    Core/Widget/SearchableList.h \
     MainWindow.h
 
 FORMS += \
@@ -62,3 +66,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Resource/resources.qrc
+
+DISTFILES += \
+    UI/QML/SearchableList.qml

@@ -9,6 +9,7 @@ class User
 {
 public:
     explicit User();
+    ~User();
 
     enum EOnlineState
     {
@@ -48,6 +49,8 @@ public:
         }
     }
 
+    static QSharedPointer<User> GetUnloginUser(const QString &name = QObject::tr("未登录"));
+
     void setID(unsigned int id) { mUID = id; }
     void setNickName(const QString &name) { mNickName = name; }
     void setMD5(const QString &md5) { mMD5 = md5; }
@@ -57,6 +60,7 @@ public:
     inline unsigned int getUID(void) const { return mUID; }
     inline const QString getNickName(void) const { return mNickName; }
     inline const QPixmap getAvatar(void) const { return mAvatar; }
+    inline EOnlineState getOnlineState(void) const { return mOnlineState; }
 
 private:
     Q_DISABLE_COPY(User)
@@ -71,6 +75,8 @@ private:
     QString mAccount;
 
     QPixmap mAvatar;
+
+    EOnlineState mOnlineState;
 
 private:
     static std::mutex _mutex;

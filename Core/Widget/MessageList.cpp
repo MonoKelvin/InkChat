@@ -1,19 +1,15 @@
 ﻿#include "MessageList.h"
 
-#include "../Utility/Utility.h"
+//#include "../Configuation.h"
+//#include "../Utility/Utility.h"
 #include "MessageItem.h"
-#include "Avatar.h"
+//#include "Avatar.h"
 
 #include <QListWidgetItem>
 
 MessageList::MessageList(QWidget *parent)
-    : QListWidget(parent)
+    : SearchableList(parent)
 {
-    setHorizontalScrollMode(QListView::ScrollPerPixel);
-    setVerticalScrollMode(QListView::ScrollPerPixel);
-    setEditTriggers(QListView::NoEditTriggers);
-    setResizeMode(QListView::Adjust);
-    setSpacing(0);
 
 }
 

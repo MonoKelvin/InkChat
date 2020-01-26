@@ -66,15 +66,10 @@
 
 /* LineEdit */
 QLineEdit {
-    height: 40px;
-    border-radius: 20px;
-    background: rgba(50, 50, 80, 15);
-    padding-left: 16px;
-    padding-right: 16px;
-}
-QLineEdit:hover,
-QLineEdit:focus {
-    background: rgba(50, 50, 80, 30);
+    color: #a7adbd;
+    background-color: #f5f6fa;
+    border-radius: 6px;
+    padding: 0 10px;
 }
 
 /* ToolTip */
@@ -132,11 +127,9 @@ QScrollBar::sub-line:horizontal {
 /* Navigation */
 Navigation {
     color: #a7adbd;
-    min-width: 70px;
-    max-width: 70px;
     border-right: 1px solid #d9e8ff;
 }
-#navBtnsContents #navButton {
+#navButton {
     min-width: 40px;
     min-height: 40px;
     max-width: 40px;
@@ -144,18 +137,14 @@ Navigation {
     border-radius: 6px;
     background: transparent;
 }
-/* #navBtnsContents #navButton::hover {
+/* #navButton::hover {
     background: #292929;
 } */
-#navBtnsContents #navButton::checked {
+#navButton::checked {
     background: #d9e8ff;
 }
 
 /* Message List */
-MessageList {
-    max-width: 270px;
-    border-right: 1px solid #d9e8ff;
-}
 MessageList::item:hover {
     background-color: #f5f6fa;
 }
@@ -165,13 +154,13 @@ MessageList::item:selected {
 MessageList::item:hover:!selected {
     background-color: #f5f6fa;
 }
-MessageList #backTopBtn {
+#backTop {
     background: #4d7bf5;
-    min-width: 40px;
-    max-height: 40px;
-    max-width: 40px;
-    max-height: 40px;
-    border-radius: 24px;
+    border-radius: 20px;
+}
+#msgListTitle {
+    font-size: 16px;
+    color: #a7adbd;
 }
 
 /* Message Item */
@@ -179,8 +168,10 @@ MessageItem #name {
     font-weight: bold;
     font-size: 14px;
     color: #3b4151;
+    min-height: 24px;
 }
 MessageItem #message {
+    /* min-height: 24px; */
     font-size: 12px;
     color: #a7adbd;
 }
@@ -195,14 +186,24 @@ Avatar {
     max-height: 46px;
 }
 
-/** Chat Item */
+/** Chat List */
+ChatListView {
+    margin-top: 55px;
+    border-left: 1px solid #d9e8ff;
+}
+ChatListView #header {
+    min-height: 55px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #D9E8FF;
+    border-left: 1px solid #D9E8FF;
+    font-size: 16px;
+    color: #3B4151;
+}
+
 ChatListView::item {
     background: transparent;
 }
-ChatItem {
-    border: 1px solid blue;
-}
-ChatItem #message_ta {
+#message_ta {
     color: #ffffff;
     background: #4d7bf5;
     border-top-right-radius: 10px;
@@ -210,7 +211,7 @@ ChatItem #message_ta {
     border-bottom-right-radius: 10px;
     padding: 8px;
 }
-ChatItem #message_me {
+#message_me {
     color: #3b4151;
     background: #f5f6fa;
     border: 1px solid #d9e8ff;

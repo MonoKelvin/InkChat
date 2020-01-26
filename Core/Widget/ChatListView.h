@@ -4,12 +4,16 @@
 #include <QListWidget>
 
 class IChatWidget;
+class QLabel;
+class QPushButton;
+class User;
 
 class ChatListView : public QListWidget
 {
     Q_OBJECT
 public:
-    ChatListView(QWidget *parent = nullptr);
+    explicit ChatListView(QWidget *parent = nullptr);
+    explicit ChatListView(QSharedPointer<User> user, QWidget *parent);
 
     /**
      * @brief 添加一条聊天控件
@@ -23,9 +27,16 @@ protected:
 
 private:
     /**
-     * @brief 更新可见视图内的所有item
+     * @brief 更新视图
      */
-    void updateViewportItems(void);
+    void updateViewport(void);
+
+private:
+    /** 顶部标题文字 */
+    QLabel *mHeaderTitle;
+
+    /** 顶部工具按钮 */
+    QPushButton *mBtnTool;
 };
 
 #endif // CHATLISTVIEW_H

@@ -1,40 +1,16 @@
 ﻿#ifndef ADVANCEDLIST_H
 #define ADVANCEDLIST_H
 
-#include "../Configuation.h"
+#include <QListWidget>
 
-#include <QMenu>
-
-class QListView;
 class QPushButton;
-class QLineEdit;
+enum class EAlignment;
 
-/**
- * @brief 高级列表类，提供可搜索的列表容器，可添加自定义菜单动作、回到顶部按钮等。
- */
-class SearchableList : public QWidget
+class SearchableList : public QListWidget
 {
     Q_OBJECT
 public:
     explicit SearchableList(QWidget *parent = nullptr);
-
-    /****************************/
-    /******* 工具栏相关方法 *******/
-    /****************************/
-
-    void setMenuVisiable(bool enabled);
-
-#if QT_CONFIG(menu)
-    void setToolMenu(QMenu *menu);
-
-    void addActionToToolMenu(const QAction &action);
-#endif
-
-    void addWidgetToTool(QWidget *widget);
-
-    /*****************************/
-    /******* 回到顶部相关方法 *******/
-    /*****************************/
 
     /**
      * @brief 设置回到顶部按钮的对齐方式
@@ -42,53 +18,36 @@ public:
      * @note 该对齐方式只有底部左边、底部中间和底部右边三种，分别对应：
      * EAlignment::Left、EAlignment::Center和EAlignment::Right
      */
-    void setBackTopAlignment(EAlignment alignment);
+    inline void setBackTopAlignment(const EAlignment &alignment)
+    {
+        mBackTopAlignment = alignment;
+        resizeEvent(nullptr);
+    }
 
+    /**
+     * @brief 设置回到顶部按钮是否可见
+     * @param enabled 开关
+     */
     void setBackTopVisiable(bool enabled);
 
-    /*****************************/
-    /******* 列表视图相关方法 *******/
-    /*****************************/
-
-    inline void setListWidget(QListView *list) { mList = list; }
-
-    inline const QListView *getListWidget(void) const { return mList; }
-
-protected slots:
-    void closeSearchBox(void);
-    void expandSearchBox(void);
-    void clearList(void);
-
-    virtual void search(const QString &key, bool isRealTime = false);
-    virtual bool refresh();
+public slots:
+    virtual void search(const QString &key);
+//    virtual bool refresh();
 
 protected:
     virtual void resizeEvent(QResizeEvent *e) override;
 
+    virtual bool searchDelegate(const QString &, QListWidgetItem *) { return true; }
+
 protected:
-    /** 列表显示控件 */
-    QListView *mList;
-
-    /** 搜索栏 */
-    QLineEdit *mSearchBox;
-
-    /** 刷新按钮 */
-    QPushButton *mBtnRefresh;
-
-#if QT_CONFIG(menu)
-    /** 菜单按钮 */
-    QPushButton *mBtnMenu;
-#endif
-
     /** 回到顶部按钮 */
-    QPushButton *mBtnBackTop;
+    QPushButton *mBackTop;
 
-    /** 回到顶部按钮对齐方式 */
+    /** 回到顶部按钮的对齐方式
+     * @note 该对齐方式只有底部左边、底部中间和底部右边三种，分别对应：
+     * EAlignment::Left、EAlignment::Center和EAlignment::Right
+     */
     EAlignment mBackTopAlignment;
-
-private:
-    /** 顶部搜索框和菜单等控件的容器 */
-    QWidget *mToopContainer;
 };
 
 #endif // ADVANCEDLIST_H

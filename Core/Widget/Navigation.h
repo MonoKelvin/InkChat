@@ -8,7 +8,7 @@
 
 class QButtonGroup;
 class QPushButton;
-class Avatar;
+class User;
 
 /**
  * 一般的垂直导航形式为：
@@ -78,6 +78,12 @@ public:
     /**********************************/
 
     /**
+     * @brief 导航动作
+     * @param index 按钮索引
+     */
+    void navigate(int index);
+
+    /**
      * @brief 添加一个导航按钮
      * @param text 按钮显示的文字
      * @param icon 按钮显示的图标
@@ -136,11 +142,11 @@ public:
     void addLogo(const QPixmap &logo);
 
     /**
-     * @brief 添加一个用户头像到导航栏尾部
-     * @param avatar 用户头像控件
+     * @brief 设置一个用户到导航栏尾部
+     * @param user 用户
      * @note 若不想添加到默认位置，可以不设置该值，而是用@see pullWidget()添加到头部。
      */
-    void addAvatar(Avatar *avatar);
+    void setUser(QScopedPointer<User> user);
 
     /*******************************/
     /*********** 其他方法 ***********/

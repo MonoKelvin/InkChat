@@ -4,6 +4,7 @@
 #include "Avatar.h"
 #include "ChatItem.h"
 
+#include <QLabel>
 #include <QScrollBar>
 #include <QPushButton>
 #include <QListWidgetItem>
@@ -17,17 +18,21 @@ ChatListView::ChatListView(QWidget *parent)
     setResizeMode(QListWidget::Adjust);
     setSpacing(ESpacing::Narrow);
 
+    mHeaderTitle = new QLabel("Tony Stack", this);
+    mHeaderTitle->setAlignment(Qt::AlignCenter);
+    mHeaderTitle->setObjectName(QLatin1String("header"));
+
+    mBtnTool = new QPushButton(this);
+    mBtnTool->setFixedSize(16, 16);
+    mBtnTool->setObjectName(QLatin1String("toolBtn"));
+
     QSharedPointer<User> u = QSharedPointer<User>(new User);
     u->setNickName("Tony Stack");
     u->setAvatar(Avatar::GetDefaultPixmap());
 
     /// 测试
-    QPushButton *btn = new QPushButton("添加对话", this->parentWidget());
     srand(unsigned(time(nullptr)));
-    connect(btn,
-            &QPushButton::clicked,
-            [ = ]
-    {
+    for (int j = 0; j< 20; j++) {
         QString s("a");
         int i = 0;
         const int r = rand() % 50 + 1;
@@ -53,15 +58,19 @@ ChatListView::ChatListView(QWidget *parent)
         }
         addChatWidget(new ChatItem(u, s, IChatWidget::ESender::Ta));
         addChatWidget(new ChatItem(u, s));
-    });
+    }
 
     // 每次滚动时，更新items
-    connect(verticalScrollBar(),
-            &QScrollBar::valueChanged,
-            [ = ]
-    {
-        updateViewportItems();
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, [=] {
+        updateViewport();
     });
+
+    resizeEvent(nullptr);
+}
+
+ChatListView::ChatListView(QSharedPointer<User> user, QWidget *parent)
+{
+
 }
 
 void ChatListView::addChatWidget(IChatWidget *chat, bool isScrollToBottom)
@@ -79,7 +88,7 @@ void ChatListView::addChatWidget(IChatWidget *chat, bool isScrollToBottom)
             scrollToBottom();
         }
 
-        updateViewportItems();
+        updateViewport();
     }
     // TODO: else { throw error }
 }
@@ -88,10 +97,14 @@ void ChatListView::resizeEvent(QResizeEvent *e)
 {
     Q_UNUSED(e)
 
-    updateViewportItems();
+    // 更新标题栏
+    mHeaderTitle->setGeometry(0, 0, width(), mHeaderTitle->height());
+    mBtnTool->move(width() - mBtnTool->width() - ESpacing::Std, (mHeaderTitle->height() - mBtnTool->height()) / 2);
+
+    updateViewport();
 }
 
-void ChatListView::updateViewportItems()
+void ChatListView::updateViewport()
 {
     // 垂直扫描item并更新它们的尺寸
     for (int scan = 1; scan <= height();)

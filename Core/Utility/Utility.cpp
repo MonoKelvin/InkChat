@@ -1,9 +1,9 @@
 ﻿#include "Utility.h"
 
-#include <QWidget>
+#include <QLabel>
 #include <QGraphicsDropShadowEffect>
 
-void attachShadowEffect(QWidget *widget, const QColor &color, qreal radius, qreal xoffset, qreal yoffset)
+void attachShadowEffect(QWidget *widget, double xoffset, double yoffset, double radius, const QColor &color)
 {
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(widget);
     effect->setOffset(xoffset, yoffset);
@@ -12,14 +12,18 @@ void attachShadowEffect(QWidget *widget, const QColor &color, qreal radius, qrea
     widget->setGraphicsEffect(effect);
 }
 
-const QString getElidedText(QString text, const QFont &font, int maxWidth)
+const QString getElidedText(const QString &text, const QFont &font, int maxWidth, Qt::TextElideMode mode)
 {
-    QFontMetrics fontWidth(font);
+    return QFontMetrics(font).elidedText(text, mode, maxWidth);
+}
 
-    if (fontWidth.horizontalAdvance(text) >= maxWidth)
-    {
-        text = fontWidth.elidedText(text, Qt::ElideRight, maxWidth);
-    }
+void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode)
+{
+    label->setFixedWidth(maxWidth);
 
-    return text;
+    const auto fw = label->fontMetrics();
+    const auto et = fw.elidedText(label->text(), mode, maxWidth - 3*fw.averageCharWidth());
+
+    label->setText(et);
+    label->adjustSize();
 }
