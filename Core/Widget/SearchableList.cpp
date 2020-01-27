@@ -8,6 +8,7 @@
 SearchableList::SearchableList(QWidget *parent)
     : QListWidget(parent)
 {
+    setAutoFillBackground(true);
     setHorizontalScrollMode(QListView::ScrollPerPixel);
     setVerticalScrollMode(QListView::ScrollPerPixel);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

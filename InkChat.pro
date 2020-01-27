@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Core/Widget/ChatInputBox.cpp \
+    Core/Widget/FriendInfoCard.cpp \
     Core/Widget/Navigation.cpp \
     Core/LoginWithQQMail.cpp \
     Core/User.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
 HEADERS += \
     Core/Configuation.h \
     Core/Widget/ChatInputBox.h \
+    Core/Widget/FriendInfoCard.h \
     Core/Widget/Navigation.h \
     Core/InkChatApi.h \
     Core/LoginWithQQMail.h \

@@ -29,8 +29,8 @@ ChatListView::ChatListView(QWidget *parent)
     mBtnTool->setObjectName(QLatin1String("toolBtn"));
 
     QSharedPointer<User> u = QSharedPointer<User>(new User);
-    u->setNickName("Tony Stack");
-    u->setAvatar(Avatar::GetDefaultPixmap());
+    u->NickName = "Peter Park";
+    u->Avatar = Avatar::GetDefaultPixmap();
 
     /////////////////////////////////////////////////////////
     /// 测试

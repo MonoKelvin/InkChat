@@ -4,6 +4,7 @@
 #include "Core/Utility/Utility.h"
 #include "Core/User.h"
 #include "Core/Widget/MessageItem.h"
+#include "Core/Widget/FriendInfoCard.h"
 #include <QScrollBar>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -43,6 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
             ui->chatView->scrollToBottom();
         }
     });
+
+    FriendInfoCard *fid = new FriendInfoCard(User::GetUnloginUser(), this);
+    fid->setGeometry(0, 0, 250, 640);
 }
 
 MainWindow::~MainWindow()

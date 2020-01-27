@@ -29,6 +29,8 @@ Navigation::Navigation(EAlignment alignment, EOrientation orientation, QWidget *
 
 void Navigation::init()
 {
+    setAutoFillBackground(true);
+
     mButtonGroup = new QButtonGroup(this);
     mButtonGroup->setExclusive(true);
 
@@ -143,8 +145,8 @@ void Navigation::setNavButtonsMargin(int left, int top, int right, int bottom)
 
 void Navigation::setUser(QScopedPointer<User> user)
 {
-    Avatar *avatar = new Avatar(user->getAvatar(), this);
-    avatar->setOnlineState(user->getOnlineState());
+    Avatar *avatar = new Avatar(user->Avatar, this);
+    avatar->setOnlineState(user->OnlineState);
     this->layout()->addWidget(avatar);
 }
 

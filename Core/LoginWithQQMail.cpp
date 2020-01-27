@@ -29,12 +29,12 @@ QSharedPointer<User> LoginWithQQMail::parse(const QString &jsonData)
 
         auto user = QSharedPointer<User>(new User);
 
-        user->setID(unsigned(jsonObj.value("id").toString().toInt()));
-        user->setNickName(jsonObj.value("name").toString());
-        user->setAccount(jsonObj.value("account").toString());
+        user->UID = unsigned(jsonObj.value("id").toString().toInt());
+        user->NickName = jsonObj.value("name").toString();
+        user->Account = jsonObj.value("account").toString();
 //        user->setPassword(jsonObj.value("password").toString());
 //        user->setAvatarUrl(jsonObj.value("avatar").toString());
-        user->setMD5(jsonObj.value("md5").toString());
+        user->MD5 = jsonObj.value("md5").toString();
 
         return user;
     }

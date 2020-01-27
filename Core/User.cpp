@@ -19,8 +19,8 @@ QSharedPointer<User> User::GetUnloginUser(const QString &name)
 {
     QSharedPointer<User> user = QSharedPointer<User>(new User);
 
-    user->setNickName(name);
-    user->setAvatar(Avatar::GetDefaultPixmap());
+    user->NickName = name;
+    user->Avatar = Avatar::GetDefaultPixmap();
 
     return user;
 }

@@ -8,6 +8,7 @@ Avatar::Avatar(QWidget *parent)
     : QWidget(parent)
     , mOnlineState(User::Offline)
 {
+    setAutoFillBackground(true);
     setDefaultAvatar();
     setFixedSize(AVATAR_BASE_SIZE, AVATAR_BASE_SIZE);
     setCursor(Qt::PointingHandCursor);
@@ -17,6 +18,7 @@ Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
     : QWidget(parent)
     , mOnlineState(User::Offline)
 {
+    setAutoFillBackground(true);
     setAvatar(pixmap);
     setFixedSize(AVATAR_BASE_SIZE, AVATAR_BASE_SIZE);
     setCursor(Qt::PointingHandCursor);

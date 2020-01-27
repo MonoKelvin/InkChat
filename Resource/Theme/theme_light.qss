@@ -20,7 +20,7 @@
  * 标题字体样式：16px 次字色 加粗
  * 用户名样式：16px 主字色
  *
- * !间距全用奇数，控件大小全部偶数
+ * !间距全用 5的倍数，控件大小全部偶数
  *
  * - 间距 -
  * 小间距：5px
@@ -64,6 +64,10 @@
     border: none;
 }
 
+/**********************/
+/**   Public Style    */
+/**********************/
+
 /* LineEdit */
 QLineEdit {
     color: #a7adbd;
@@ -92,7 +96,7 @@ QPlainTextEdit {
     color: #3b4151;
     border-radius: 10px;
     padding: 6px;
-    background-color: #F5F6FA;
+    background-color: #f5f6fa;
 }
 
 /** ScrollBar Vertical */
@@ -101,11 +105,11 @@ QScrollBar:vertical {
     max-width: 10px;
 }
 QScrollBar::handle:vertical {
-    background: #D9E8FF;
+    background: #d9e8ff;
     min-height: 10px;
 }
 QScrollBar::handle:hover {
-    background: #4D7BF5;
+    background: #4d7bf5;
 }
 QScrollBar::add-line:vertical {
     height: 0;
@@ -120,11 +124,11 @@ QScrollBar:horizontal {
     max-height: 10px;
 }
 QScrollBar::handle:horizontal {
-    background: #D9E8FF;
+    background: #d9e8ff;
     min-width: 10px;
 }
 QScrollBar::horizontal:hover {
-    background: #4D7BF5;
+    background: #4d7bf5;
 }
 QScrollBar::add-line:horizontal {
     width: 0;
@@ -132,6 +136,15 @@ QScrollBar::add-line:horizontal {
 QScrollBar::sub-line:horizontal {
     width: 0;
 }
+#title {
+    padding: 15px;
+    font-size: 16px;
+    color: #a7adbd;
+}
+
+/************************/
+/** Custom Widget Style */
+/************************/
 
 /** Navigation */
 Navigation {
@@ -146,14 +159,11 @@ Navigation {
     border-radius: 6px;
     background: transparent;
 }
-/* #navButton::hover {
-    background: #292929;
-} */
 #navButton::checked {
     background: #d9e8ff;
 }
 
-/* Message List */
+/** Message List */
 MessageList {
     margin-top: 15px;
 }
@@ -166,21 +176,14 @@ MessageList::item:selected {
 MessageList::item:hover:!selected {
     background-color: #f5f6fa;
 }
-#msgListTitle {
-    font-size: 16px;
-    color: #a7adbd;
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
 #btnBackTop {
     background: #4d7bf5;
     border-radius: 20px;
 }
 
-/* Message Item */
+/** Message Item */
 MessageItem #name {
     font-weight: bold;
-    font-size: 14px;
     color: #3b4151;
     min-height: 24px;
 }
@@ -190,7 +193,7 @@ MessageItem #message {
     color: #a7adbd;
 }
 
-/* Avatar */
+/** Avatar */
 Avatar {
     background: #d9e8ff;
     border-radius: 23px;
@@ -232,9 +235,6 @@ ChatListView #header {
     border-bottom-right-radius: 10px;
     padding: 8px;
 }
-/* ChatItem #name {
-    min-height: 10px;
-} */
 ChatItem #time {
     font-size: 12px;
     color: #a7adbd;
@@ -260,7 +260,7 @@ ChatInputBox QPushButton {
     border: none;
 }
 
-/* Badge */
+/** Badge */
 Badge {
     padding: 0 6px;
 }
@@ -279,6 +279,7 @@ Badge {
     background: #4d7bf6;
 }
 
+/** Prompt Widget */
 PromptWidget {
     color: #ffffff;
     border-radius: 4px;
@@ -288,4 +289,64 @@ PromptWidget {
 }
 #promptAlert {
     background: #fe2a52;
+}
+
+/*********************/
+/** Friend Info Card */
+/*********************/
+FriendInfoCard {
+    background-color: #ffffff;
+}
+FriendInfoCard #avatar {
+    max-width: 80px;
+    max-height: 80px;
+}
+FriendInfoCard QPushButton {
+    min-height: 36px;
+    color: #3b4151;
+    background-color: #f5f6fa;
+    border-radius: 6px;
+}
+FriendInfoCard QPushButton:hover {
+    background-color: #d9e8ff;
+}
+FriendInfoCard QPushButton:pressed {
+    color: #4d7bf5;
+    background-color: #d9e8ff;
+}
+FriendInfoCard #line {
+    max-width: 1px;
+    border-right: 2px dashed #D9E8FF;
+    margin-right: 1px;
+}
+#idBadge {
+    font-weight: bold;
+    color: #feaa2a;
+    padding: 6px;
+	background-color: #ffedd5;
+	border-radius: 6px;
+}
+#deleteFriend {
+    color: #fe2a52;
+    background-color: #ffd6de;
+}
+#deleteFriend:pressed {
+    color: #ffffff;
+    background-color: #fe2a52;
+}
+#friendNumIcon, #onlineDaysIcon {
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 18px;
+}
+#friendNumIcon {
+    background-color: #ffedd5;
+}
+#onlineDaysIcon {
+    background-color: #D9E8FF;
+}
+#friendNum, #onlineDays {
+    font-weight: bold;
+    font-size: 16px;
+    color: #3b4151;
 }

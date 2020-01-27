@@ -18,7 +18,7 @@ ChatItem::ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender
     setAttribute(Qt::WA_TranslucentBackground);
 
     // 头像
-    mAvatar = new Avatar(user->getAvatar(), this);
+    mAvatar = new Avatar(user->Avatar, this);
     mAvatar->setOnlineState(User::NoneState);
     mAvatar->setObjectName(QLatin1String("mAvatar"));
 
