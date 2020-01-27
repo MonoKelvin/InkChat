@@ -12,11 +12,6 @@ void attachShadowEffect(QWidget *widget, double xoffset, double yoffset, double 
     widget->setGraphicsEffect(effect);
 }
 
-const QString getElidedText(const QString &text, const QFont &font, int maxWidth, Qt::TextElideMode mode)
-{
-    return QFontMetrics(font).elidedText(text, mode, maxWidth);
-}
-
 void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode)
 {
     label->setFixedWidth(maxWidth);

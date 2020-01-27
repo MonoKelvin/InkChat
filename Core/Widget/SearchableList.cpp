@@ -1,6 +1,7 @@
 ﻿#include "SearchableList.h"
 
 #include "../Configuation.h"
+#include "../Utility/Utility.h"
 
 #include <QPushButton>
 
@@ -9,13 +10,16 @@ SearchableList::SearchableList(QWidget *parent)
 {
     setHorizontalScrollMode(QListView::ScrollPerPixel);
     setVerticalScrollMode(QListView::ScrollPerPixel);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setEditTriggers(QListView::NoEditTriggers);
     setResizeMode(QListView::Adjust);
     setSpacing(0);
 
     mBackTop = new QPushButton(this);
-    mBackTop->setObjectName(QLatin1String("backTop"));
+    mBackTop->setObjectName(QLatin1String("btnBackTop"));
+    mBackTop->setCursor(Qt::PointingHandCursor);
     mBackTop->setFixedSize(40, 40);
+    attachShadowEffect(mBackTop, 0.0, 4.0, 20.0, "#A7ADBD");
 
     resize(size());
 
@@ -49,15 +53,15 @@ void SearchableList::resizeEvent(QResizeEvent *event)
     if(mBackTop->isVisible()) {
         switch (mBackTopAlignment) {
         case EAlignment::Right:
-            mBackTop->move(width() - mBackTop->width() - ESpacing::Std,
-                           height() - mBackTop->height() - ESpacing::Std);
+            mBackTop->move(width() - mBackTop->width() - ESpacing::Wide,
+                           height() - mBackTop->height() - ESpacing::Wide);
             break;
         case EAlignment::Left:
-            mBackTop->move(ESpacing::Std, height() - mBackTop->height() - ESpacing::Std);
+            mBackTop->move(ESpacing::Wide, height() - mBackTop->height() - ESpacing::Wide);
             break;
         default:
             mBackTop->move((width() - mBackTop->width()) / 2,
-                           height() - mBackTop->height() - ESpacing::Std);
+                           height() - mBackTop->height() - ESpacing::Wide);
             break;
         }
     }

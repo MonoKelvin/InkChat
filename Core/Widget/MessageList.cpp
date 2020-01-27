@@ -5,6 +5,7 @@
 #include "MessageItem.h"
 //#include "Avatar.h"
 
+//#include <QScrollBar>
 #include <QListWidgetItem>
 
 MessageList::MessageList(QWidget *parent)

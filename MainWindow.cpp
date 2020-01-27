@@ -1,8 +1,10 @@
 ﻿#include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include "Core/Utility/Utility.h"
 #include "Core/User.h"
 #include "Core/Widget/MessageItem.h"
+#include <QScrollBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -29,6 +31,18 @@ MainWindow::MainWindow(QWidget *parent)
     auto mi3 = new MessageItem(2, ui->messageList);
     mi3->setName(QLatin1String("Jerry McKenzie"));
     mi3->setMessage(QLatin1String("Lorem ipsum dolor sit amet, consectetur adipisicing elit,"));
+
+    // 测试
+    connect(ui->msgSearchBox, &QLineEdit::returnPressed, ui->chatView, &ChatListView::clearChats);
+
+    // 当聊天视图滚动到最底端时，又展开输入框后，会使得视图布局不更新，导致无法看到最后几条消息。
+    connect(ui->chatInputer, &ChatInputBox::onFoldup, [=] {
+        updateLayout(this);
+        const auto vsb = ui->chatView->verticalScrollBar();
+        if (vsb->value() > vsb->maximum() - ui->chatInputer->height()) {
+            ui->chatView->scrollToBottom();
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -36,4 +50,3 @@ MainWindow::~MainWindow()
     User::DestroyMe();
     delete ui;
 }
-

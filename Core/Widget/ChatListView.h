@@ -23,6 +23,12 @@ public:
      */
     void addChatWidget(IChatWidget *chat, bool isScrollToBottom = true);
 
+public slots:
+    /**
+     * @brief 清空聊天消息内容，只影响界面，不会更新数据库
+     */
+    void clearChats();
+
 protected:
     void resizeEvent(QResizeEvent *e) override;
 
@@ -38,9 +44,6 @@ private:
 
     /** 顶部工具按钮 */
     QPushButton *mBtnTool;
-
-    /** 输入聊天消息控件 */
-    ChatInputBox *mChatInputer;
 };
 
 #endif // CHATLISTVIEW_H

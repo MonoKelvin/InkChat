@@ -59,7 +59,7 @@
     padding: 0;
     font-size: 14px;
     font-family: '微软雅黑';
-    background: white;
+    background-color: white;
     outline: none;
     border: none;
 }
@@ -81,22 +81,31 @@ QToolTip {
     opacity: 150;
 }
 
-/* Label */
+/** Label */
 QLabel {
     background-color: transparent;
 }
 
-/* ScrollBar Vertical */
+/** QPlainTextEdit */
+QPlainTextEdit {
+    font-size: 16px;
+    color: #3b4151;
+    border-radius: 10px;
+    padding: 6px;
+    background-color: #F5F6FA;
+}
+
+/** ScrollBar Vertical */
 QScrollBar:vertical {
     background: white;
-    width: 10px;
+    max-width: 10px;
 }
 QScrollBar::handle:vertical {
-    background: rgb(224, 227, 241);
+    background: #D9E8FF;
     min-height: 10px;
 }
 QScrollBar::handle:hover {
-    background: rgb(187, 200, 228);
+    background: #4D7BF5;
 }
 QScrollBar::add-line:vertical {
     height: 0;
@@ -105,17 +114,17 @@ QScrollBar::sub-line:vertical {
     height: 0;
 }
 
-/* ScrollBar Horizontal */
+/** ScrollBar Horizontal */
 QScrollBar:horizontal {
     background: white;
-    height: 10px;
+    max-height: 10px;
 }
 QScrollBar::handle:horizontal {
-    background: rgb(224, 227, 241);
+    background: #D9E8FF;
     min-width: 10px;
 }
 QScrollBar::horizontal:hover {
-    background: rgb(187, 200, 228);
+    background: #4D7BF5;
 }
 QScrollBar::add-line:horizontal {
     width: 0;
@@ -124,7 +133,7 @@ QScrollBar::sub-line:horizontal {
     width: 0;
 }
 
-/* Navigation */
+/** Navigation */
 Navigation {
     color: #a7adbd;
     border-right: 1px solid #d9e8ff;
@@ -145,6 +154,9 @@ Navigation {
 }
 
 /* Message List */
+MessageList {
+    margin-top: 15px;
+}
 MessageList::item:hover {
     background-color: #f5f6fa;
 }
@@ -154,13 +166,15 @@ MessageList::item:selected {
 MessageList::item:hover:!selected {
     background-color: #f5f6fa;
 }
-#backTop {
-    background: #4d7bf5;
-    border-radius: 20px;
-}
 #msgListTitle {
     font-size: 16px;
     color: #a7adbd;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+#btnBackTop {
+    background: #4d7bf5;
+    border-radius: 20px;
 }
 
 /* Message Item */
@@ -191,17 +205,15 @@ ChatListView {
     margin-top: 55px;
     border-left: 1px solid #d9e8ff;
 }
-ChatListView #header {
-    min-height: 55px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #d9e8ff;
-    border-left: 1px solid #d9e8ff;
-    font-size: 16px;
-    color: #3b4151;
-}
-
 ChatListView::item {
     background: transparent;
+}
+ChatListView #header {
+    font-size: 16px;
+    color: #3b4151;
+    background-color: #ffffff;
+    min-height: 55px;
+    margin-left: 1px;
 }
 #message_ta {
     color: #ffffff;
@@ -231,17 +243,21 @@ ChatItem #time {
 /** Chat Inpu tBox */
 ChatInputBox {
     border-top: 1px solid #d9e8ff;
-    min-height: 160px;
 }
 ChatInputBox QPushButton {
-    min-width: 16px;
-    min-height: 16px;
-    max-width: 16px;
-    max-height: 16px;
+    border: 1px solid gray;
+    min-width: 20px;
+    min-height: 20px;
+    max-width: 20px;
+    max-height: 20px;
+    margin: 5px;
 }
-ChatInputBox #btnSend {
+#btnSend {
     background: #4d7bf5;
     border-radius: 20px;
+    min-height: 40px;
+    min-width: 40px;
+    border: none;
 }
 
 /* Badge */

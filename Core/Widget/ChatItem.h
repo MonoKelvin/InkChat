@@ -42,6 +42,8 @@ protected:
     void updateContents() override;
 
 private:
+    Q_DISABLE_COPY(ChatItem)
+
     /** 消息发送者的头像 */
     Avatar *mAvatar;
 

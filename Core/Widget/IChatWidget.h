@@ -65,6 +65,7 @@ protected:
 
     /** 是否更新过内容区域了，用于减少更新次数，提高效率 */
     bool mIsUpdatedContents;
+
 };
 
 #endif // ICHATWIDGET_H

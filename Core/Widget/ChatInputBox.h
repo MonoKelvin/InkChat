@@ -9,11 +9,33 @@ class QPlainTextEdit;
 class ChatInputBox : public QWidget
 {
     Q_OBJECT
+
+    friend class ChatListView;
 public:
     explicit ChatInputBox(QWidget *parent = nullptr);
 
+    /**
+     * @brief 显示模式
+     */
+    enum EDisplayMode
+    {
+        Expand, // 展开
+        Foldup, // 收起
+        Simple, // 精简 TODO: next version
+    };
+
+Q_SIGNALS:
+    void onFoldup(bool enabled);
+
+public slots:
+    /**
+     * @brief 收起消息输入框
+     * @param enabled 开关，传入true表示收起，false则表示展开
+     */
+    void foldup(bool enabled);
+
 protected:
-    void resizeEvent(QResizeEvent *event) override;
+    void moveEvent(QMoveEvent *event) override;
 
 private:
     /** 输入文本的按钮，默认 */
@@ -36,6 +58,13 @@ private:
 
     /** 收回\展开 输入框按钮 */
     QPushButton *mBtnExpand;
+
+    /** 显示模式 */
+    EDisplayMode mDisplayMode;
+
+private:
+    /** 在收起之前的高度 */
+    int _oldH;
 };
 
 #endif // CHATINPUTBOX_H

@@ -45,6 +45,8 @@ protected:
     virtual void setBadge(const QString& text);
 
 private:
+    Q_DISABLE_COPY(MessageItem)
+
     /** 头像控件 */
     Avatar *mAvatar;
 

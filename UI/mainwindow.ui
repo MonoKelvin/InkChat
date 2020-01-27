@@ -72,16 +72,42 @@
        </property>
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <property name="topMargin">
-          <number>15</number>
-         </property>
-         <property name="horizontalSpacing">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="verticalSpacing">
-          <number>10</number>
-         </property>
-         <item row="1" column="1">
+         <item row="3" column="0" colspan="2">
+          <widget class="MessageList" name="messageList" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>220</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>270</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLineEdit" name="msgSearchBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>36</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
           <widget class="QPushButton" name="pushButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -100,39 +126,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLineEdit" name="lineEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>36</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="MessageList" name="messageList" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>220</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>270</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2">
+         <item row="1" column="0" colspan="2">
           <widget class="QLabel" name="msgListTitle">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -140,31 +134,35 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
            <property name="text">
             <string>消息列表</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignHCenter|Qt::AlignTop</set>
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="ChatListView" name="chatView" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <layout class="QVBoxLayout" name="chatLayout">
+         <property name="spacing">
+          <number>0</number>
          </property>
-        </widget>
+         <item>
+          <widget class="ChatListView" name="chatView" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ChatInputBox" name="chatInputer" native="true"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -190,6 +188,12 @@
    <class>Navigation</class>
    <extends>QWidget</extends>
    <header location="global">Core/Widget/Navigation.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChatInputBox</class>
+   <extends>QWidget</extends>
+   <header location="global">Core/Widget/ChatInputBox.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

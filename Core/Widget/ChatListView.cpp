@@ -15,11 +15,10 @@ ChatListView::ChatListView(QWidget *parent)
 {
     setHorizontalScrollMode(QListView::ScrollPerPixel);
     setVerticalScrollMode(QListView::ScrollPerPixel);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setEditTriggers(QListView::NoEditTriggers);
-    setResizeMode(QListWidget::Adjust);
+    setResizeMode(QListView::Adjust);
     setSpacing(ESpacing::Narrow);
-
-    mChatInputer = new ChatInputBox(this);
 
     mHeaderTitle = new QLabel("Tony Stack", this);
     mHeaderTitle->setAlignment(Qt::AlignCenter);
@@ -33,7 +32,9 @@ ChatListView::ChatListView(QWidget *parent)
     u->setNickName("Tony Stack");
     u->setAvatar(Avatar::GetDefaultPixmap());
 
+    /////////////////////////////////////////////////////////
     /// 测试
+    /////////////////////////////////////////////////////////
     srand(unsigned(time(nullptr)));
     for (int j = 0; j< 20; j++) {
         QString s("a");
@@ -62,6 +63,7 @@ ChatListView::ChatListView(QWidget *parent)
         addChatWidget(new ChatItem(u, s, IChatWidget::ESender::Ta));
         addChatWidget(new ChatItem(u, s));
     }
+    /////////////////////////////////////////////////////////
 
     // 每次滚动时，更新items
     connect(verticalScrollBar(), &QScrollBar::valueChanged, [=] {
@@ -96,11 +98,27 @@ void ChatListView::addChatWidget(IChatWidget *chat, bool isScrollToBottom)
     // TODO: else { throw error }
 }
 
+void ChatListView::clearChats()
+{
+    const int c = count();
+
+    QListWidgetItem *item;
+    for (int index = 0; index < c; index++)
+    {
+        item = takeItem(0);
+        if (item) {
+            setItemWidget(item, nullptr);
+            delete item;
+            item = nullptr;
+        }
+    }
+}
+
 void ChatListView::resizeEvent(QResizeEvent *e)
 {
     Q_UNUSED(e)
 
-    // 更新标题栏
+    // 更新组件
     mHeaderTitle->setGeometry(0, 0, width(), mHeaderTitle->height());
     mBtnTool->move(width() - mBtnTool->width() - ESpacing::Std, (mHeaderTitle->height() - mBtnTool->height()) / 2);
 
