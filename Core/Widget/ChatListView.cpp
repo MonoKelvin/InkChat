@@ -22,11 +22,11 @@ ChatListView::ChatListView(QWidget *parent)
 
     mHeaderTitle = new QLabel("Tony Stack", this);
     mHeaderTitle->setAlignment(Qt::AlignCenter);
-    mHeaderTitle->setObjectName(QLatin1String("header"));
+    mHeaderTitle->setObjectName(QStringLiteral("header"));
 
     mBtnTool = new QPushButton(this);
     mBtnTool->setFixedSize(16, 16);
-    mBtnTool->setObjectName(QLatin1String("toolBtn"));
+    mBtnTool->setObjectName(QStringLiteral("toolBtn"));
 
     QSharedPointer<User> u = QSharedPointer<User>(new User);
     u->NickName = "Peter Park";

@@ -1,7 +1,7 @@
 ﻿#ifndef LOGINWITHQQMAIL_H
 #define LOGINWITHQQMAIL_H
 
-#include "Utility/ILoginOperation.h"
+#include "ILoginOperation.h"
 
 /**
  * @brief 使用QQ邮箱注册、登录和验证

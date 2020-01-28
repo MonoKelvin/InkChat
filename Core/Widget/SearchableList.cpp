@@ -17,7 +17,7 @@ SearchableList::SearchableList(QWidget *parent)
     setSpacing(0);
 
     mBackTop = new QPushButton(this);
-    mBackTop->setObjectName(QLatin1String("btnBackTop"));
+    mBackTop->setObjectName(QStringLiteral("btnBackTop"));
     mBackTop->setCursor(Qt::PointingHandCursor);
     mBackTop->setFixedSize(40, 40);
     attachShadowEffect(mBackTop, 0.0, 4.0, 20.0, "#A7ADBD");

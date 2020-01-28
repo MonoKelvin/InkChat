@@ -20,5 +20,8 @@
 /** 用户注册Url地址，post请求方式 */
 #define UserSignupUrl       QString(UserUrl + "/signup.php")
 
+#define CHAT_MAJOR_VERSION  1
+#define CHAT_MINOR_VERSION  0
+#define CHAT_REVERSION      0
 
 #endif // INKCHATAPI_H

@@ -20,11 +20,11 @@ ChatItem::ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender
     // 头像
     mAvatar = new Avatar(user->Avatar, this);
     mAvatar->setOnlineState(User::NoneState);
-    mAvatar->setObjectName(QLatin1String("mAvatar"));
+    mAvatar->setObjectName(QStringLiteral("mAvatar"));
 
     // 名称（只有群聊才有内容，否则只是占位）
     mName = new QLabel(this);
-    mName->setObjectName(QLatin1String("name"));
+    mName->setObjectName(QStringLiteral("name"));
     mName->setFixedHeight(mAvatar->height() / 2);
 
     // 消息
@@ -34,14 +34,14 @@ ChatItem::ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender
 
     // 发送时间
     mTime = new QLabel(QDateTime::currentDateTime().toString("hh:mm:ss"), this);
-    mTime->setObjectName(QLatin1String("time"));
+    mTime->setObjectName(QStringLiteral("time"));
     mTime->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
 
     // 正在发送标志
     mSendStateLabel = new QLabel(this);
     mSendStateLabel->setFixedSize(ESpacing::Std, ESpacing::Std);
     mSendStateLabel->setScaledContents(true);
-    mSendStateLabel->setObjectName(QLatin1String("sendState_sending"));
+    mSendStateLabel->setObjectName(QStringLiteral("sendState_sending"));
     mSendStateLabel->setAttribute(Qt::WA_TranslucentBackground);
     mSendStateLabel->setAutoFillBackground(false);
     // 设置加载gif动画或图片
@@ -70,16 +70,16 @@ void ChatItem::setSender(ChatItem::ESender sender)
     switch (mSender)
     {
     case ESender::Me:
-        mMessage->setObjectName(QLatin1String("message_me"));
+        mMessage->setObjectName(QStringLiteral("message_me"));
         break;
     case ESender::Ta:
-        mMessage->setObjectName(QLatin1String("message_ta"));
+        mMessage->setObjectName(QStringLiteral("message_ta"));
         break;
     case ESender::Other:
-        mMessage->setObjectName(QLatin1String("message_other"));
+        mMessage->setObjectName(QStringLiteral("message_other"));
         break;
     case ESender::System:
-        mMessage->setObjectName(QLatin1String("message_system"));
+        mMessage->setObjectName(QStringLiteral("message_system"));
         break;
     }
 

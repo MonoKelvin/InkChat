@@ -3,9 +3,7 @@
 
 #include "../User.h"
 
-#include <QObject>
 #include <QString>
-#include <QSharedPointer>
 
 class ILoginOperation : public QObject
 {

@@ -13,7 +13,8 @@ class FriendInfoCard : public QWidget
 public:
     explicit FriendInfoCard(QSharedPointer<User> user, QWidget *parent = nullptr);
 
-signals:
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 private:
 

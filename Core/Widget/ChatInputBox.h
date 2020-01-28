@@ -36,6 +36,7 @@ public slots:
 
 protected:
     void moveEvent(QMoveEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     /** 输入文本的按钮，默认 */

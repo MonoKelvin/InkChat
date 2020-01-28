@@ -1,7 +1,7 @@
 ﻿#include "MainWindow.h"
 #include "ui_mainwindow.h"
 
-#include "Core/Utility/Utility.h"
+#include "Core/Utility.h"
 #include "Core/User.h"
 #include "Core/Widget/MessageItem.h"
 #include "Core/Widget/FriendInfoCard.h"
@@ -13,25 +13,27 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->msgListTitle->setObjectName(QStringLiteral("title"));
+
     ui->navigation->addNavButton("Message");
     ui->navigation->addNavButton("Friend");
     ui->navigation->addNavButton("Mine");
     ui->navigation->addNavButton("Settings");
-    ui->navigation->navigate(1);
+    ui->navigation->navigate(0);
 
     auto mi = new MessageItem(1, ui->messageList);
-    mi->setName(QLatin1String("Tony Stack"));
-    mi->setMessage(QLatin1String("There was a message yestoday"));
+    mi->setName(QStringLiteral("Tony Stack"));
+    mi->setMessage(QStringLiteral("There was a message yestoday"));
     mi->setUnreadMessageNumber(20);
 
     auto mi2 = new MessageItem(2, ui->messageList);
-    mi2->setName(QLatin1String("Francis King"));
+    mi2->setName(QStringLiteral("Francis King"));
     mi2->setUnreadMessageNumber(150);
     mi2->setMessage("昨天发来的100多条消息。昨天发来的100多条消息。");
 
     auto mi3 = new MessageItem(2, ui->messageList);
-    mi3->setName(QLatin1String("Jerry McKenzie"));
-    mi3->setMessage(QLatin1String("Lorem ipsum dolor sit amet, consectetur adipisicing elit,"));
+    mi3->setName(QStringLiteral("Jerry McKenzie"));
+    mi3->setMessage(QStringLiteral("Lorem ipsum dolor sit amet, consectetur adipisicing elit,"));
 
     // 测试
     connect(ui->msgSearchBox, &QLineEdit::returnPressed, ui->chatView, &ChatListView::clearChats);
@@ -45,8 +47,8 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    FriendInfoCard *fid = new FriendInfoCard(User::GetUnloginUser(), this);
-    fid->setGeometry(0, 0, 250, 640);
+//    auto fc = new FriendInfoCard(User::GetUnloginUser(), this);
+//    fc->setFixedSize(250, height());
 }
 
 MainWindow::~MainWindow()

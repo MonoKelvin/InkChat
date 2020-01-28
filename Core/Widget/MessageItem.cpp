@@ -17,8 +17,8 @@ MessageItem::MessageItem(unsigned int id, MessageList *list)
     mName = new QLabel(this);
     mMessage = new QLabel(this);
 
-    mName->setObjectName(QLatin1String("name"));
-    mMessage->setObjectName(QLatin1String("message"));
+    mName->setObjectName(QStringLiteral("name"));
+    mMessage->setObjectName(QStringLiteral("message"));
 
     setParent(list);
     setFixedHeight(mAvatar->height() + ESpacing::Narrow + ESpacing::Narrow);
@@ -101,7 +101,7 @@ void MessageItem::setBadge(const QString &text)
 
     if (ok) {
         if (num > 99) {
-            mBadge->setText(QLatin1String("99+"));
+            mBadge->setText(QStringLiteral("99+"));
         } else if (num > 0) {
             mBadge->setNum(num);
         } else {

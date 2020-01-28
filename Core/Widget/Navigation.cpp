@@ -1,5 +1,6 @@
 ﻿#include "Navigation.h"
 
+#include "../Configuation.h"
 #include "../Utility/Utility.h"
 #include "../User.h"
 #include "Avatar.h"
@@ -35,7 +36,7 @@ void Navigation::init()
     mButtonGroup->setExclusive(true);
 
     mNavContents = new QWidget(this);
-    mNavContents->setObjectName(QLatin1String("navBtnsContents"));
+    mNavContents->setObjectName(QStringLiteral("navBtnsContents"));
 
     QBoxLayout *layout;
     QBoxLayout *navBtnsLayout;
@@ -89,7 +90,7 @@ void Navigation::addNavButton(const QString &text, const QIcon &icon)
     QPushButton *btn = new QPushButton(icon, text, mNavContents);
 
     btn->setCheckable(true);
-    btn->setObjectName(QLatin1String("navButton"));
+    btn->setObjectName(QStringLiteral("navButton"));
     btn->setCursor(Qt::PointingHandCursor);
 
 #ifndef QT_NO_TOOLTIP
@@ -153,6 +154,13 @@ void Navigation::setUser(QScopedPointer<User> user)
 int Navigation::getCurrentNavigationIndex()
 {
     return mButtonGroup->checkedId();
+}
+
+void Navigation::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+
+    USE_STYLE_SHEET
 }
 
 void Navigation::setNavButtonsAlignment(const EAlignment &alignment)

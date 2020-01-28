@@ -1,14 +1,14 @@
 ﻿#ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include "../Configuation.h"
-
 #include <QWidget>
 #include <QIcon>
 
 class QButtonGroup;
 class QPushButton;
 class User;
+enum class EAlignment;
+enum class EOrientation;
 
 /**
  * 一般的垂直导航形式为：
@@ -179,6 +179,9 @@ Q_SIGNALS:
      * @param index 导航按钮的索引
      */
     void onNavigated(int index);
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     void resizeNavButtonContents(void);

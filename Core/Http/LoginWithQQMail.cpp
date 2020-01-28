@@ -1,9 +1,9 @@
 ﻿#include "LoginWithQQMail.h"
 
-#include "User.h"
-#include "Utility/HttpRequest.h"
-#include "InkChatApi.h"
-#include "Widget/PromptWidget.h"
+#include "../User.h"
+#include "HttpRequest.h"
+#include "../InkChatApi.h"
+#include "../Widget/PromptWidget.h"
 
 #include <QMap>
 #include <QJsonParseError>

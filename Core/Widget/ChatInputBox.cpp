@@ -13,9 +13,10 @@ ChatInputBox::ChatInputBox(QWidget *parent)
     , mDisplayMode(EDisplayMode::Expand)
 {
     setFixedHeight(150);
+    setAutoFillBackground(true);
 
     mBtnSend = new QPushButton(this->parentWidget());
-    mBtnSend->setObjectName(QLatin1String("btnSend"));
+    mBtnSend->setObjectName(QStringLiteral("btnSend"));
     mBtnSend->setCursor(Qt::PointingHandCursor);
     mBtnSend->setFixedSize(40, 40);
     attachShadowEffect(mBtnSend, 0.0, 4.0, 20.0, "#A7ADBD");
@@ -23,27 +24,27 @@ ChatInputBox::ChatInputBox(QWidget *parent)
     QGridLayout *gridLayout = new QGridLayout(this);
 
     mChatInputer = new QPlainTextEdit(this);
-    mChatInputer->setObjectName(QLatin1String("chatInputer"));
+    mChatInputer->setObjectName(QStringLiteral("chatInputer"));
     mChatInputer->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(mChatInputer, 1, 0, 1, 6);
 
     mBtnText = new QPushButton(this);
-    mBtnText->setObjectName(QLatin1String("btnText"));
+    mBtnText->setObjectName(QStringLiteral("btnText"));
     mBtnText->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(mBtnText, 0, 0, 1, 1);
 
     mBtnImage = new QPushButton(this);
-    mBtnImage->setObjectName(QLatin1String("btnImage"));
+    mBtnImage->setObjectName(QStringLiteral("btnImage"));
     mBtnImage->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(mBtnImage, 0, 1, 1, 1);
 
     mBtnVideo = new QPushButton(this);
-    mBtnVideo->setObjectName(QLatin1String("btnVideo"));
+    mBtnVideo->setObjectName(QStringLiteral("btnVideo"));
     mBtnVideo->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(mBtnVideo, 0, 2, 1, 1);
 
     mBtnFile = new QPushButton(this);
-    mBtnFile->setObjectName(QLatin1String("btnFile"));
+    mBtnFile->setObjectName(QStringLiteral("btnFile"));
     mBtnFile->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(mBtnFile, 0, 3, 1, 1);
 
@@ -52,7 +53,7 @@ ChatInputBox::ChatInputBox(QWidget *parent)
 
     mBtnExpand = new QPushButton(this);
     mBtnExpand->setCheckable(true);
-    mBtnExpand->setObjectName(QLatin1String("btnExpand"));
+    mBtnExpand->setObjectName(QStringLiteral("btnExpand"));
     mBtnExpand->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(mBtnExpand, 0, 5, 1, 1);
 
@@ -103,4 +104,11 @@ void ChatInputBox::moveEvent(QMoveEvent *event)
 
     mBtnSend->move(geometry().right() - mBtnSend->width() - ESpacing::Wide,
                    y() - mBtnSend->height() - ESpacing::Wide);
+}
+
+void ChatInputBox::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+
+    USE_STYLE_SHEET
 }

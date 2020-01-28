@@ -2,6 +2,8 @@
 #define UTILITY_H
 
 #include <QWidget>
+#include <QStylePainter>
+#include <QStyleOption>
 
 class QWidget;
 class QFont;
@@ -57,6 +59,20 @@ inline void updateLayout(QWidget *widget)
     widget->resize(s.width() + 1, s.height());
     widget->resize(s.width(), s.height());
 }
+
+/**
+ * @brief 继承自QWidget的类如果不实现自己的paintEvent方法，那么该类就无法使用样式表
+ * 改变样式。通过该宏可以在样式表中改变当前控件的样式
+ * @note 该宏必须放在paintEvent函数中。
+ */
+#define USE_STYLE_SHEET \
+    { \
+        QStylePainter _Painter_(this); \
+        QStyleOption _Opt_; \
+        _Opt_.initFrom(this); \
+        _Opt_.rect = rect(); \
+        _Painter_.drawPrimitive(QStyle::PE_Widget, _Opt_); \
+    }
 
 /** 向上取整，返回的是int类型 */
 #define Ceil(x) int(float(x)+0.500000f)
