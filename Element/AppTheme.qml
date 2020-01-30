@@ -55,33 +55,45 @@
  */
 
 QtObject {
-    id: appTheme
+    property color primaryColor1: "#4f7eff"
+    property color primaryActiveColor1: Qt.darker(primaryColor1, 1.5)
+    property color subColor1: "#d6e7ff"
 
-    readonly property color primaryColor1: "#4D7BF5"
-    readonly property color primaryActiveColor1: Qt.darker(primaryColor1, 1.5)
-    readonly property color subColor1: "#D9E8FF"
+    property color primaryColor2: "#ffaa2b"
+    property color primaryActiveColor2: Qt.darker(primaryColor2, 1.5)
+    property color subColor2: "#ffedd5"
 
-    readonly property color primaryColor2: "#FDAA2A"
-    readonly property color primaryActiveColor2: Qt.darker(primaryColor2, 1.5)
-    readonly property color subColor2: "#FFEDD5"
+    property color primaryColor3: "#ff2b52"
+    property color primaryActiveColor3: Qt.darker(primaryColor3, 1.5)
+    property color subColor3: "#ffd6de"
 
-    readonly property color primaryColor3: "#FE2A52"
-    readonly property color primaryActiveColor3: Qt.darker(primaryColor3, 1.5)
-    readonly property color subColor3: "#FFD6DE"
+    property color primaryColor4: "#2bff75"
 
-    readonly property color primaryColor4: "#2AFE75"
+    property color mainTextColor: "#333b50"
+    property color subTextColor: "#a2a8bd"
 
-    readonly property color mainTextColor: "#3B4151"
-    readonly property color subTextColor: "#A7ADBD"
-
-    readonly property color tintColor: "#F5F6FA"
-    readonly property color backgroundColor: "#ffffff"
+    property color tintColor: "#f5f6fa"
+    property color backgroundColor: "#ffffff"
 
     readonly property int tinySpacing: 5
     readonly property int narrowSpacing: 10
     readonly property int stdSpacing: 15
     readonly property int wideSpacing: 20
+    readonly property int largeSpacing: 25
+    readonly property int extremeSpacing: 40
 
-    readonly property int stdRadius: 6
-    readonly property int bigRadius: 10
+    property int stdRadius: 6
+    property int bigRadius: 10
+
+    property int titleTextSize: 16
+    property int stdTextSize: 14
+    property int smallTextSize: 12
+    property int tinyTextSize: 10
+
+    property color onlineStateColor: primaryColor4;
+    property color offlineStateColor: subTextColor;
+    property color busyStateColor: primaryColor2;
+
+    property int stdWidgetHeight: 36
+    property int stdBadgeHeight: 18
 }

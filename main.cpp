@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QFont>
 
+#include "Core/User.h"
 #include <Navigation.h>
 #include <MessagePage.h>
 
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_WINDOWS)
     app.setFont(QFont(QStringLiteral("微软雅黑")));
 #endif
+
+    qmlRegisterType<User>("User", 1, 0, "User");
 
     NAVIGATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA

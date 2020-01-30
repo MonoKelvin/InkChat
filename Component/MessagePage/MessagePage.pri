@@ -6,3 +6,6 @@ INCLUDEPATH *= \
 
 HEADERS += \
     $$PWD/MessagePage.h
+
+RESOURCES += \
+    $$PWD/MessagePage.qrc

@@ -1,0 +1,6 @@
+﻿<RCC>
+    <qresource prefix="/MessagePage">
+        <file>MessageList/MessageList.qml</file>
+        <file>MessageList/MessageItem.qml</file>
+    </qresource>
+</RCC>

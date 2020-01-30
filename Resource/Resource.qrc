@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/AppResource">
+        <file>Icon/default_avatar.png</file>
+    </qresource>
+</RCC>
