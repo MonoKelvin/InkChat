@@ -1,7 +1,6 @@
 ﻿#include "ChatInputBox.h"
 
 #include "../Configuation.h"
-#include "../Utility/Utility.h"
 
 #include <QPushButton>
 #include <QPlainTextEdit>
@@ -19,7 +18,6 @@ ChatInputBox::ChatInputBox(QWidget *parent)
     mBtnSend->setObjectName(QStringLiteral("btnSend"));
     mBtnSend->setCursor(Qt::PointingHandCursor);
     mBtnSend->setFixedSize(40, 40);
-    attachShadowEffect(mBtnSend, 0.0, 4.0, 20.0, "#A7ADBD");
 
     QGridLayout *gridLayout = new QGridLayout(this);
 

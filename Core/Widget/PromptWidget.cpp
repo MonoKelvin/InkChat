@@ -1,6 +1,6 @@
 ﻿#include "PromptWidget.h"
 
-#include "../Utility/Utility.h"
+#include "../Utility.h"
 
 #include <QLabel>
 #include <QHBoxLayout>
@@ -24,11 +24,11 @@ void PromptWidget::show(PromptWidget::PromptType type)
 {
     if (type == PromptType::Alert)
     {
-        setObjectName("promptAlert");
+        setObjectName(QStringLiteral("promptAlert"));
     }
     else if (type == PromptType::Prompt)
     {
-        setObjectName("promptPrompt");
+        setObjectName(QStringLiteral("promptPrompt"));
     }
 
     QSize pwSize = parentWidget()->size();

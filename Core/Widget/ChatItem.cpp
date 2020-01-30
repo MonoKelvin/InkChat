@@ -1,16 +1,13 @@
 ﻿#include "ChatItem.h"
 
 #include "Avatar.h"
-#include "../Utility/Utility.h"
+#include "../Utility.h"
 #include "../Configuation.h"
 
 #include <QBoxLayout>
-#include <QPaintEvent>
 #include <QDateTime>
-#include <QPainter>
 #include <QMovie>
 #include <QLabel>
-#include <QFontMetrics>
 
 ChatItem::ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender, QWidget *parent)
     : IChatWidget(sender, parent)

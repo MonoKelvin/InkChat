@@ -1,7 +1,6 @@
 ﻿#include "SearchableList.h"
 
 #include "../Configuation.h"
-#include "../Utility/Utility.h"
 
 #include <QPushButton>
 
@@ -20,7 +19,6 @@ SearchableList::SearchableList(QWidget *parent)
     mBackTop->setObjectName(QStringLiteral("btnBackTop"));
     mBackTop->setCursor(Qt::PointingHandCursor);
     mBackTop->setFixedSize(40, 40);
-    attachShadowEffect(mBackTop, 0.0, 4.0, 20.0, "#A7ADBD");
 
     resize(size());
 

@@ -72,5 +72,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     Resource/resources.qrc
 
-DISTFILES += \
-    UI/QML/SearchableList.qml
+DISTFILES +=

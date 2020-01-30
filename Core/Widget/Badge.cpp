@@ -1,6 +1,6 @@
 ﻿#include "Badge.h"
 
-#include "../Utility/Utility.h"
+#include "../Utility.h"
 #include "../Configuation.h"
 
 Badge::Badge(QWidget *parent)

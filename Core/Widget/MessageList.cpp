@@ -1,7 +1,5 @@
 ﻿#include "MessageList.h"
 
-//#include "../Configuation.h"
-//#include "../Utility/Utility.h"
 #include "MessageItem.h"
 //#include "Avatar.h"
 

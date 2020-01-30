@@ -1,7 +1,7 @@
 ﻿#include "Navigation.h"
 
 #include "../Configuation.h"
-#include "../Utility/Utility.h"
+#include "../Utility.h"
 #include "../User.h"
 #include "Avatar.h"
 
