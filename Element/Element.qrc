@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/Element">
+        <file>AppTheme.qml</file>
+        <file>IconButton.qml</file>
+    </qresource>
+</RCC>

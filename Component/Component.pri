@@ -1,0 +1,5 @@
+include( $$PWD/MessagePage/MessagePage.pri )
+include( $$PWD/Navigation/Navigation.pri )
+#include( $$PWD/FriendPage/FriendPage.pri )
+#include( $$PWD/MinePage/MinePage.pri )
+#include( $$PWD/SettingsPage/SettingsPage.pri )

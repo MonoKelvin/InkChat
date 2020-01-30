@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/Navigation">
+        <file>Navigation.qml</file>
+    </qresource>
+</RCC>
