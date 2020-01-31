@@ -4,5 +4,6 @@
         <file>IconButton.qml</file>
         <file>Avatar.qml</file>
         <file>InputBox.qml</file>
+        <file>BlurEffect.qml</file>
     </qresource>
 </RCC>

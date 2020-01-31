@@ -130,6 +130,9 @@ Item {
                                 },
                             ]);
 
+        const t = new Date();
+        const curTime = t.getHours() + ":" + t.getMinutes();
+
         chatPage.refresh([
                              {
                                  avatar: null,
@@ -137,7 +140,7 @@ Item {
                                  sender: ChatView.Ta,
                                  name:"Tnoy Stack",
                                  message:"this is a message",
-                                 sendTime: Date("hh:mm").toString(),
+                                 sendTime: curTime,
                              },
                              {
                                  avatar: null,
@@ -145,7 +148,7 @@ Item {
                                  sender: ChatView.Me,
                                  name:"Tnoy Stack",
                                  message:"this is a message",
-                                 sendTime: Date("hh:mm").toString(),
+                                 sendTime: curTime
                              },
                          ]);
     }

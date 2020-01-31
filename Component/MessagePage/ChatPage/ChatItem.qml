@@ -16,7 +16,7 @@ Item {
      * _sender : ChatView.ESender
      * _messageType
      */
-    property string sendTime: new Date("hh:mm")
+    property string sendTime: {const t = new Date(); return t.getHours() + ":" + t.getMinutes()}
     property var sendState: ChatView.Sending
 
     onSendStateChanged: {
@@ -46,6 +46,13 @@ Item {
         height: msgText.height + 2 * appTheme.narrowSpacing
         clip: true
 
+        Rectangle {
+            id: corner
+            width: message.radius
+            height: message.radius
+            color: message.color
+        }
+
         Text {
             id: msgText
             text: _message
@@ -62,7 +69,7 @@ Item {
     }
 
     Text {
-        id: time
+        id: timeText
         text: _sendTime
         color: appTheme.subTextColor
         font.pixelSize: appTheme.smallTextSize
@@ -75,8 +82,8 @@ Item {
 
     Component.onCompleted: {
         avatar.anchors.top = bubbleItem.top
-        name.height = avatar.height / 2
         message.anchors.top = avatar.verticalCenter
+        corner.anchors.top = message.top
 
         if(_sender !== ChatView.Me) {
             // 头像
@@ -87,13 +94,11 @@ Item {
             message.anchors.left = avatar.right
             message.anchors.leftMargin = appTheme.narrowSpacing
             message.color = appTheme.leftBubbleColor
+            corner.anchors.left = message.left
             msgText.color = appTheme.leftBubbleTextColor
 
-            // 名称
-            name.anchors.left = message.left
-
             // 时间
-            time.anchors.right = message.right
+            timeText.anchors.right = message.right
 
             // 加载动画
             sendStateIcon.anchors.left = message.right
@@ -105,20 +110,31 @@ Item {
             message.anchors.right = avatar.left
             message.anchors.rightMargin = appTheme.narrowSpacing
             message.color = appTheme.rightBubbleColor
+            corner.anchors.right = message.right
             msgText.color = appTheme.rightBubbleTextColor
 
-            name.anchors.right = message.right
+            name.horizontalAlignment = Text.AlignRight
 
-            time.anchors.left = message.left
+            timeText.anchors.left = message.left
 
             sendStateIcon.anchors.right = message.left
             sendStateIcon.anchors.rightMargin = appTheme.tinySpacing
         }
 
-        name.width = message.width
-        name.anchors.bottom = message.top
-        time.anchors.top = message.bottom
-        time.anchors.topMargin = appTheme.tinySpacing
+        // 名称
+        if(_sender !== ChatView.Other) {
+            name.visible = false;
+        } else {
+            name.height = avatar.height / 2
+            name.anchors.left = message.left
+            name.width = message.width
+            name.anchors.bottom = message.top
+        }
+
+        timeText.anchors.top = message.bottom
+        timeText.anchors.topMargin = appTheme.tinySpacing
         sendStateIcon.anchors.verticalCenter = message.verticalCenter
+
+        bubbleItem.height = timeText.y + appTheme.largeSpacing
     }
 }

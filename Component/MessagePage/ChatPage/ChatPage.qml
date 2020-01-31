@@ -1,13 +1,12 @@
-﻿import QtQuick 2.0
-import "qrc:/Element/"
+﻿import QtQuick 2.12
 import ChatView 1.0
+import QtGraphicalEffects 1.0
+import "qrc:/Element/"
 
 Item {
     property alias titleName: titleNameText.text
 
-    Component.onCompleted: {
-
-    }
+    titleName: qsTr("聊天")
 
     ListView {
         id: chatListView
@@ -17,7 +16,6 @@ Item {
             id: chatListModel
         }
         delegate: Loader {
-            id:loader
             width: chatListView.width
             source: "ChatItem.qml"
         }
@@ -25,6 +23,16 @@ Item {
             height: titleBar.height + appTheme.stdSpacing
             width: chatListView.width
         }
+
+        onContentYChanged: {
+            blurEffect.update();
+        }
+
+//        Component.onCompleted: {
+//            grabToImage(function(result) {
+//                toBlurImg.source = result.url;
+//            }, Qt.size(200, 55))
+//        }
     }
 
     Text {
@@ -43,6 +51,18 @@ Item {
         width: parent.width
         height: 55
         color: appTheme.backgroundColor
+
+        Loader {
+            id:blurEffect
+            source: "qrc:/Element/BlurEffect.qml"
+
+        }
+
+//        Element.BlurEffect {
+//            id: blurEffect
+//            show: parent
+//            background: chatListView
+//        }
 
         Text {
             id: titleNameText

@@ -1,4 +1,5 @@
 ﻿import QtQuick 2.0
+import QtGraphicalEffects 1.14
 import User 1.0
 import "qrc:/Element/"
 
@@ -24,12 +25,15 @@ Item {
 
     onOnlineStateChanged: {
         dot.visible = true;
+        grayAvatar.visible = false;
+
         switch(onlineState) {
         case User.Online:
             dot.color = appTheme.onlineStateColor;
             break;
         case User.Offline:
             dot.color = appTheme.offlineStateColor;
+            grayAvatar.visible = true;
             break;
         case User.Busy:
             dot.color = appTheme.busyStateColor;
@@ -49,6 +53,16 @@ Item {
             id: image
             anchors.fill: parent
             onStatusChanged: if(status !== Image.Ready) source = defaultToShow;
+
+            Colorize {
+                id: grayAvatar
+                anchors.fill: image
+                source: image
+                hue: 0.0
+                saturation: 0.0
+                lightness: 0.0
+                visible:false
+            }
         }
 
         Rectangle {
