@@ -1,10 +1,8 @@
-﻿import QtQuick 2.7
+﻿import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtGraphicalEffects 1.0
-import User 1.0
 import "qrc:/Element/"
 import "qrc:/Navigation/"
-import "qrc:/MessagePage/MessageList"
 
 ApplicationWindow {
     id: window
@@ -19,44 +17,7 @@ ApplicationWindow {
     minimumHeight: 512
 
     Component.onCompleted: {
-        messageList.refresh([
-                                {
-                                   id: 1,
-                                   name: "Tnoy Stack",
-                                   message: "昨天发来的100多条消息。",
-                                   loginState: User.Online,
-                                   unreadMessageNumber: 10,
-                                   read: false,
-                                   messageTime: "13:16"
-                                },
-                                {
-                                    id: 2,
-                                    name: "Tnoy SAlita",
-                                    message: "昨天发来lo! how are you?",
-                                    loginState: User.Offline,
-                                    unreadMessageNumber: 120,
-                                    read: false,
-                                    messageTime: "10:16"
-                                },
-                                {
-                                    id: 3,
-                                    name: "Francis King",
-                                    message: "昨天发来的100多条消息。",
-                                    loginState: User.Busy,
-                                    unreadMessageNumber: 0,
-                                    read: true,
-                                    messageTime: "13:16"
-                                },
-                                {
-                                    id: 3,
-                                    name: "Jack Lloyd",
-                                    message: "1小时前已读的消息。",
-                                    loginState: User.NoneState,
-                                    unreadMessageNumber: 100,
-                                    read: false,
-                                    messageTime: "13:16"
-                                },
-                            ]);
+        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
     }
 
     AppTheme{
@@ -65,20 +26,86 @@ ApplicationWindow {
 
     Navigation {
         id: navigation
-
-        anchors {
-            left: parent.left
-            top: parent.top
-            bottom: parent.bottom
+        anchors.left: parent.left
+        height: parent.height
+        layer.enabled: true
+        layer.effect: DropShadow {
+            radius: 20.0
+            samples: 17
+            color: appTheme.shadowColor
+            horizontalOffset: 1
         }
 
-        onNavigate: function(i){console.log(i)}
+        onNavigate: {
+            switch(index)
+            {
+            case 0:
+                pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
+                break;
+            case 1:
+                console.log("好友列表正在开发中...");
+                break;
+            case 2:
+                console.log("我的主页正在开发中...");
+                break;
+            case 2:
+                console.log("系统设置正在开发中...");
+                break;
+            default:
+                break;
+            }
+        }
     }
 
-    MessageList {
-        id: messageList
+    Item {
+        id: pageContains
+        height: parent.height
+        width: parent.width - navigation.width
         anchors.left: navigation.right
-        height: window.height
-        width: 270
+        z: -2
+
+        property var pages: new Object
+
+        function showPage(pageQrcLocation) {
+            showPageTimer.pageQrcLocation = pageQrcLocation;
+            showPageTimer.start();
+        }
+
+        Timer {
+            id: showPageTimer
+            interval: 5
+            repeat: false
+            running: false
+
+            property string pageQrcLocation
+
+            onTriggered: {
+                switch(pageQrcLocation)
+                {
+                case "": break;
+                    // case "notSupport": materialUI.showSnackbarMessage( "此功能暂未开放" ); break;
+                default:
+                    if (!(pageQrcLocation in pageContains.pages))
+                    {
+                        var component = Qt.createComponent(pageQrcLocation);
+
+                        if (component.status === Component.Ready) {
+                            var page = component.createObject(pageContains);
+                            page.anchors.fill = pageContains;
+                            pageContains.pages[pageQrcLocation] = page;
+                        }
+                    }
+
+                    for (var key in pageContains.pages)
+                    {
+                        pageContains.pages[key].visible = false;
+                    }
+
+                    pageContains.pages[pageQrcLocation].visible = true;
+
+                    break;
+                }
+            }
+        }
     }
 }

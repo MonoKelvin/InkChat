@@ -10,18 +10,16 @@ Rectangle {
     property url clickedIcon: normalIcon
     property size iconSize: Qt.size(16, 16)
 
-    property bool circleBorder: false
-
     property bool checkable: false
     property bool checked: false
     property ExclusiveGroup exclusiveGroup: null
 
     property color normalColor: "transparent"
-    property color clickedColor: appTheme.tintColor
+    property color clickedColor: appTheme.widgetColor
 
     width: 24
     height: 24
-    radius: circleBorder?width/2:6
+    radius: appTheme.stdRadius
     color: checked?clickedColor:normalColor
 
     signal clicked;

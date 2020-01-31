@@ -24,4 +24,5 @@
 #define CHAT_MINOR_VERSION  0
 #define CHAT_REVERSION      0
 
+
 #endif // INKCHATAPI_H

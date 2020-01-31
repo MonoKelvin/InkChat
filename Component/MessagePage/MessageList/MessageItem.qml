@@ -2,21 +2,20 @@
 import User 1.0
 import "qrc:/Element"
 
-Item {
+Rectangle {
     property int msgId: -1
     property int unreadMsgNumber: -1
     property bool hasRead: true
     property string msgTime: new Date().toString()
 
     height: 70
+    color: (messageListView.currentIndex === index)?appTheme.widgetColor:"transparent"
 
     Component.onCompleted: {
-        msgId = id;
-        hasRead = read;
-        nameText.text = name;
-        messageText.text = message;
-        msgTime = messageTime;
-        unreadMsgNumber = unreadMessageNumber;
+        msgId = _id;
+        hasRead = _read;
+        msgTime = _messageTime;
+        unreadMsgNumber = _unreadMessageNumber;
     }
 
     onHasReadChanged: {
@@ -36,7 +35,6 @@ Item {
     onUnreadMsgNumberChanged: {
         if(hasRead) return;
 
-        console.log(unreadMsgNumber)
         if(unreadMsgNumber <= 0) {
             unreadMsgRect.width = 0;
             unreadMsgRect.visible = false;
@@ -54,8 +52,8 @@ Item {
 
     Avatar {
         id: avatar
-        imageSource: avatarUrl
-        onlineState: loginState
+        imageSource: _avatarUrl
+        onlineState: _loginState
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: appTheme.stdSpacing
@@ -92,6 +90,7 @@ Item {
             color: appTheme.mainTextColor
             width: parent.width
             elide: Text.ElideRight
+            text: _name
         }
         Text {
             id: messageText
@@ -99,6 +98,7 @@ Item {
             color: appTheme.subTextColor
             width: parent.width
             elide: Text.ElideRight
+            text: _message
         }
     }
 
@@ -122,6 +122,9 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: console.log("message item clicked")
+        onClicked: {
+            messageListView.currentIndex = index;
+            messageList.itemClicked(msgId);
+        }
     }
 }

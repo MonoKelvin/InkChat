@@ -20,6 +20,7 @@ public:
         Ta, // ta（他或她，一个人）
         Other, // 其他人（针对群聊天）
     };
+    Q_ENUM(ESender)
 
     /**
      * @brief 聊天消息发送状态枚举
@@ -31,6 +32,7 @@ public:
         Failed, // 发送失败
         Withdraw, // 撤回
     };
+    Q_ENUM(ESendState)
 
 public:
     explicit IChatWidget(ESender sender = ESender::Me, QWidget *parent = nullptr);

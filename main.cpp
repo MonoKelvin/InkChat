@@ -1,10 +1,10 @@
-﻿#include <QGuiApplication>
+﻿#include <QFont>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QFont>
 
-#include "Core/User.h"
-#include <Navigation.h>
 #include <MessagePage.h>
+#include <Navigation.h>
+#include <User.h>
 
 int main(int argc, char *argv[])
 {
@@ -18,18 +18,21 @@ int main(int argc, char *argv[])
 #endif
 
     qmlRegisterType<User>("User", 1, 0, "User");
-
     NAVIGATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA
 
     // qml环境
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-        &app, [url](QObject *obj, const QUrl &objUrl) {
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreated,
+        &app,
+        [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)
                 QCoreApplication::exit(-1);
-        }, Qt::QueuedConnection);
+        },
+        Qt::QueuedConnection);
     engine.load(url);
 
     return app.exec();

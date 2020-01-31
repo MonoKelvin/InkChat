@@ -74,6 +74,13 @@ QtObject {
 
     property color tintColor: "#f5f6fa"
     property color backgroundColor: "#ffffff"
+    property color widgetColor: tintColor
+    property color shadowColor: "#1f5a6169"
+
+    property color leftBubbleColor: primaryColor1
+    property color leftBubbleTextColor: backgroundColor
+    property color rightBubbleColor: tintColor
+    property color rightBubbleTextColor: mainTextColor
 
     readonly property int tinySpacing: 5
     readonly property int narrowSpacing: 10
@@ -96,4 +103,9 @@ QtObject {
 
     property int stdWidgetHeight: 36
     property int stdBadgeHeight: 18
+
+
+    function getDefaultUrl() {
+        return "qrc:/AppResource/Icon/default_avatar.png";
+    }
 }

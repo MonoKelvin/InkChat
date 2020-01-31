@@ -2,5 +2,8 @@
     <qresource prefix="/MessagePage">
         <file>MessageList/MessageList.qml</file>
         <file>MessageList/MessageItem.qml</file>
+        <file>ChatPage/ChatPage.qml</file>
+        <file>ChatPage/ChatItem.qml</file>
+        <file>MessagePage.qml</file>
     </qresource>
 </RCC>

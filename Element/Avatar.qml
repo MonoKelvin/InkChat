@@ -8,7 +8,7 @@ Item {
     property var onlineState: User.NoneState
 
     property alias imageSource: image.source
-    property url defaultToShow: "qrc:/AppResource/Icon/default_avatar.png"
+    property url defaultToShow: appTheme.getDefaultUrl()
 
     clip: true
     width: size
@@ -20,10 +20,6 @@ Item {
         if(image.status !== Image.Ready) {
             image.source = defaultToShow
         }
-    }
-
-    function getDefaultUrl() {
-        return "qrc:/AppResource/Icon/default_avatar.png";
     }
 
     onOnlineStateChanged: {
@@ -52,6 +48,7 @@ Item {
         Image {
             id: image
             anchors.fill: parent
+            onStatusChanged: if(status !== Image.Ready) source = defaultToShow;
         }
 
         Rectangle {
