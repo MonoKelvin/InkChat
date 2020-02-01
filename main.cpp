@@ -1,6 +1,7 @@
 ﻿#include <QFont>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+//#include <QKeySequence>
 
 #include <MessagePage.h>
 #include <Navigation.h>
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
 #endif
 
     qmlRegisterType<User>("User", 1, 0, "User");
+//    qmlRegisterUncreatableType<QKeySequence>("KeySequence",1,0,"KeySequence","for win&mac");
     NAVIGATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA
 

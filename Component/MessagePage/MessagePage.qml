@@ -3,8 +3,8 @@ import QtGraphicalEffects 1.0
 import User 1.0
 import ChatView 1.0
 import "qrc:/Element/"
-import "qrc:/MessagePage/MessageList"
 import "qrc:/MessagePage/ChatPage"
+import "qrc:/MessagePage/MessageList"
 
 Item {
 
@@ -148,6 +148,186 @@ Item {
                                  sender: ChatView.Me,
                                  name:"Tnoy Stack",
                                  message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"thisQML debugging is enabled. Only use this in a safe environment.QML debugging is enabled. Only use this in a safe environment. is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"thiQML debugging is enabled. Only use this in a safe environment.s is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"thiQML debugging is enabled. Only use this in a safe environment.QML debugging is enabled. Only use this in a safe environment.QML debugging is enabled. Only use this in a safe environment.QML debugging is enabled. Only use this in a safe environment.s is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a message",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a mQML debugging is enabled. Only use this in a safe environment.essage",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a messaQML debugging is enabled. Only QML debugging is enabled. Only use this in a safe environment.use this in a safe environment.ge",
+                                 sendTime: curTime
+                             },{
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Ta,
+                                 name:"Tnoy Stack",
+                                 message:"this is a messageQML debugging is enabled. Only use this in a safe environment.",
+                                 sendTime: curTime,
+                             },
+                             {
+                                 avatar: null,
+                                 messageType:ChatView.Message,
+                                 sender: ChatView.Me,
+                                 name:"Tnoy Stack",
+                                 message:"this is a messageQML debugging is enabled. Only use this in a safe environment.",
                                  sendTime: curTime
                              },
                          ]);

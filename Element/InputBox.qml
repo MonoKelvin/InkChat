@@ -3,7 +3,6 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 TextField {
-    property alias placeholder: textField.placeholderText
     property color normalBackgroundColor: appTheme.tintColor
     property color focusBackgroundColor: appTheme.tintColor
     property var icon: null

@@ -3,25 +3,25 @@ import QtGraphicalEffects 1.0
 
 Item {
     property var background
-    property var show
-
-    property alias width: blurItem.width
-    property alias height: blurItem.height
+    property var target
 
     property alias blurRadius: fastBlur.radius
 
-    width: sourceItem.width
-    height: sourceItem.height
-    blurRadius: 64
+    opacity: 0.2
+    width: target.width
+    height: target.height
 
     Item {
         id: blurItem
         clip: true
+        anchors.fill: parent
         visible: false
 
         Image {
-           id: toBlurImg
-           x:0; y:0
+            id: toBlurImg
+            width: background.width
+            height: background.height
+            x:0; y:0
         }
     }
 
@@ -32,9 +32,17 @@ Item {
         height: blurItem.height
     }
 
+    /**
+     * 更新背景控件
+     * @note 该方法应当在 当背景控件需要更新时 调用
+     */
     function update() {
-        background.grabToImage(function(result) {
-            toBlurImg.source = result.url;
-        }, Qt.size(width, height))
+        if(background.width > 1 && background.height > 1) {
+            background.grabToImage(function(result) {
+                toBlurImg.source = result.url;
+            }, Qt.size(background.width, background.height))
+            // return toBlurImg
+        }
+        // return null
     }
 }

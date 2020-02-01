@@ -27,7 +27,7 @@ Rectangle {
 
         InputBox {
             id: searchBox
-            placeholder: qsTr("搜索...")
+            placeholderText: qsTr("搜索...")
             icon: IconButton {
                 clickedColor: appTheme.primaryColor1
                 checked: true

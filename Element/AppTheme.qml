@@ -56,15 +56,15 @@
 
 QtObject {
     property color primaryColor1: "#4f7eff"
-    property color primaryActiveColor1: Qt.darker(primaryColor1, 1.5)
+    property color primaryActiveColor1: Qt.darker(primaryColor1, 1.3)
     property color subColor1: "#d6e7ff"
 
     property color primaryColor2: "#ffaa2b"
-    property color primaryActiveColor2: Qt.darker(primaryColor2, 1.5)
+    property color primaryActiveColor2: Qt.darker(primaryColor2, 1.3)
     property color subColor2: "#ffedd5"
 
     property color primaryColor3: "#ff2b52"
-    property color primaryActiveColor3: Qt.darker(primaryColor3, 1.5)
+    property color primaryActiveColor3: Qt.darker(primaryColor3, 1.3)
     property color subColor3: "#ffd6de"
 
     property color primaryColor4: "#2bff75"

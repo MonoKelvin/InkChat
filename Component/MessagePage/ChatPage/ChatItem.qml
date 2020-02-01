@@ -1,11 +1,13 @@
-﻿import QtQuick 2.0
+﻿import QtQuick 2.14
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import ChatView 1.0
 import "qrc:/Element/"
 
-Item {
+Rectangle {
     id: bubbleItem
+    border.width: 1
+    border.color: "red"
 
     /*
      * _avatar
@@ -42,8 +44,8 @@ Item {
     Rectangle {
         id: message
         radius: appTheme.bigRadius
-        width: msgText.width + 2 * appTheme.narrowSpacing
-        height: msgText.height + 2 * appTheme.narrowSpacing
+        width: msgText.width
+        height: msgText.implicitHeight
         clip: true
 
         Rectangle {
@@ -56,14 +58,13 @@ Item {
         Text {
             id: msgText
             text: _message
-            wrapMode: Text.WrapAnywhere
+            padding: appTheme.stdSpacing
+            wrapMode: Text.WordWrap
             font.pixelSize: appTheme.stdTextSize
-            width: Math.min(bubbleItem.width * 0.7, msgText.contentWidth)
-            anchors {
-                left: parent.left
-                top: parent.top
-                leftMargin: appTheme.narrowSpacing
-                topMargin: appTheme.narrowSpacing
+            width: Math.min(bubbleItem.width * 0.7, implicitWidth);
+
+            onImplicitHeightChanged: {
+                bubbleItem.height = message.y +message.height + appTheme.largeSpacing;
             }
         }
     }
@@ -81,60 +82,59 @@ Item {
     }
 
     Component.onCompleted: {
-        avatar.anchors.top = bubbleItem.top
-        message.anchors.top = avatar.verticalCenter
-        corner.anchors.top = message.top
+        avatar.y = appTheme.stdSpacing;
+        message.anchors.top = avatar.verticalCenter;
 
         if(_sender !== ChatView.Me) {
             // 头像
-            avatar.anchors.left = bubbleItem.left
-            avatar.anchors.leftMargin = appTheme.stdSpacing
+            avatar.x = appTheme.stdSpacing;
 
             // 消息
             message.anchors.left = avatar.right
-            message.anchors.leftMargin = appTheme.narrowSpacing
-            message.color = appTheme.leftBubbleColor
-            corner.anchors.left = message.left
-            msgText.color = appTheme.leftBubbleTextColor
+            message.anchors.leftMargin = appTheme.narrowSpacing;
+            message.color = appTheme.leftBubbleColor;
+            corner.anchors.left = message.left;
+            msgText.color = appTheme.leftBubbleTextColor;
 
-            // 时间
-            timeText.anchors.right = message.right
+            timeText.horizontalAlignment = Text.AlignRight;
 
             // 加载动画
-            sendStateIcon.anchors.left = message.right
-            sendStateIcon.anchors.leftMargin = appTheme.tinySpacing
+            sendStateIcon.anchors.left = message.right;
+            sendStateIcon.anchors.leftMargin = appTheme.tinySpacing;
         } else {
-            avatar.anchors.right = bubbleItem.right
-            avatar.anchors.rightMargin = appTheme.stdSpacing
+            avatar.anchors.right = bubbleItem.right;
+            avatar.anchors.rightMargin = appTheme.stdSpacing;
 
-            message.anchors.right = avatar.left
-            message.anchors.rightMargin = appTheme.narrowSpacing
-            message.color = appTheme.rightBubbleColor
-            corner.anchors.right = message.right
-            msgText.color = appTheme.rightBubbleTextColor
+            message.anchors.right = avatar.left;
+            message.anchors.rightMargin = appTheme.narrowSpacing;
+            message.color = appTheme.rightBubbleColor;
+            corner.anchors.right = message.right;
+            msgText.color = appTheme.rightBubbleTextColor;
 
-            name.horizontalAlignment = Text.AlignRight
+            name.horizontalAlignment = Text.AlignRight;
 
-            timeText.anchors.left = message.left
-
-            sendStateIcon.anchors.right = message.left
-            sendStateIcon.anchors.rightMargin = appTheme.tinySpacing
+            sendStateIcon.anchors.right = message.left;
+            sendStateIcon.anchors.rightMargin = appTheme.tinySpacing;
         }
 
         // 名称
         if(_sender !== ChatView.Other) {
             name.visible = false;
         } else {
-            name.height = avatar.height / 2
-            name.anchors.left = message.left
-            name.width = message.width
-            name.anchors.bottom = message.top
+            name.anchors.left = message.left;
+            name.anchors.right = message.right;
+            name.height = avatar.height / 2;
         }
 
-        timeText.anchors.top = message.bottom
-        timeText.anchors.topMargin = appTheme.tinySpacing
-        sendStateIcon.anchors.verticalCenter = message.verticalCenter
+        // 时间
+        timeText.anchors.left = message.left;
+        timeText.anchors.right = message.right;
+        timeText.anchors.top = message.bottom;
+        timeText.anchors.topMargin = appTheme.tinySpacing;
 
-        bubbleItem.height = timeText.y + appTheme.largeSpacing
+        corner.y = 0;
+        sendStateIcon.anchors.verticalCenter = message.verticalCenter;
+
+        bubbleItem.height = timeText.y + appTheme.largeSpacing;
     }
 }

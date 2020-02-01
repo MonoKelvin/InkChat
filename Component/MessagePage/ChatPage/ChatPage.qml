@@ -3,14 +3,18 @@ import ChatView 1.0
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
 
-Item {
+Rectangle {
     property alias titleName: titleNameText.text
 
+    color: appTheme.backgroundColor
     titleName: qsTr("聊天")
 
     ListView {
         id: chatListView
+        width: parent.width
         anchors.fill: parent
+        //        anchors.top: parent.top
+        //        anchors.bottom: inputer.top
 
         model: ListModel {
             id: chatListModel
@@ -24,15 +28,25 @@ Item {
             width: chatListView.width
         }
 
-        onContentYChanged: {
-            blurEffect.update();
-        }
+        footer: Loader {
+            id: inputer
+            z: 10
+            width: chatListView.width
+            source: "ChatInputer.qml"
 
-//        Component.onCompleted: {
-//            grabToImage(function(result) {
-//                toBlurImg.source = result.url;
-//            }, Qt.size(200, 55))
-//        }
+            // 防止鼠标事件穿透
+            MouseArea {
+                anchors.fill: parent
+                onWheel: {}
+            }
+        }
+        footerPositioning: ListView.OverlayFooter
+
+        onContentYChanged: {
+            if(contentY > -titleBar.height){
+                blurEffect.update();
+            }
+        }
     }
 
     Text {
@@ -46,23 +60,33 @@ Item {
         visible: false
     }
 
+    //    Loader {
+    //        id: inputer
+    //        width: parent.width
+    //        height: 200
+    //        anchors.bottom: parent.bottom
+    //        source: "ChatInputer.qml"
+    //    }
+
     Rectangle {
         id: titleBar
         width: parent.width
         height: 55
         color: appTheme.backgroundColor
-
-        Loader {
-            id:blurEffect
-            source: "qrc:/Element/BlurEffect.qml"
-
+        layer.enabled: true
+        layer.effect: DropShadow {
+            radius: 20.0
+            samples: 17
+            color: appTheme.shadowColor
+            verticalOffset: 1
         }
 
-//        Element.BlurEffect {
-//            id: blurEffect
-//            show: parent
-//            background: chatListView
-//        }
+        BlurEffect {
+            id: blurEffect
+            target: titleBar
+            background: chatListView
+            blurRadius: 128
+        }
 
         Text {
             id: titleNameText
@@ -73,7 +97,6 @@ Item {
             anchors.right: menuIconBtn.left
             anchors.rightMargin: appTheme.stdSpacing
             font.pixelSize: appTheme.titleTextSize
-            font.bold: true
         }
 
         IconButton {
@@ -89,7 +112,7 @@ Item {
      */
     function setVoidView() {
         chatListView.visible = false;
-        //        chatListModel.clear();
+        // chatListModel.clear();
         nochatText.visible = true;
         titleName = qsTr("聊天");
     }
