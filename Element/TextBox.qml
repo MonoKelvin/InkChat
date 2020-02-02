@@ -3,12 +3,14 @@ import QtQuick.Controls 2.0
 //import QtQuick.Controls 1.4
 
 Rectangle {
-
     property alias text: textBox.text
     property alias placeholder: textBox.placeholderText
 
     color: appTheme.widgetColor
     radius: appTheme.stdRadius
+    focus: false
+
+    onFocusChanged: textBox.focus = focus;
 
     Flickable {
         id: textBoxFlickable
@@ -27,7 +29,6 @@ Rectangle {
             font.pixelSize: appTheme.stdTextSize
             selectedTextColor: appTheme.backgroundColor
             selectionColor: appTheme.primaryColor1
-
         }
 
 //        Menu {

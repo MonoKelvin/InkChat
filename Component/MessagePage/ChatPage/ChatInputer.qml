@@ -13,12 +13,13 @@ Item {
     onFoldUpChanged: {
         if(foldUp) {
             height = iconsToolBar.height;
-            sendIcon.visible = false;
+            sendIcon.opacity = 0;
         } else {
             height = foldUpHeight;
-            sendIcon.visible = true;
+            sendIcon.opacity = 1;
         }
 
+        textBox.focus = true;
         anchors.bottom = parent.bottom;
     }
 
@@ -48,6 +49,13 @@ Item {
             samples: 17
             color: Qt.lighter(appTheme.primaryColor1, 1.2)
             verticalOffset: 5
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                easing.type: Easing.InOutCubic
+                duration: 450
+            }
         }
     }
 

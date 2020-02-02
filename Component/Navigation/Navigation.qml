@@ -54,5 +54,27 @@ Rectangle {
             exclusiveGroup: exclusiveGroup
             onCheckedChanged: checked?navigate(3):null
         }
+
+    }
+
+    Avatar {
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: name.top
+            bottomMargin: appTheme.narrowSpacing
+        }
+    }
+
+    Text {
+        id: name
+        text: qsTr("Alita")
+        font.pixelSize: appTheme.stdTextSize
+        color: appTheme.mainTextColor
+        horizontalAlignment: Text.AlignHCenter
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom
+            bottomMargin: appTheme.largeSpacing
+        }
     }
 }

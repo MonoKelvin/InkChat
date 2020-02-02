@@ -10,13 +10,23 @@ ApplicationWindow {
     width: 1080
     height: 640
     visible: true
-    opacity: 1
+    opacity: 0
     color: appTheme.backgroundColor
 
     minimumWidth: 800
     minimumHeight: 512
 
+    NumberAnimation {
+        id: opacityAnimation
+        target: window
+        property: "opacity"
+        easing.type: Easing.OutQuart
+        duration: 300
+        to: 1
+    }
+
     Component.onCompleted: {
+        opacityAnimation.start()
         pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
     }
 

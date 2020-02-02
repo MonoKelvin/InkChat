@@ -15,6 +15,9 @@ TextField {
 
     style: TextFieldStyle {
         padding.left: 2*appTheme.tinySpacing + (icon?icon.width:0)
+        placeholderTextColor: appTheme.subTextColor
+        selectedTextColor: appTheme.backgroundColor
+        selectionColor: appTheme.primaryColor1
         background: Rectangle {
             id: inputRect
             anchors.fill: parent

@@ -1,13 +1,11 @@
 ﻿import QtQuick 2.14
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls 2.0
+import QtGraphicalEffects 1.0
 import ChatView 1.0
 import "qrc:/Element/"
 
-Rectangle {
+Item {
     id: bubbleItem
-    border.width: 1
-    border.color: "red"
 
     /*
      * _avatar
@@ -41,10 +39,14 @@ Rectangle {
         font.pixelSize: appTheme.stdTextSize
     }
 
+    property int _readWidth
+
+    onWidthChanged: _readWidth = Math.min(width * 0.7, msgText.implicitWidth);
+
     Rectangle {
         id: message
         radius: appTheme.bigRadius
-        width: msgText.width
+        width: _readWidth
         height: msgText.implicitHeight
         clip: true
 
@@ -55,17 +57,21 @@ Rectangle {
             color: message.color
         }
 
-        Text {
+        TextEdit {
             id: msgText
             text: _message
+            readOnly: true
+            selectByMouse: true
             padding: appTheme.stdSpacing
             wrapMode: Text.WordWrap
             font.pixelSize: appTheme.stdTextSize
-            width: Math.min(bubbleItem.width * 0.7, implicitWidth);
+            selectedTextColor: appTheme.backgroundColor
+            selectionColor: appTheme.primaryActiveColor1
+            width: _readWidth + 1
+        }
 
-            onImplicitHeightChanged: {
-                bubbleItem.height = message.y +message.height + appTheme.largeSpacing;
-            }
+        onHeightChanged: {
+            bubbleItem.height = timeText.y + appTheme.largeSpacing;
         }
     }
 
@@ -136,5 +142,6 @@ Rectangle {
         sendStateIcon.anchors.verticalCenter = message.verticalCenter;
 
         bubbleItem.height = timeText.y + appTheme.largeSpacing;
+        _readWidth = Math.min(bubbleItem.width * 0.7, msgText.implicitWidth);
     }
 }
