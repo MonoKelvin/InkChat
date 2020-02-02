@@ -13,8 +13,7 @@ Rectangle {
         id: chatListView
         width: parent.width
         anchors.fill: parent
-        //        anchors.top: parent.top
-        //        anchors.bottom: inputer.top
+        topMargin: titleBar.height
 
         model: ListModel {
             id: chatListModel
@@ -23,11 +22,6 @@ Rectangle {
             width: chatListView.width
             source: "ChatItem.qml"
         }
-        header: Item {
-            height: titleBar.height + appTheme.stdSpacing
-            width: chatListView.width
-        }
-
         footer: Loader {
             id: inputer
             z: 10

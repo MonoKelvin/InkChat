@@ -1,0 +1,7 @@
+﻿<RCC>
+    <qresource prefix="/FriendPage">
+        <file>FriendListItem.qml</file>
+        <file>FriendListView.qml</file>
+        <file>FriendPage.qml</file>
+    </qresource>
+</RCC>

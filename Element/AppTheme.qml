@@ -101,7 +101,7 @@ QtObject {
     property color offlineStateColor: subTextColor;
     property color busyStateColor: primaryColor2;
 
-    property int stdWidgetHeight: 36
+    property int stdWidgetHeight: 32
     property int stdBadgeHeight: 18
 
 

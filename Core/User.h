@@ -24,6 +24,15 @@ public:
     };
     Q_ENUM(EOnlineState)
 
+    enum EUserType
+    {
+        Friend,
+        Stranger,
+        Group,
+        BlackList,
+    };
+    Q_ENUM(EUserType)
+
     static User *GetMe(void)
     {
         std::lock_guard<std::mutex> lock(_mutex);

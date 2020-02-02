@@ -8,13 +8,15 @@ Rectangle {
 
     signal navigate(var index)
 
+    property int currentIndex: 0
+
+    onCurrentIndexChanged: navigate(currentIndex);
+
     Column {
         id: navigation
         spacing: 10
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-
-        property int currentIndex: 0
 
         ExclusiveGroup {id : exclusiveGroup}
 
@@ -28,7 +30,7 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: checked?navigate(0):null
+            onCheckedChanged: if(checked) currentIndex = 0;
         }
         IconButton {
             id: btnFriend
@@ -36,7 +38,7 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: checked?navigate(1):null
+            onCheckedChanged: if(checked) currentIndex = 1;
         }
         IconButton {
             id: btnMine
@@ -44,7 +46,7 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: checked?navigate(2):null
+            onCheckedChanged: if(checked) currentIndex = 2;
         }
         IconButton {
             id: btnSettings
@@ -52,7 +54,7 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: checked?navigate(3):null
+            onCheckedChanged: if(checked) currentIndex = 3;
         }
 
     }

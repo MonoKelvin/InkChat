@@ -27,7 +27,8 @@ ApplicationWindow {
 
     Component.onCompleted: {
         opacityAnimation.start()
-        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
+//        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
+        pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
     }
 
     AppTheme{
@@ -53,7 +54,7 @@ ApplicationWindow {
                 pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
                 break;
             case 1:
-                console.log("好友列表正在开发中...");
+                pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
                 break;
             case 2:
                 console.log("我的主页正在开发中...");
