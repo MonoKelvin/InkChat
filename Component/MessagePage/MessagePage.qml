@@ -13,6 +13,7 @@ Item {
         messageList.refresh([
                                 {
                                     id: 1,
+                                    avatar: "",
                                     name: "Tnoy Stack",
                                     message: "昨天发来的100多条消息。",
                                     loginState: User.Online,
@@ -22,6 +23,7 @@ Item {
                                 },
                                 {
                                     id: 2,
+                                    avatar: "",
                                     name: "Tnoy SAlita",
                                     message: "昨天发来lo! how are you?",
                                     loginState: User.Offline,
@@ -31,6 +33,7 @@ Item {
                                 },
                                 {
                                     id: 3,
+                                    avatar: "",
                                     name: "Francis King",
                                     message: "昨天发来的100多条消息。",
                                     loginState: User.Busy,
@@ -40,6 +43,7 @@ Item {
                                 },
                                 {
                                     id: 3,
+                                    avatar: "",
                                     name: "Jack Lloyd",
                                     message: "1小时前已读的消息。",
                                     loginState: User.NoneState,
@@ -49,6 +53,7 @@ Item {
                                 },
                                 {
                                     id: 3,
+                                    avatar: "",
                                     name: "Francis King",
                                     message: "昨天发来的100多条消息。",
                                     loginState: User.Busy,
@@ -58,6 +63,7 @@ Item {
                                 },
                                 {
                                     id: 3,
+                                    avatar: "",
                                     name: "Francis King",
                                     message: "昨天发来的100多条消息。",
                                     loginState: User.Busy,
@@ -67,6 +73,7 @@ Item {
                                 },
                                 {
                                     id: 3,
+                                    avatar: "",
                                     name: "Francis King",
                                     message: "昨天发来的100多条消息。",
                                     loginState: User.Busy,
@@ -76,58 +83,14 @@ Item {
                                 },
                                 {
                                     id: 1,
+                                    avatar: "",
                                     name: "Tnoy Stack",
                                     message: "昨天发来的100多条消息。",
                                     loginState: User.Online,
                                     unreadMessageNumber: 10,
                                     read: false,
                                     messageTime: "13:16"
-                                },
-                                {
-                                    id: 2,
-                                    name: "Tnoy SAlita",
-                                    message: "昨天发来lo! how are you?",
-                                    loginState: User.Offline,
-                                    unreadMessageNumber: 120,
-                                    read: false,
-                                    messageTime: "10:16"
-                                },
-                                {
-                                    id: 1,
-                                    name: "Tnoy Stack",
-                                    message: "昨天发来的100多条消息。",
-                                    loginState: User.Online,
-                                    unreadMessageNumber: 10,
-                                    read: false,
-                                    messageTime: "13:16"
-                                },
-                                {
-                                    id: 2,
-                                    name: "Tnoy SAlita",
-                                    message: "昨天发来lo! how are you?",
-                                    loginState: User.Offline,
-                                    unreadMessageNumber: 120,
-                                    read: false,
-                                    messageTime: "10:16"
-                                },
-                                {
-                                    id: 1,
-                                    name: "Tnoy Stack",
-                                    message: "昨天发来的100多条消息。",
-                                    loginState: User.Online,
-                                    unreadMessageNumber: 10,
-                                    read: false,
-                                    messageTime: "13:16"
-                                },
-                                {
-                                    id: 2,
-                                    name: "Tnoy SAlita",
-                                    message: "昨天发来lo! how are you?",
-                                    loginState: User.Offline,
-                                    unreadMessageNumber: 120,
-                                    read: false,
-                                    messageTime: "10:16"
-                                },
+                                }
                             ]);
 
         const t = new Date();

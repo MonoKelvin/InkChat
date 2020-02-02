@@ -11,12 +11,11 @@ Item {
                                   {
                                       groupName: "默认分组",
                                       groupMaxCount: 200,
-                                      groupMemberCount: 20,
                                       members: [
                                           {
                                               type: User.Friend,
                                               id: 1,
-                                              avatar: "https://hbimg.huabanimg.com/b2518fa6829ceeaeafa166c1ad0d9eafe7d8e0d93f108-EnmqA2_fw658",
+                                              avatar: "https://static.collectui.com/shots/3691930/sign-in-and-sign-up-views-dark-theme-large",
                                               onlineState: User.Online,
                                               name: "墨痕轻琐",
                                               signature: "阶前雨下客，窗后书中人",
@@ -46,7 +45,6 @@ Item {
                                   {
                                       groupName: "我的好友",
                                       groupMaxCount: 100,
-                                      groupMemberCount: 4,
                                       members: [
                                           {
                                               type: User.Friend,
@@ -169,7 +167,6 @@ Item {
                 groupListModel.append({
                                           _groupName: buf["groupName"],
                                           _groupMaxCount: buf["groupMaxCount"],
-                                          _groupMemberCount: buf["groupMemberCount"],
                                           _members: buf["members"],
                                       });
             }

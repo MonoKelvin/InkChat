@@ -1,6 +1,5 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.0
-//import QtQuick.Controls 1.4
 
 Rectangle {
     property alias text: textBox.text
@@ -8,16 +7,13 @@ Rectangle {
 
     color: appTheme.widgetColor
     radius: appTheme.stdRadius
-    focus: false
-
-    onFocusChanged: textBox.focus = focus;
 
     Flickable {
         id: textBoxFlickable
         anchors.fill: parent
         anchors.margins: appTheme.tinySpacing
         contentWidth: width
-        contentHeight: Math.max(textBox.contentHeight, height)
+        contentHeight: Math.max(textBox.implicitHeight, height)
         clip: true
 
         TextArea {

@@ -99,6 +99,7 @@ Rectangle {
             var buf = items[index];
             messageListModel.append({
                                         _id: buf["id"],
+                                        _avatar: buf["avatar"],
                                         _name: buf["name"],
                                         _message: buf["message"],
                                         _loginState: buf["loginState"],

@@ -20,7 +20,6 @@ ApplicationWindow {
         id: opacityAnimation
         target: window
         property: "opacity"
-        easing.type: Easing.OutQuart
         duration: 300
         to: 1
     }

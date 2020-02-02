@@ -6,7 +6,7 @@ Item {
     height: 32
     clip: true
 
-    Behavior on height { NumberAnimation { easing.type: Easing.InOutQuad; duration: 400 } }
+    Behavior on height { NumberAnimation { easing.type: Easing.InOutQuad; duration: 350 } }
 
     Component.onCompleted: {
         for ( var index = 0; index < _members.count; ++index ) {
@@ -28,15 +28,16 @@ Item {
             friendListModel.append(data);
         }
 
-        friendListView.height = _members.count * 90;
-        friendListView.y = -1 * friendListView.height;
+        friendListView.height = _members.count * 85;
+        friendListView.y = -friendListView.height;
     }
 
     Item {
         x: 0
-        y: groupNameText.height + groupNameText.padding
+        y: 32
         width: parent.width
         height: friendListView.height
+        clip: true
 
         ListView {
             id: friendListView
@@ -44,12 +45,14 @@ Item {
             width: parent.width
             height: 0
             spacing: appTheme.tinySpacing
-            visible: y !== (-1 * friendListView.height)
+            visible: y !== -friendListView.height
             boundsBehavior: Flickable.StopAtBounds
 
             model: ListModel {
                 id: friendListModel
             }
+
+            Behavior on y { NumberAnimation { easing.type: Easing.InOutQuad; duration: 350 } }
 
             delegate: Loader {
                 width: friendListView.width
@@ -59,16 +62,36 @@ Item {
         }
     }
 
+    // 组名
     Text {
         id: groupNameText
-        text: _groupName
         width: parent.width
         height: 32
-        padding: appTheme.stdSpacing
         font.pixelSize: appTheme.stdTextSize
         color: appTheme.subTextColor
+        verticalAlignment: Text.AlignVCenter
+        anchors.left: parent.left
+        text: _groupName
 
-        Behavior on color { ColorAnimation { duration: 200 } }
+        // 组成员数量badge
+        Rectangle {
+            radius: appTheme.stdRadius
+            x: groupNameText.contentWidth + appTheme.narrowSpacing
+            anchors.verticalCenter: parent.verticalCenter
+            width: memberCountText.implicitWidth
+            height: appTheme.stdBadgeHeight
+            color: appTheme.subColor1
+
+            Text {
+                id: memberCountText
+                height: parent.height
+                font.pixelSize: appTheme.smallTextSize
+                color: appTheme.primaryColor1
+                verticalAlignment: Text.AlignVCenter
+                padding: appTheme.tinySpacing
+                text: friendListView.count + "/" + _groupMaxCount
+            }
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -76,7 +99,7 @@ Item {
             onClicked: {
                 if (friendListModel.count) {
                     if (friendListView.visible) {
-                        friendListView.y = -1 * friendListView.height;
+                        friendListView.y = -friendListView.height;
                         groupItem.height = 32;
                     } else {
                         friendListView.y = 0;
@@ -84,6 +107,7 @@ Item {
                     }
                 }
             }
+
         }
     }
 }

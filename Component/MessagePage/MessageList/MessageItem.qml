@@ -52,12 +52,11 @@ Rectangle {
 
     Avatar {
         id: avatar
-        imageSource: _avatarUrl
+        imageSource: _avatar
         onlineState: _loginState
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: appTheme.stdSpacing
-        onClicked: console.log("avatar clicked")
 
         onOnlineStateChanged: {
             switch(onlineState) {

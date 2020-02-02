@@ -6,20 +6,21 @@ Item {
     property int foldUpHeight
     property bool foldUp: false
 
-    height: 200
+    height: 180
 
     Component.onCompleted: foldUpHeight = height
 
     onFoldUpChanged: {
         if(foldUp) {
-            height = iconsToolBar.height;
+            height = textBox.y + textBox.anchors.topMargin;
             sendIcon.opacity = 0;
+            textBox.opacity = 0;
         } else {
             height = foldUpHeight;
             sendIcon.opacity = 1;
+            textBox.opacity = 1;
         }
 
-        textBox.focus = true;
         anchors.bottom = parent.bottom;
     }
 
@@ -71,7 +72,7 @@ Item {
             verticalOffset: -1
         }
 
-        Column {
+        Item {
             anchors.fill: parent
             anchors.margins: appTheme.narrowSpacing
 
@@ -79,7 +80,7 @@ Item {
                 id: iconsToolBar
                 spacing: appTheme.narrowSpacing
                 width: parent.width
-                height: textIcon.height + 2 * appTheme.narrowSpacing
+                height: textIcon.height
 
                 IconButton {
                     id: textIcon
@@ -96,9 +97,9 @@ Item {
                     id: fileIcon
                 }
                 IconButton {
-                    normalColor: appTheme.primaryColor1
                     id: flodUpIcon
                     onClicked: foldUp = !foldUp
+                    normalColor: appTheme.primaryColor1
                 }
             }
 
@@ -106,7 +107,9 @@ Item {
                 id: textBox
                 width: parent.width
                 height: parent.height - y
-                placeholder: qsTr("输入你想说的话")
+                anchors.top: iconsToolBar.bottom
+                anchors.topMargin: appTheme.narrowSpacing
+                placeholder: qsTr("输入你想说的话...")
             }
         }
     }

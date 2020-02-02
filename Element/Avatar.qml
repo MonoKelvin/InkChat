@@ -3,25 +3,14 @@ import QtGraphicalEffects 1.14
 import User 1.0
 import "qrc:/Element/"
 
-Item {
-    property int size: 45
-
+Rectangle {
     property var onlineState: User.NoneState
+    property alias imageSource: avatar.source
 
-    property alias imageSource: image.source
-    property url defaultToShow: appTheme.getDefaultUrl()
-
-    clip: true
-    width: size
-    height: size
-
-    signal clicked
-
-    Component.onCompleted: {
-        if(image.status !== Image.Ready) {
-            image.source = defaultToShow
-        }
-    }
+    width: 46
+    height: 46
+    radius: 23
+    color: appTheme.subColor1
 
     onOnlineStateChanged: {
         dot.visible = true;
@@ -44,39 +33,46 @@ Item {
         }
     }
 
-    Rectangle {
+    Image {
         id: avatar
         anchors.fill: parent
-        radius: size / 2
+        visible: false
 
-        Image {
-            id: image
-            anchors.fill: parent
-            onStatusChanged: if(status !== Image.Ready) source = defaultToShow;
-
-            Colorize {
-                id: grayAvatar
-                anchors.fill: image
-                source: image
-                hue: 0.0
-                saturation: 0.0
-                lightness: 0.0
-                visible:false
-            }
-        }
-
-        Rectangle {
-            id: dot
-            width: 10;
-            height: 10;
-            radius: 5;
-            anchors.bottom: avatar.bottom;
-            anchors.right:avatar.right;
+        Colorize {
+            id: grayAvatar
+            anchors.fill: avatar
+            source: avatar
+            hue: 0.0
+            saturation: 0.0
+            lightness: 0.0
             visible: false
         }
+    }
 
-        MouseArea {
-            onPressed: clicked()
+    Rectangle{
+        id: mask
+        anchors.fill: parent
+        radius: width / 2
+        visible: false
+    }
+
+    OpacityMask {
+        anchors.fill: avatar
+        source: avatar
+        maskSource: mask
+        visible: true
+        antialiasing: true
+    }
+
+    Rectangle {
+        id: dot
+        width: 10
+        height: 10
+        radius: 5
+        anchors {
+            bottom: parent.bottom
+            right: parent.right
         }
+        visible: false
     }
 }
