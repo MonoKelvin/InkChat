@@ -55,27 +55,28 @@
  */
 
 QtObject {
-    property color primaryColor1: "#4f7eff"
+    property color primaryColor1: "#4D7CFE"
     property color primaryActiveColor1: Qt.darker(primaryColor1, 1.3)
-    property color subColor1: "#d6e7ff"
+    property color subColor1: Qt.lighter(primaryColor1, 1.6)
 
-    property color primaryColor2: "#ffaa2b"
+    property color primaryColor2: "#FFAB2E"
     property color primaryActiveColor2: Qt.darker(primaryColor2, 1.3)
-    property color subColor2: "#ffedd5"
+    property color subColor2: Qt.lighter(primaryColor2, 1.6)
 
     property color primaryColor3: "#ff2b52"
     property color primaryActiveColor3: Qt.darker(primaryColor3, 1.3)
-    property color subColor3: "#ffd6de"
+    property color subColor3: Qt.lighter(primaryColor3, 1.6)
 
     property color primaryColor4: "#2bff75"
 
     property color mainTextColor: "#333b50"
-    property color subTextColor: "#a2a8bd"
+    property color subTextColor: Qt.lighter(mainTextColor, 2.5)
 
     property color tintColor: "#f5f6fa"
     property color backgroundColor: "#ffffff"
     property color widgetColor: tintColor
     property color shadowColor: "#1f5a6169"
+    property color borderColor: Qt.darker(backgroundColor, 1.2)
 
     property color leftBubbleColor: primaryColor1
     property color leftBubbleTextColor: backgroundColor
@@ -89,8 +90,9 @@ QtObject {
     readonly property int largeSpacing: 25
     readonly property int extremeSpacing: 40
 
-    property int stdRadius: 6
-    property int bigRadius: 10
+    readonly property int smallRadius: 4
+    readonly property int stdRadius: 6
+    readonly property int bigRadius: 10
 
     property int titleTextSize: 16
     property int stdTextSize: 14
@@ -103,7 +105,6 @@ QtObject {
 
     property int stdWidgetHeight: 32
     property int stdBadgeHeight: 18
-
 
     function getDefaultUrl() {
         return "qrc:/AppResource/Icon/default_avatar.png";

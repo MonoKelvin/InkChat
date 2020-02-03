@@ -1,10 +1,10 @@
-﻿import QtQuick 2.0
-import QtQuick.Controls 1.4
+﻿import QtQuick 2.7
+import QtQuick.Window 2.3
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
 import "qrc:/Navigation/"
 
-ApplicationWindow {
+Window {
     id: window
     title: "InkChat"
     width: 1080
@@ -24,27 +24,20 @@ ApplicationWindow {
         to: 1
     }
 
+    AppTheme{
+        id: appTheme
+    }
+
     Component.onCompleted: {
         opacityAnimation.start()
 //        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
         pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
     }
 
-    AppTheme{
-        id: appTheme
-    }
-
     Navigation {
         id: navigation
         anchors.left: parent.left
         height: parent.height
-        layer.enabled: true
-        layer.effect: DropShadow {
-            radius: 20.0
-            samples: 17
-            color: appTheme.shadowColor
-            horizontalOffset: 1
-        }
 
         onNavigate: {
             switch(index)

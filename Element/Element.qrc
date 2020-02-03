@@ -1,4 +1,4 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/Element">
         <file>AppTheme.qml</file>
         <file>IconButton.qml</file>
@@ -6,5 +6,6 @@
         <file>InputBox.qml</file>
         <file>BlurEffect.qml</file>
         <file>TextBox.qml</file>
+        <file>Toast.qml</file>
     </qresource>
 </RCC>
