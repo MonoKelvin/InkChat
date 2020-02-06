@@ -35,9 +35,12 @@ public:
 
     static User *GetMe(void)
     {
+        static std::mutex _mutex;
+
         std::lock_guard<std::mutex> lock(_mutex);
         if (UserMe)
         {
+            static std::mutex _mutex2;
             std::lock_guard<std::mutex> lock(_mutex2);
             if (UserMe)
             {
@@ -50,9 +53,12 @@ public:
 
     static void DestroyMe(void)
     {
+        static std::mutex _mutex;
+
         std::lock_guard<std::mutex> lock(_mutex);
         if (UserMe)
         {
+            static std::mutex _mutex2;
             std::lock_guard<std::mutex> lock(_mutex2);
             if (UserMe)
             {
@@ -75,6 +81,8 @@ public:
 
     QString Account;
 
+    QString Password;
+
     QPixmap Avatar;
 
     EOnlineState OnlineState;
@@ -82,9 +90,6 @@ public:
 private:
     Q_DISABLE_COPY(User)
     Q_DISABLE_MOVE(User)
-
-    static std::mutex _mutex;
-    static std::mutex _mutex2;
 
     static User *UserMe;
 };

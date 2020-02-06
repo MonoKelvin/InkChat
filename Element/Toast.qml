@@ -1,16 +1,14 @@
 ﻿import QtQuick 2.14
 import QtQuick.Controls 2.0
 
-/**
- * @brief Manager that creates Toasts dynamically
- */
 Item {
     id: root
 
-    readonly property int defaultTime: 3000
-    readonly property int fadeTime: 500
-    property int showTime: 3000
+    property int showTime: 2500
+    property int showType: Toast.EmergeFromBottom
+    readonly property int fadeTime: 300
 
+    // TODO: 目前只支持从底部冒出(EmergeFromBottom)
     enum EShowType {
         EmergeFromTop,
         EmergeFromBottom,
@@ -20,9 +18,11 @@ Item {
     z: Infinity
     width: window.width
     height: window.height
+    clip: true
 
-    function show(text, duration) {
+    function show(text, duration, type = Toast.EmergeFromBottom) {
         theText.text = text;
+        showType = type;
         if(typeof duration !== "undefined"){
             if(duration >= 2*fadeTime) {
                 showTime = duration;
@@ -30,18 +30,35 @@ Item {
                 showTime = 2*fadeTime;
             }
         } else {
-            showTime = defaultTime;
+            showTime = 2500;
         }
         anim.start();
     }
 
     Rectangle {
+        id: toastItem
         opacity: 0
         color: appTheme.primaryColor1
-        width: theText.implicitWidth + 2 * appTheme.stdSpacing
-        height: theText.implicitHeight + 2 * appTheme.narrowSpacing
+        width: theText.implicitWidth + appTheme.wideSpacing
+        height: theText.implicitHeight + appTheme.wideSpacing
         radius: appTheme.smallRadius
-        anchors.centerIn: parent
+
+        Component.onCompleted: {
+            toastItem.anchors.horizontalCenter = root.horizontalCenter;
+            toastItem.y = root.height;
+
+            // switch(showType) {
+            // case Toast.EmergeFromTop:
+            //     toastItem.y = -toastItem.height;
+            //     break;
+            // case Toast.EmergeFromBottom:
+            //     toastItem.y = root.height;
+            //     break;
+            // default:
+            //     toastItem.anchors.centerIn = root;
+            //     break;
+            // }
+        }
 
         Text{
             id: theText
@@ -51,21 +68,44 @@ Item {
             font.pixelSize: appTheme.stdTextSize
         }
 
-        SequentialAnimation on opacity {
+        SequentialAnimation{
             id: anim
-
             running: false
 
-            NumberAnimation {
-                to: 0.9
-                duration: fadeTime
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: toastItem
+                    property: "y"
+                    duration: fadeTime
+                    easing.type: Easing.OutCubic
+                    to: root.height - toastItem.height - appTheme.wideSpacing
+                }
+                PropertyAnimation {
+                    target: toastItem
+                    property: "opacity"
+                    duration: fadeTime
+                    easing.type: Easing.OutCubic
+                    to: 0.95
+                }
             }
             PauseAnimation {
                 duration: showTime
             }
-            NumberAnimation {
-                to: 0
-                duration: fadeTime
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: toastItem
+                    property: "y"
+                    duration: fadeTime
+                    easing.type: Easing.OutCubic
+                    to: root.height
+                }
+                PropertyAnimation {
+                    target: toastItem
+                    property: "opacity"
+                    duration: fadeTime
+                    easing.type: Easing.OutCubic
+                    to: 0
+                }
             }
 
             onRunningChanged: if(!running) root.destroy();

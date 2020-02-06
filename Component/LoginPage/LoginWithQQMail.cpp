@@ -1,11 +1,9 @@
 ﻿#include "LoginWithQQMail.h"
 
-#include "../User.h"
-#include "HttpRequest.h"
-#include "../InkChatApi.h"
-#include "../Widget/PromptWidget.h"
+#include <User.h>
+#include <InkChatApi.h>
+#include <Http/HttpRequest.h>
 
-#include <QMap>
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -30,10 +28,10 @@ QSharedPointer<User> LoginWithQQMail::parse(const QString &jsonData)
         auto user = QSharedPointer<User>(new User);
 
         user->UID = unsigned(jsonObj.value("id").toString().toInt());
-        user->NickName = jsonObj.value("name").toString();
+        user->NickName = jsonObj.value("nickName").toString();
         user->Account = jsonObj.value("account").toString();
-//        user->setPassword(jsonObj.value("password").toString());
-//        user->setAvatarUrl(jsonObj.value("avatar").toString());
+        user->Password = jsonObj.value("password").toString();
+        user->Avatar = QPixmap(jsonObj.value("avatar").toString());
         user->MD5 = jsonObj.value("md5").toString();
 
         return user;
@@ -42,22 +40,25 @@ QSharedPointer<User> LoginWithQQMail::parse(const QString &jsonData)
     return nullptr;
 }
 
-void LoginWithQQMail::verify(const QMap<QString, QString> &mapping)
+void LoginWithQQMail::login(const QVariantMap &mapping)
 {
+    emit failed("ceshi"); //todo
     HttpRequest *request = new HttpRequest;
 
-    QString postData = "account=" + mapping["account"] + "&password=" + mapping["password"];
-    request->sendRequest(UserLoginUrl, HttpRequest::POST, postData);
+    // 解析登录信息
+    QString postData = "account=" + mapping["account"].toString()
+                       + "&password=" + mapping["password"].toString();
 
-    connect(request, &HttpRequest::request, [ = ](bool success, const QByteArray & jsonData)
+    request->sendRequest(UserLoginUrl, HttpRequest::POST, postData);
+    qDebug() << postData;
+
+    connect(request, &HttpRequest::request, [ = ](bool success, const QByteArray &jsonData)
     {
         if (success)
         {
             mUser = parse(QString(jsonData));
-            emit logedin();
-        }
-        else
-        {
+            emit verified();
+        } else {
             QJsonParseError jsonError;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &jsonError);
             if (jsonError.error == QJsonParseError::NoError && jsonDoc.isObject())
@@ -68,32 +69,32 @@ void LoginWithQQMail::verify(const QMap<QString, QString> &mapping)
     });
 }
 
-void LoginWithQQMail::signup(const QMap<QString, QString> &mapping)
+void LoginWithQQMail::signup(const QVariantMap &mapping)
 {
     HttpRequest *request = new HttpRequest;
-    QString postData = "name=" + mapping["name"]
-                       + "&account=" + mapping["account"]
-                       + "&password=" + mapping["password"];
+
+    // 解析注册信息
+    QString postData = "nickName=" + mapping["nickName"].toString()
+                       + "&account=" + mapping["account"].toString()
+                       + "&password=" + mapping["password"].toString();
+
     request->sendRequest(UserSignupUrl, HttpRequest::POST, postData);
-    connect(request, &HttpRequest::request, [ = ](bool success, const QByteArray & jsonData)
+    qDebug() << postData;
+
+    connect(request, &HttpRequest::request, [ = ](bool success, const QByteArray &jsonData)
     {
         QJsonParseError jsonError;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &jsonError);
         if (jsonError.error == QJsonParseError::NoError && jsonDoc.isObject())
         {
             QJsonObject jsonObj = jsonDoc.object();
-            if (success)
-            {
+            if (success) {
                 emit registered();
-            }
-            else
-            {
+            } else {
                 emit failed(jsonObj.value("msg").toString());
             }
-        }
-        else
-        {
-            emit failed("注册信息不完整！");
+        } else {
+            emit failed(tr("注册信息不完整！"));
         }
     });
 }

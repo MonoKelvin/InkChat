@@ -9,4 +9,7 @@
         <file>Toast.qml</file>
         <file>RoundedButton.qml</file>
     </qresource>
+    <qresource prefix="/js">
+        <file>js/Utility.js</file>
+    </qresource>
 </RCC>

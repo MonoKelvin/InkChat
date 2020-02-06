@@ -1,8 +1,9 @@
 ﻿#include <QFont>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-//#include <QKeySequence>
+#include <QQmlContext>
 
+#include <LoginWithQQMail.h>
 #include <MessagePage.h>
 #include <Navigation.h>
 #include <User.h>
@@ -19,7 +20,8 @@ int main(int argc, char *argv[])
 #endif
 
     qmlRegisterType<User>("User", 1, 0, "User");
-//    qmlRegisterUncreatableType<QKeySequence>("KeySequence",1,0,"KeySequence","for win&mac");
+    qmlRegisterType<LoginWithQQMail>("LoginWithQQMail", 1, 0, "LoginWithQQMail");
+
     NAVIGATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA
 
@@ -36,6 +38,9 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
     engine.load(url);
+
+    LoginWithQQMail loginOperation;
+    engine.rootContext()->setContextProperty("loginOperation", &loginOperation);
 
     return app.exec();
 }

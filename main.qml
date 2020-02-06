@@ -30,8 +30,8 @@ Window {
 
     Component.onCompleted: {
         opacityAnimation.start()
-//        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
-        pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
+        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
+//        pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
     }
 
     Navigation {

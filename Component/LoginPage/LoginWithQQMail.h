@@ -1,7 +1,7 @@
 ﻿#ifndef LOGINWITHQQMAIL_H
 #define LOGINWITHQQMAIL_H
 
-#include "ILoginOperation.h"
+#include <Http/ILoginOperation.h>
 
 /**
  * @brief 使用QQ邮箱注册、登录和验证
@@ -15,8 +15,11 @@ public:
     // ILoginOperation interface
 public:
     QSharedPointer<User> parse(const QString &jsonData) override;
-    void verify(const QMap<QString, QString> &mapping) override;
-    void signup(const QMap<QString, QString> &mapping) override;
+    Q_INVOKABLE void login(const QVariantMap &mapping) override;
+    Q_INVOKABLE void signup(const QVariantMap &mapping) override;
+
+private:
+    Q_DISABLE_COPY_MOVE(LoginWithQQMail)
 };
 
 #endif // LOGINWITHQQMAIL_H

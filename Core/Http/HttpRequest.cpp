@@ -6,6 +6,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QTextCodec>
 
+/** Http请求超时间隔 */
 #define HTTP_TIMEOUT 6000
 
 HttpRequest::HttpRequest(QObject *parent)
@@ -45,7 +46,7 @@ void HttpRequest::sendRequest(const QString &strUrl, HttpRequestType type, const
         mNetworkReply = mNetworkManager->get(netRequest);
     }
 
-    // 开始计时，每HTTP_TIMEOUT个时间戳响应一次信号事件，响应一次后就表示请求超时
+    // 开始计时，HTTP_TIMEOUT(ms)时间后就表示请求超时
     mTimer->start(HTTP_TIMEOUT);
 
     // 请求完成信号
@@ -80,11 +81,9 @@ void HttpRequest::requestFinished()
     this->deleteLater(); //释放内存
 }
 
-//请求超时
 void HttpRequest::requestTimeout()
 {
     emit request(false, "timeout"); //请求失败
     mNetworkReply->deleteLater();
     this->deleteLater(); //释放内存
 }
-
