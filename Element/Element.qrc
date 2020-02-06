@@ -7,5 +7,6 @@
         <file>BlurEffect.qml</file>
         <file>TextBox.qml</file>
         <file>Toast.qml</file>
+        <file>RoundedButton.qml</file>
     </qresource>
 </RCC>

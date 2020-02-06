@@ -13,8 +13,8 @@ Window {
     opacity: 0
     color: appTheme.backgroundColor
 
-    minimumWidth: 800
-    minimumHeight: 512
+    minimumWidth: 720
+    minimumHeight: 460
 
     NumberAnimation {
         id: opacityAnimation

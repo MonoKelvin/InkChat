@@ -94,10 +94,10 @@ QtObject {
     readonly property int stdRadius: 6
     readonly property int bigRadius: 10
 
-    property int titleTextSize: 16
-    property int stdTextSize: 14
-    property int smallTextSize: 12
-    property int tinyTextSize: 10
+    readonly property int titleTextSize: 16
+    readonly property int stdTextSize: 14
+    readonly property int smallTextSize: 12
+    readonly property int tinyTextSize: 10
 
     property color onlineStateColor: primaryColor4;
     property color offlineStateColor: subTextColor;
