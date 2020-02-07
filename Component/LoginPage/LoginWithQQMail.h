@@ -12,11 +12,11 @@ class LoginWithQQMail : public ILoginOperation
 public:
     LoginWithQQMail(QObject *parent = nullptr);
 
-    // ILoginOperation interface
-public:
-    QSharedPointer<User> parse(const QString &jsonData) override;
-    Q_INVOKABLE void login(const QVariantMap &mapping) override;
-    Q_INVOKABLE void signup(const QVariantMap &mapping) override;
+    Q_INVOKABLE void loginRequest(const QVariantMap &mapping) override;
+    Q_INVOKABLE void signupRequest(const QVariantMap &mapping) override;
+
+    void parse(const QVariantMap &userJson) override;
+    void redirect(QObject *ui) override;
 
 private:
     Q_DISABLE_COPY_MOVE(LoginWithQQMail)

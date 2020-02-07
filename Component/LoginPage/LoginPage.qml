@@ -18,24 +18,38 @@ Window {
     minimumWidth: 720
     minimumHeight: 460
 
+    enum EAction {
+        Login,
+        Signup,
+        Exit
+    }
+
+    // 是否是进行登录（否则为注册）
+    property int action: LoginPage.Login
+
+    // 是否正在进行请求，包括登录、注册请求
+    property bool isRequesting: false
+
     // 当登录失败或者注册失败时被调用的槽函数，提供给C++
     function slotFailed(msg) {
-        console.log(msg)
+        console.log('登录或注册失败，原因:' + msg);
+        isRequesting = false;
     }
 
     // 当登录成功时被调用的槽函数
     function slotVerified() {
-        console.log('verified')
+        console.log('登录成功')
+        action = LoginPage.Exit;
     }
 
     // 当注册成功时被调用的槽函数
     function slotRegistered() {
-        console.log('registered')
+        console.log('注册成功')
+        isRequesting = false;
     }
 
     Component.onCompleted: {
         opacityAnimation.start();
-        loginOperation.failed.connect(slotFailed);
     }
 
     NumberAnimation {
@@ -60,7 +74,7 @@ Window {
         // todo: 替换成logo
         Image {
             id: appLogo
-//            source: "http://inkchat.com/api/image.php?user=user&type=avatar&id=1"
+            //            source: "http://inkchat.com/api/image.php?user=user&type=avatar&id=1"
             source: "https://hbimg.huabanimg.com/e6cf965a1906a001fdfc74d5a575408b396492d6c20a8-Ad4g9x_fw658"
             width: parent.width
             fillMode: Image.PreserveAspectFit
@@ -100,8 +114,6 @@ Window {
 
     // 表单区域
     Rectangle {
-        property bool isLogin: true
-
         id: form
         height: parent.height
         color: appTheme.backgroundColor
@@ -192,15 +204,14 @@ Window {
 
                 // 数据和合法验证
                 onClicked: {
-                    if (ibAccount.text.trim() === '' ||
-                            ibPassword.text.trim() === '' ||
-                            (!form.isLogin && ibNickName.text.trim() === ''))
+                    if (ibAccount.text.trim() === '' || ibPassword.text.trim() === '' ||
+                            (window.action === LoginPage.Signup && ibNickName.text.trim() === ''))
                     {
                         ToastJs.createToast(qsTr("内容不允许为空"), window);
                         return;
                     }
 
-                    if(!form.isLogin) {
+                    if(window.action === LoginPage.Signup) {
                         if(ibPassword.text.length < 6) {
                             ToastJs.createToast(qsTr("密码至少位6个字符"), window);
                             return;
@@ -212,18 +223,20 @@ Window {
                         }
                     }
 
-                    if(form.isLogin) {
+                    isRequesting = true;
+
+                    if(window.action === LoginPage.Login) {
                         // 打包数据成json交付给C++处理
-                        loginOperation.login({
-                                                  account: ibAccount.text,
-                                                  password: ibPassword.text
-                                              });
+                        loginOperation.loginRequest({
+                                                        account: ibAccount.text,
+                                                        password: ibPassword.text
+                                                    });
                     } else {
-                        loginOperation.signup({
-                                                   nickName: ibNickName.text,
-                                                   account: ibAccount.text,
-                                                   password: ibPassword.text
-                                               });
+                        loginOperation.signupRequest({
+                                                         nickName: ibNickName.text,
+                                                         account: ibAccount.text,
+                                                         password: ibPassword.text
+                                                     });
                     }
                 }
             }
@@ -233,32 +246,54 @@ Window {
                 width: parent.width
                 text: qsTr("注册")
                 height: 40
-                onClicked: form.isLogin = !form.isLogin;
-            }
-        }
-
-        onIsLoginChanged: {
-            if (isLogin) {
-                loginButton.text = qsTr("登录");
-                signupButton.text = qsTr("注册");
-
-                ibNickName.visible = false;
-                ibRecheckPwd.visible = false;
-                forgetPwdText.visible = true;
-
-                ibAccount.placeholderText = qsTr("账号");
-                ibPassword.placeholderText = qsTr("密码");
-            } else {
-                loginButton.text = qsTr("注册");
-                signupButton.text = qsTr("返回登录");
-
-                ibNickName.visible = true;
-                ibRecheckPwd.visible = true;
-                forgetPwdText.visible = false;
-
-                ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）");
-                ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）");
+                onClicked: {
+                    if(window.action === LoginPage.Login)
+                        window.action = LoginPage.Signup;
+                    else
+                        window.action = LoginPage.Login;
+                }
             }
         }
     }
+
+    onIsRequestingChanged: {
+        if(isRequesting) {
+            loginButton.enabled = false;
+            signupButton.enabled = false;
+        } else {
+            loginButton.enabled = true;
+            signupButton.enabled = true;
+        }
+    }
+
+    onActionChanged: {
+        switch(window.action) {
+        case LoginPage.Login:
+            loginButton.text = qsTr("登录");
+            signupButton.text = qsTr("注册");
+
+            ibNickName.visible = false;
+            ibRecheckPwd.visible = false;
+            forgetPwdText.visible = true;
+
+            ibAccount.placeholderText = qsTr("账号");
+            ibPassword.placeholderText = qsTr("密码");
+            break;
+        case LoginPage.Signup:
+            loginButton.text = qsTr("注册");
+            signupButton.text = qsTr("返回登录");
+
+            ibNickName.visible = true;
+            ibRecheckPwd.visible = true;
+            forgetPwdText.visible = false;
+
+            ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）");
+            ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）");
+            break;
+        default:
+            window.destroy();
+            break;
+        }
+    }
+
 }
