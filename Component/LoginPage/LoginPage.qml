@@ -1,6 +1,6 @@
 ﻿import QtQuick 2.7
 import QtQuick.Window 2.3
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.0
 import LoginWithQQMail 1.0
 import "qrc:/Element/"
@@ -32,19 +32,25 @@ Window {
 
     // 当登录失败或者注册失败时被调用的槽函数，提供给C++
     function slotFailed(msg) {
-        console.log('登录或注册失败，原因:' + msg);
+        ToastJs.createToast(qsTr("登录或注册失败，原因：" + msg), window);
         isRequesting = false;
     }
 
     // 当登录成功时被调用的槽函数
     function slotVerified() {
-        console.log('登录成功')
+//        ToastJs.createToast(qsTr("登录成功"), window);
         action = LoginPage.Exit;
     }
 
     // 当注册成功时被调用的槽函数
     function slotRegistered() {
-        console.log('注册成功')
+        ToastJs.createToast(qsTr("注册成功"), window);
+
+        ibNickName.clear();
+        ibAccount.clear();
+        ibPassword.clear();
+        ibRecheckPwd.clear();
+
         isRequesting = false;
     }
 
@@ -211,16 +217,14 @@ Window {
                         return;
                     }
 
-                    if(window.action === LoginPage.Signup) {
-                        if(ibPassword.text.length < 6) {
-                            ToastJs.createToast(qsTr("密码至少位6个字符"), window);
-                            return;
-                        }
+                    if(ibPassword.text.length < 6) {
+                        ToastJs.createToast(qsTr("密码至少位6个字符"), window);
+                        return;
+                    }
 
-                        if(ibRecheckPwd.text !== ibPassword.text){
-                            ToastJs.createToast(qsTr("两次输入的密码不一样"), window);
-                            return;
-                        }
+                    if(window.action === LoginPage.Signup && ibRecheckPwd.text !== ibPassword.text){
+                        ToastJs.createToast(qsTr("两次输入的密码不一样"), window);
+                        return;
                     }
 
                     isRequesting = true;
@@ -291,9 +295,8 @@ Window {
             ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）");
             break;
         default:
-            window.destroy();
+            window.close();
             break;
         }
     }
-
 }
