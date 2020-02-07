@@ -3,7 +3,7 @@ require_once(__DIR__ . '\..\utility.php');
 
 /**
  * 通过id验证用户
- * @param int $uid 用户ID
+ * @param int $id 用户ID
  * @param string $account 账号
  * @param string $password 密码
  * @return 具体返回数据包含
@@ -14,28 +14,28 @@ require_once(__DIR__ . '\..\utility.php');
  *      'gender',
  *      'avatar',
  * ]
- * @note uid只是辅助快速查询数据库，账号和密码也会进行匹配。
+ * @note id只是辅助快速查询数据库，账号和密码也会进行匹配。
  */
-function verifyLoginById($uid, $account, $password)
+function verifyLoginById($id, $account, $password)
 {
-    if (!$uid || !$account || !$password) {
-        reply(null, 700, '用户数据为空');
+    if (!$id || !$account || !$password) {
+        errorReply(700);
         die;
     }
 
     // 查询数据库
     $db = MySqlAPI::getInstance();
     if (!$db) {
-        reply(null, 600, '数据库连接失败');
+        errorReply(600);
         $db->close();
         die;
     }
-    $res = $db->getRow('SELECT * FROM User WHERE ID=' . $uid);
+    $res = $db->getRow('SELECT * FROM User WHERE ID=' . $id);
     $db->close();
 
     if ($res) {
         if ($res['Account'] !== $account || $res['Password'] !== $password) {
-            reply(null, 702, '账号或密码错误');
+            errorReply(702);
             die;
         }
 
@@ -48,7 +48,7 @@ function verifyLoginById($uid, $account, $password)
             'avatar' => $res['Avatar']
         ]);
     } else {
-        reply(null, 701, '用户不存在');
+        errorReply(701);
     }
 }
 
@@ -68,22 +68,22 @@ function verifyLoginById($uid, $account, $password)
 function verifyLoginByPassword($account, $password)
 {
     if (!$account || !$password) {
-        reply(null, 700, '用户数据为空');
+        errorReply(700);
         die;
     }
 
     // 查询数据库
     $db = MySqlAPI::getInstance();
     if (!$db) {
-        reply(null, 600, '数据库连接失败');
+        errorReply(600);
         $db->close();
         die;
     }
-    $res = $db->getRow("SELECT * FROM User WHERE Account=$account AND Password=$password");
+    $res = $db->getRow("SELECT * FROM User WHERE Account='$account' AND Password='$password'");
     $db->close();
 
     if (@$res['Account'] !== $account || @$res['Password'] !== $password) {
-        reply(null, 702, '账号或密码错误');
+        errorReply(702);
         die;
     }
 

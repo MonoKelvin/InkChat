@@ -13,9 +13,13 @@
     <ul>
         <li>
             登录验证：
-            <form action="./api/user/login.php?verify_method=id" method="post">
+            <form action="./api/user/login.php" method="post">
                 <div>
-                    <input name="uid" type="number" value="1">
+                    <select name="verify_method">
+                        <option value="id">id</option>
+                        <option value="password">password</option>
+                    </select>
+                    <input name="id" type="number" value="1">
                     <input name="account" type="text" value="15007083506@qq.com">
                     <input name="password" type="password" value="123456">
                     <button type="submit">测试</button>
