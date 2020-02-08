@@ -10,5 +10,6 @@ HEADERS += \
 
 SOURCES += \
         $$PWD/Http/HttpRequest.cpp \
+        $$PWD/Http/ILoginOperation.cpp \
         $$PWD/User.cpp \
         $$PWD/Utility.cpp

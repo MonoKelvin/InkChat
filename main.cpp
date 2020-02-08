@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <User.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -26,7 +26,10 @@ int main(int argc, char *argv[])
     NAVIGATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA
 
-    LoginWithQQMail loginWithQQ;
+    QQmlApplicationEngine engine;
+    LoginWithQQMail::SetQmlApplicationEngine(&engine);
+
+    LoginWithQQMail loginWithQQ(QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
 
     return app.exec();
 }

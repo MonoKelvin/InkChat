@@ -32,12 +32,15 @@ Window {
         opacityAnimation.start()
         pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
 //        pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
+        console.log(UserModel.Avatar)
     }
 
     Navigation {
         id: navigation
         anchors.left: parent.left
         height: parent.height
+        userAvatar: UserModel.Avatar
+        nickName: UserModel.NickName
 
         onNavigate: {
             switch(index)

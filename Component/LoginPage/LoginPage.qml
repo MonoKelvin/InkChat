@@ -2,7 +2,6 @@
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.0
-import LoginWithQQMail 1.0
 import "qrc:/Element/"
 import "qrc:/js/js/Utility.js" as ToastJs
 
@@ -30,21 +29,27 @@ Window {
     // 是否正在进行请求，包括登录、注册请求
     property bool isRequesting: false
 
-    // 当登录失败或者注册失败时被调用的槽函数，提供给C++
+    // 当登录失败或者注册失败时被调用的槽函数
     function slotFailed(msg) {
-        ToastJs.createToast(qsTr("登录或注册失败，原因：" + msg), window);
+        loadingDialog.closeDialog();
+        ToastJs.createToast(qsTr("操作失败，原因：" + msg), window);
         isRequesting = false;
     }
 
     // 当登录成功时被调用的槽函数
     function slotVerified() {
-//        ToastJs.createToast(qsTr("登录成功"), window);
-        action = LoginPage.Exit;
+        loadingDialog.delayCloseDialog(qsTr("登录成功"), function(){
+            // 重定向到主页面
+            loginOperation.redirect(null, "qrc:/main.qml");
+
+            // 动作为：退出登录页面
+            action = LoginPage.Exit;
+        });
     }
 
     // 当注册成功时被调用的槽函数
     function slotRegistered() {
-        ToastJs.createToast(qsTr("注册成功"), window);
+        loadingDialog.delayCloseDialog(qsTr("注册成功"));
 
         ibNickName.clear();
         ibAccount.clear();
@@ -56,6 +61,19 @@ Window {
 
     Component.onCompleted: {
         opacityAnimation.start();
+
+        // 关联信号槽
+        loginOperation.failed.connect(window.slotFailed);
+        loginOperation.verified.connect(window.slotVerified);
+        loginOperation.registered.connect(window.slotRegistered);
+
+        // TODO: REMOVE THIS
+        ibAccount.text = "15007083506@qq.com";
+        ibPassword.text = "123456";
+    }
+
+    LoadingDialog {
+        id: loadingDialog
     }
 
     NumberAnimation {
@@ -235,12 +253,14 @@ Window {
                                                         account: ibAccount.text,
                                                         password: ibPassword.text
                                                     });
+                        loadingDialog.showDialog(window.contentItem, qsTr("正在登录..."));
                     } else {
                         loginOperation.signupRequest({
                                                          nickName: ibNickName.text,
                                                          account: ibAccount.text,
                                                          password: ibPassword.text
                                                      });
+                        loadingDialog.showDialog(window.contentItem, qsTr("正在注册..."));
                     }
                 }
             }

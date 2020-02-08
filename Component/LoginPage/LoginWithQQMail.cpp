@@ -10,16 +10,15 @@
 #include <QJsonParseError>
 #include <QQmlContext>
 
+QPointer<QQmlApplicationEngine> LoginWithQQMail::QmlEngine = nullptr;
 QSharedPointer<User> ILoginOperation::mUser = nullptr;
 
-LoginWithQQMail::LoginWithQQMail(QObject* parent)
-    : ILoginOperation(parent)
+LoginWithQQMail::LoginWithQQMail(const QUrl& url, const QString& contextName)
 {
-    qmlRegisterType<LoginWithQQMail>("LoginWithQQMail", 1, 0, "LoginWithQQMail");
+    Q_ASSERT(QmlEngine != nullptr);
 
-    const QUrl url(QStringLiteral("qrc:/LoginPage/LoginPage.qml"));
     QObject::connect(
-        &Engine,
+        QmlEngine,
         &QQmlApplicationEngine::objectCreated,
         qApp,
         [url](QObject* obj, const QUrl& objUrl) {
@@ -28,26 +27,8 @@ LoginWithQQMail::LoginWithQQMail(QObject* parent)
         },
         Qt::QueuedConnection);
 
-    Engine.rootContext()->setContextProperty("loginOperation", this);
-    Engine.load(url);
-
-    const auto qmlWin = Engine.rootObjects().first();
-    connect(this, &LoginWithQQMail::failed, [qmlWin](const QString& msg) {
-        QMetaObject::invokeMethod(qmlWin, "slotFailed", Q_ARG(QVariant, msg));
-    });
-    connect(this, &LoginWithQQMail::verified, [qmlWin, this] {
-        QMetaObject::invokeMethod(qmlWin, "slotVerified");
-        this->redirect(&(this->Engine));
-    });
-    connect(this, &LoginWithQQMail::registered, [qmlWin] {
-        QMetaObject::invokeMethod(qmlWin, "slotRegistered");
-    });
-    connect(&Engine, &QQmlApplicationEngine::quit, this, &LoginWithQQMail::deleteLater);
-}
-
-LoginWithQQMail::~LoginWithQQMail()
-{
-    qDebug() << "deleted";
+    QmlEngine->rootContext()->setContextProperty(contextName, this);
+    QmlEngine->load(url);
 }
 
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
@@ -84,7 +65,6 @@ void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
         + "&password=" + mapping["password"].toString();
 
     request->sendRequest(UserSignupUrl, HttpRequest::POST, postData);
-    qDebug() << postData;
 
     connect(request, &HttpRequest::request, [=](bool success, const QByteArray& jsonData) {
         QJsonParseError err;
@@ -102,36 +82,33 @@ void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
     });
 }
 
+void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
+{
+    Q_UNUSED(engine)
+
+    Q_ASSERT(QmlEngine != nullptr);
+    QObject::connect(
+        engine, &QQmlApplicationEngine::objectCreated, qApp,
+        [url](QObject* obj, const QUrl& objUrl) {
+            if (!obj && url == objUrl) {
+                QCoreApplication::exit(-1);
+            }
+        },
+        Qt::QueuedConnection);
+
+    engine->rootContext()->setContextProperty(QStringLiteral("UserModel"), mUser.data());
+    engine->load(url);
+}
+
 void LoginWithQQMail::parse(const QVariantMap& userJson)
 {
     if (mUser.isNull()) {
         mUser = QSharedPointer<User>(new User);
     }
 
-    mUser->UID = userJson["id"].toString().toUInt();
-    mUser->NickName = userJson["nickName"].toString();
-    mUser->Account = userJson["account"].toString();
-    mUser->Password = userJson["password"].toString();
-    mUser->Avatar = QPixmap(userJson["avatar"].toString());
-}
-
-void LoginWithQQMail::redirect(QObject* ui)
-{
-    auto engine = qobject_cast<QQmlApplicationEngine*>(ui);
-    if (engine) {
-        const QUrl url(QStringLiteral("qrc:/main.qml"));
-        connect(
-            engine, &QQmlApplicationEngine::objectCreated, qApp,
-            [url](QObject* obj, const QUrl& objUrl) {
-                if (!obj && url == objUrl) {
-                    QCoreApplication::exit(-1);
-                }
-            },
-            Qt::QueuedConnection);
-
-        engine->rootContext()->setContextProperty("UserModel", mUser.data());
-
-        // 加载页面
-        engine->load(url);
-    }
+    mUser->mUID = userJson["id"].toString().toUInt();
+    mUser->mNickName = userJson["nickName"].toString();
+    mUser->mAccount = userJson["account"].toString();
+    mUser->mPassword = userJson["password"].toString();
+    mUser->mAvatar = userJson["avatar"].toString();
 }

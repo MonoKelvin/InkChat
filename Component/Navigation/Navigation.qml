@@ -3,14 +3,15 @@ import QtQuick.Controls 1.4
 import "qrc:/Element/"
 
 Rectangle {
+    property int currentIndex: 0
+    property alias userAvatar: avatar.imageSource
+    property alias nickName: userName.text
+
     width: 70
     color: appTheme.backgroundColor
+    onCurrentIndexChanged: navigate(currentIndex);
 
     signal navigate(var index)
-
-    property int currentIndex: 0
-
-    onCurrentIndexChanged: navigate(currentIndex);
 
     Column {
         id: navigation
@@ -60,19 +61,22 @@ Rectangle {
     }
 
     Avatar {
+        id: avatar
         anchors {
             horizontalCenter: parent.horizontalCenter
-            bottom: name.top
+            bottom: userName.top
             bottomMargin: appTheme.narrowSpacing
         }
     }
 
     Text {
-        id: name
-        text: qsTr("Alita")
-        font.pixelSize: appTheme.stdTextSize
+        id: userName
+        font.pixelSize: appTheme.smallTextSize
         color: appTheme.mainTextColor
         horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.NoWrap
+        elide: Text.ElideRight
+        width: avatar.width
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: parent.bottom

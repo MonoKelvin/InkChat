@@ -6,8 +6,6 @@ import "qrc:/Element/"
 
 Item {
 
-    Toast{id: toast;Component.onCompleted: toast.show("hello world");}
-
     Component.onCompleted: {
         groupListView.refresh([
                                   {

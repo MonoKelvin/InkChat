@@ -8,6 +8,7 @@
         <file>TextBox.qml</file>
         <file>Toast.qml</file>
         <file>RoundedButton.qml</file>
+        <file>LoadingDialog.qml</file>
     </qresource>
     <qresource prefix="/js">
         <file>js/Utility.js</file>

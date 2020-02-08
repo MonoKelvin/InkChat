@@ -5,6 +5,8 @@
 
 #include <QString>
 
+class QQmlApplicationEngine;
+
 /**
  * @brief 登录方式抽象基类，以实现不同的登录方式
  * @note 继承该类，可以实现登录、注册、忘记密码等方法，可以发送登录成功、注册成功等信号，
@@ -17,7 +19,8 @@ class ILoginOperation : public QObject
 public:
     ILoginOperation(QObject *parent = nullptr)
         : QObject(parent)
-    {}
+    {
+    }
 
     virtual ~ILoginOperation()
     {
@@ -42,15 +45,6 @@ public:
     virtual void signupRequest(const QVariantMap &) {}
 
     /**
-     * @brief 登录成功后重定向到新的页面方法
-     * @param ui 要跳转到的新界面对象：
-     * 1.如果要跳转到新的qml页面，则该参数需要传入 QQmlApplicationEngine* 对象，并重新设置
-     *   Url指定新的qml页面。
-     * 2.如果使用QWidget作为页面，则传入QWidget* 对象并重新设置页面属性。
-     */
-    virtual void redirect(QObject *ui) = 0;
-
-    /**
      * @brief 忘记密码方法，可以用该方法实现如何找回密码
      * @param const QVariantMap& 找回密码时提供的验证键值对，通常为手机号或邮箱
      * @note 该方法不是必须继承实现的
@@ -64,17 +58,45 @@ protected slots:
      * @brief 解析用户数据的方法
      * @param userJson 传入的用户json数据
      */
-    virtual void parse(const QVariantMap &userJson) = 0;
+    virtual void parse(const QVariantMap& userJson) = 0;
+
+    /**
+     * @brief 重定向方法。主要针对使用QWidget作为界面的开发
+     * @param const QWidget& 传入的QWidget控件
+     * @note 在登录成功（或注册成功）后，虽然@see verified 信号是立刻发生的，但UI页面可能
+     * 有自己的事务要处理，所以只有UI页面发出最后的关闭（或其他重定向信号）事件时，该方法才是最
+     * 后需要调用的。
+     */
+    virtual void redirect(const QWidget&) {}
+
+    /**
+     * @brief 重定向方法。主要针对使用QML作为界面的开发
+     * @param engine 传入的QML应用解析引擎
+     * @param url 重定向的新页面地址
+     * @note 在登录成功（或注册成功）后，虽然@see verified 信号是立刻发生的，但UI页面可能
+     * 有自己的事务要处理，所以只有UI页面发出最后的关闭（或其他重定向信号）事件时，该方法才是最
+     * 后需要调用的。
+     * @note 重定向后，可以在新是QML页面使用`UserModel`获取用户数据，如需使用其他名称，则
+     * 重写该方法。
+     */
+    Q_INVOKABLE virtual void redirect(QQmlApplicationEngine*, const QUrl&) {}
 
 signals:
-    // 信号：成功登录，
+    /**
+     * @brief 信号：成功登录
+     * @note 一般在登录成功后跳转到主页面，还需要释放自身资源，即调用deleteLater
+     */
     void verified();
 
-    // 信号：成功注册账号
+    /**
+     * @brief 信号：成功注册账号
+     */
     void registered();
 
-    // 信号：登录、注册失败时发送
-    void failed(const QString &);
+    /** 
+     * @brief 信号：登录、注册失败时发送
+     */
+    void failed(const QString&);
 
 protected:
     // 保存的用户信息
