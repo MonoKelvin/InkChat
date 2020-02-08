@@ -1,5 +1,4 @@
 <?php
-require_once(__DIR__ . '\mysql_api.class.php');
 
 /**
  * HTTP协议状态码

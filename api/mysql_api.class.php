@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__ . '\utility.php');
 
 /**
  * MySql 封装类
@@ -30,10 +31,10 @@ class MySqlAPI
     {
         $this->link = mysqli_connect($this->host . ':' . $this->port, $this->user, $this->pwd);
         if (!$this->link) {
-            echo "数据库连接失败<br>";
-            echo "错误编码" . mysqli_errno($this->link) . "<br>";
-            echo "错误信息" . mysqli_error($this->link) . "<br>";
-            exit;
+            errorReply(600);
+            // echo "错误编码" . mysqli_errno($this->link) . "<br>";
+            // echo "错误信息" . mysqli_error($this->link) . "<br>";
+            die;
         }
     }
 
@@ -82,9 +83,10 @@ class MySqlAPI
     {
         $res = mysqli_query($this->link, $sql);
         if (!$res) {
-            $err_code = mysqli_errno($this->link);
-            $err_msg = mysqli_error($this->link);
-            die("{'err_code':'$err_code', msg':'sql_excution_error', 'err_msg':'$err_msg'}");
+            // $err_code = mysqli_errno($this->link);
+            // $err_msg = mysqli_error($this->link);
+            // die("{'err_code':'$err_code', msg':'sql_excution_error', 'err_msg':'$err_msg'}");
+            die;
         }
         return $res;
     }

@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '\..\utility.php');
+require_once(__DIR__ . '\..\mysql_api.class.php');
 
 /**
  * 通过id验证用户
@@ -24,7 +24,7 @@ function verifyLoginById($id, $account, $password)
     }
 
     // 查询数据库
-    $db = MySqlAPI::getInstance();
+    $db = @MySqlAPI::getInstance();
     if (!$db) {
         errorReply(600);
         $db->close();
@@ -73,7 +73,7 @@ function verifyLoginByPassword($account, $password)
     }
 
     // 查询数据库
-    $db = MySqlAPI::getInstance();
+    $db = @MySqlAPI::getInstance();
     if (!$db) {
         errorReply(600);
         $db->close();
@@ -86,6 +86,9 @@ function verifyLoginByPassword($account, $password)
         errorReply(702);
         die;
     }
+
+    // 模拟延迟1s
+    sleep(1);
 
     // 获取信息
     reply([
