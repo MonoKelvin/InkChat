@@ -4,27 +4,52 @@
 #include <QDebug>
 
 /** 基本Url地址 */
-#define BaseUrl         QLatin1String("http://inkchat.com/api")
+#define ApiBaseUrl QLatin1String("http://inkchat.com/api")
 //#define BaseUrl       "http://localhost:8080";
 
-/** 用户信息Url地址 */
-#define UserUrl     QString(BaseUrl + "/user")
-
-/** 用户验证登录（自动登录）Url地址，post请求方式 */
-//#define UserVerifyUrl   QString(UserUrl+"/login.php?type=verify")
+/** 用户账号密码登录地址，post请求方式 */
+#define LoginByPasswordUrl QString(ApiBaseUrl + "/user/login.php?verify_method=password")
 
 /** 用户账号密码登录地址，post请求方式 */
-#define UserLoginUrl    QString(UserUrl+"/login.php?type=login")
+#define LoginByIdUrl QString(ApiBaseUrl + "/user/login.php?verify_method=id")
 
 /** 用户登出Url地址，post请求方式 */
-#define UserLogOutUrl  QString(UserUrl+"/logout.php")
+#define LogOutUrl QString(ApiBaseUrl + "/user/logout.php")
 
 /** 用户注册Url地址，post请求方式 */
-#define UserSignupUrl       QString(UserUrl + "/signup.php")
+#define SignupUrl QString(ApiBaseUrl + "/user/signup.php")
 
 #define CHAT_MAJOR_VERSION  1
 #define CHAT_MINOR_VERSION  0
-#define CHAT_REVERSION      0
+#define CHAT_REVERSION 0
 
+/********************/
+/** 文件数据文件夹路径 */
+/********************/
+
+// APP应用程序文件夹
+#define APP_DIR QCoreApplication::applicationDirPath()
+
+// APP数据文件夹
+#define APP_DATA_DIR (APP_DIR + "/data/")
+
+// 用户文件夹
+#define USER_DIR(_ID_) (APP_DATA_DIR #_ID_)
+
+// 用户数据文件夹
+#define USER_DATA_DIR(_ID_) (USER_DIR(_ID_) + "/user/")
+
+// 用户聊天记录文件夹
+#define MESSAGE_CHCHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/message/")
+// 用户缓存头像文件夹
+#define AVATAR_CHCHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/avatar/")
+// 聊天缓存图片文件夹
+#define IMAGE_CHCHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/image/")
+// 聊天缓存文件文件夹
+#define FILE_CHCHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/file/")
+// 聊天缓存视频文件夹
+#define VIDEO_CHCHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/video/")
+// 聊天缓存音频文件夹
+#define AUDIO_CHCHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/audio/")
 
 #endif // INKCHATAPI_H

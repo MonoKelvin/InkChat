@@ -11,14 +11,14 @@ class User : public QObject
 
     friend class LoginWithQQMail;
 
-    Q_PROPERTY(unsigned int ID READ getUID)
-    Q_PROPERTY(QString MD5 READ getMD5)
-    Q_PROPERTY(QString NickName READ getNickName WRITE setNickName)
+    Q_PROPERTY(unsigned int ID READ getUID CONSTANT)
+    Q_PROPERTY(QString MD5 READ getMD5 CONSTANT)
+    Q_PROPERTY(QString NickName READ getNickName WRITE setNickName NOTIFY nickNameChanged)
     Q_PROPERTY(QString Signature READ getSignature WRITE setSignature)
     Q_PROPERTY(char Gender READ getGender WRITE setGender)
-    Q_PROPERTY(QString Avatar READ getAvatar WRITE setAvatar)
-    Q_PROPERTY(QString Account READ getAccount WRITE setAccount)
-    Q_PROPERTY(QString Password READ getPassword)
+    Q_PROPERTY(QString Avatar READ getAvatar WRITE setAvatar NOTIFY avatarChanged)
+    Q_PROPERTY(QString Account READ getAccount WRITE setAccount CONSTANT)
+    Q_PROPERTY(QString Password READ getPassword CONSTANT)
     Q_PROPERTY(EOnlineState OnlineState READ getOnlineState WRITE setOnlineState)
 
 public:
@@ -44,29 +44,43 @@ public:
     };
     Q_ENUM(EUserType)
 
-    void setNickName(const QString& nickName) { mNickName = nickName; }
     const QString getNickName(void) const { return mNickName; }
+    void setNickName(const QString& nickName)
+    {
+        mNickName = nickName;
+        emit nickNameChanged();
+    }
 
     inline unsigned int getUID() const { return mUID; }
 
     inline QString getSignature() const { return mSignature; }
     inline void setSignature(const QString& value) { mSignature = value; }
 
-    inline QString getMD5() const { return mMD5; }
+    inline const QString getMD5() const { return mMD5; }
 
-    inline QString getAccount() const { return mAccount; }
+    inline const QString getAccount() const { return mAccount; }
     inline void setAccount(const QString& value) { mAccount = value; }
 
-    inline QString getPassword() const { return mPassword; }
+    inline const QString getPassword() const { return mPassword; }
 
-    inline QString getAvatar() const { return mAvatar; }
-    inline void setAvatar(const QString& value) { mAvatar = value; }
+    inline const QString getAvatar() const { return mAvatar; }
+    inline void setAvatar(const QString& value)
+    {
+        mAvatar = value;
+        emit avatarChanged();
+    }
 
     inline EOnlineState getOnlineState() const { return mOnlineState; }
     inline void setOnlineState(const EOnlineState& value) { mOnlineState = value; }
 
     inline char getGender() const { return mGender; }
     inline void setGender(char gender) { mGender = gender; }
+
+    bool cacheUserData(const QUrl& folderPath);
+
+Q_SIGNALS:
+    void nickNameChanged();
+    void avatarChanged();
 
 private:
     unsigned int mUID;

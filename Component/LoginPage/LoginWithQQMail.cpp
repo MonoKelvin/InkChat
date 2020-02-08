@@ -35,10 +35,10 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
     HttpRequest* request = new HttpRequest;
 
-    QString postData = "verify_method=password&account=" + mapping["account"].toString()
+    QString postData = "account=" + mapping["account"].toString()
         + "&password=" + mapping["password"].toString();
 
-    request->sendRequest(UserLoginUrl, HttpRequest::POST, postData);
+    request->sendRequest(LoginByPasswordUrl, HttpRequest::POST, postData);
 
     connect(request, &HttpRequest::request, [=](bool success, const QByteArray& jsonData) {
         QJsonParseError err;
@@ -64,7 +64,7 @@ void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
     QString postData = "nickName=" + mapping["nickName"].toString() + "&account=" + mapping["account"].toString()
         + "&password=" + mapping["password"].toString();
 
-    request->sendRequest(UserSignupUrl, HttpRequest::POST, postData);
+    request->sendRequest(SignupUrl, HttpRequest::POST, postData);
 
     connect(request, &HttpRequest::request, [=](bool success, const QByteArray& jsonData) {
         QJsonParseError err;
@@ -88,7 +88,7 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
 
     Q_ASSERT(QmlEngine != nullptr);
     QObject::connect(
-        engine, &QQmlApplicationEngine::objectCreated, qApp,
+        QmlEngine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
             if (!obj && url == objUrl) {
                 QCoreApplication::exit(-1);
@@ -96,8 +96,8 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
         },
         Qt::QueuedConnection);
 
-    engine->rootContext()->setContextProperty(QStringLiteral("UserModel"), mUser.data());
-    engine->load(url);
+    QmlEngine->rootContext()->setContextProperty(QStringLiteral("UserModel"), mUser.data());
+    QmlEngine->load(url);
 }
 
 void LoginWithQQMail::parse(const QVariantMap& userJson)

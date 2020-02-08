@@ -39,6 +39,7 @@ Window {
     // 当登录成功时被调用的槽函数
     function slotVerified() {
         loadingDialog.delayCloseDialog(qsTr("登录成功"), function(){
+
             // 重定向到主页面
             loginOperation.redirect(null, "qrc:/main.qml");
 

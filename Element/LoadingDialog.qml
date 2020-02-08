@@ -4,6 +4,7 @@ import "qrc:/js/js/Utility.js" as Utility
 
 Rectangle {
     property bool modality: true
+    property color dotColor: appTheme.primaryColor1
 
     id: background
     opacity: 0
@@ -35,17 +36,22 @@ Rectangle {
     }
 
     // 延迟关闭，可以设置一个文本。之后调用then函数
-    function delayCloseDialog(text, delay = 1000, then) {
+    function delayCloseDialog(text, then, delay = 1000) {
+        contentText.text = text;
+
         closeTimer.triggered.connect(function (){
             background.visible = false;
-            if(then && then !== 'undefined') {
+            if(typeof then !== "undefined") {
                 then();
             }
         });
 
-        closeTimer.interval = 1000;
+        closeTimer.interval = delay;
         closeTimer.start();
+        canvasTimer.stop();
     }
+
+    onVisibleChanged: visible?canvasTimer.start():canvasTimer.stop();
 
     Timer {
         id: closeTimer
@@ -89,8 +95,9 @@ Rectangle {
                 ctx.stroke();
 
                 // 绘制圆点
+                ctx.lineWidth = 1.5;
                 ctx.strokeStyle = appTheme.backgroundColor;
-                ctx.fillStyle = appTheme.primaryColor1;
+                ctx.fillStyle = background.dotColor;
                 ctx.beginPath();
                 ctx.ellipse(loading.dotX - r, loading.dotY - r, loading.dotSize, loading.dotSize);
                 ctx.fill();
