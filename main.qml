@@ -29,10 +29,9 @@ Window {
     }
 
     Component.onCompleted: {
-        opacityAnimation.start()
+        opacityAnimation.start();
         pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
-//        pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
-        console.log(UserModel.Avatar)
+        UserModel.cacheUserData();
     }
 
     Navigation {

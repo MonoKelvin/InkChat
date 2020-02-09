@@ -48,7 +48,6 @@ Rectangle {
 
         closeTimer.interval = delay;
         closeTimer.start();
-        canvasTimer.stop();
     }
 
     onVisibleChanged: visible?canvasTimer.start():canvasTimer.stop();

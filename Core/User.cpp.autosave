@@ -42,7 +42,7 @@ bool User::cacheUserData()
 
             QJsonArray friends;
             for (const auto i : mFriends) {
-                friends.append(i->toJsonObject());
+                friends.append(i->toJson());
             }
             jsonObj.insert("friends", friends);
 

@@ -131,6 +131,7 @@ void LoginWithQQMail::parse(const QVariantMap& userJson)
                 for (const auto group : fArr) {
                     for (const auto frd : group.toObject()) {
                         MyFriend* myFriend = new MyFriend(mUser.data());
+                        
                         const auto obj = frd.toObject();
                         obj["subgroup"];
                     }

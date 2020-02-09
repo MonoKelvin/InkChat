@@ -3,7 +3,7 @@
 
 #include "../User.h"
 
-#include <QString>
+#include <QSharedPointer>
 
 class QQmlApplicationEngine;
 

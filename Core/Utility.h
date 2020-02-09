@@ -1,16 +1,23 @@
 ﻿#ifndef UTILITY_H
 #define UTILITY_H
 
-#include <QWidget>
-#include <QStylePainter>
 #include <QStyleOption>
+#include <QStylePainter>
+#include <QWidget>
 
 class QWidget;
 class QFont;
 class QLabel;
 
 /**
- * @brief 给控件附加阴影特效
+ * @brief 图片处理函数
+ * @param pixmap 要处理的图片
+ * @param error 错误信息
+ */
+typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
+
+/**
+ * @brief 给QWidget控件附加阴影特效
  * @param widget 给定的控件
  * @param xoffset x偏移值
  * @param yoffset y偏移值
@@ -59,6 +66,43 @@ inline void updateLayout(QWidget *widget)
     widget->resize(s.width() + 1, s.height());
     widget->resize(s.width(), s.height());
 }
+
+/**
+ * @brief 文件夹（路径）是否存在，并提供不存在时创建文件夹的选项
+ * @param fullPath 文件夹（路径）全称
+ * @param makeIfNull 当路径不存在时则创建路径
+ * @param recursion 是否使用递归创建路径。
+ *  当为false时，必须保证上一级路径存在；
+ *  当为true时，会创建路径中所有不存在的路径文件夹。
+ * @return bool 文件夹（路径）存在则返回true，否则返回false。
+ *  当makeIfNull为true、recursion为false时：必须保证上一级路径存在才返回true，否则返回false；
+ *  当makeIfNull为true、recursion为true时：总是返回true，并创建新指定的路径。
+ * @note 该方法总是先判断路径是否存在，存在则返回true，之后不做任何事情。
+ * @note isFileExists
+ */
+bool isDirExists(const QString& fullPath, bool makeIfNull = false, bool recursion = true);
+
+/**
+ * @brief 文件是否存在，并提供不存在时创建文件的选项
+ * @param fullPath 文件全称，包含路径和后缀名
+ * @param makeIfNull 当文件不存在时则创建文件
+ * @param recursion 是否使用递归创建文件，即创建路径中不存在的文件夹。
+ *  当为false时，必须保证文件所在的文件夹存在；
+ *  当为true时，会创建路径中所有不存在的路径文件夹。
+ * @return bool 文件存在则返回true，否则返回false。
+ *  当makeIfNull为true、recursion为false时：必须保证文件所在的文件夹存在才返回true，否则返回false；
+ *  当makeIfNull为true、recursion为true时：总是返回true，并创建新指定的文件。
+ * @note 该方法总是先判断文件是否存在，存在则返回true，之后不做任何事情。
+ * @see isDirExists
+ */
+bool isFileExists(const QString& fileName, bool makeIfNull = false, bool recursion = true);
+
+/**
+ * @brief 从网络获取图片
+ * @param callBack 回调函数，当获取图片或失败后做的事
+ * @see DealWithPixmapFunc
+ */
+void* getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack);
 
 /**
  * @brief 继承自QWidget的类如果不实现自己的paintEvent方法，那么该类就无法使用样式表
