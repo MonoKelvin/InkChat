@@ -30,7 +30,7 @@ function verifyLoginById($id, $account, $password)
         $db->close();
         die;
     }
-    $res = $db->getRow('SELECT * FROM User WHERE ID=' . $id);
+    $res = $db->getRow('SELECT * FROM `User` WHERE `ID`=' . $id);
     $db->close();
 
     if ($res) {
@@ -79,7 +79,7 @@ function verifyLoginByPassword($account, $password)
         $db->close();
         die;
     }
-    $res = $db->getRow("SELECT * FROM User WHERE Account='$account' AND Password='$password'");
+    $res = $db->getRow("SELECT * FROM `User` WHERE `Account`='$account' AND `Password`='$password'");
     $db->close();
 
     if (@$res['Account'] !== $account || @$res['Password'] !== $password) {
@@ -88,7 +88,7 @@ function verifyLoginByPassword($account, $password)
     }
 
     // 模拟延迟1s
-    sleep(1);
+    // sleep(1);
 
     // 获取信息
     reply([
@@ -98,4 +98,67 @@ function verifyLoginByPassword($account, $password)
         'gender' => $res['Gender'],
         'avatar' => $res['Avatar']
     ]);
+}
+
+/**
+ * 查询用户的所有好友信息
+ * @param int $id 用户id
+ * @return array
+ * 数组形式是按好友所在组分的
+ * [
+ *   {
+ *      "subgroup": "groupName",
+ *      "members": [
+ *           {
+ *               "id": 2,
+ *               "hostAddress": "192.64.12.7",
+ *               "isTop": true,
+ *               "gender": "1",
+ *               "remark": "我的好友",
+ *               "nickName": "MonoKelvin",
+ *               "signature": "没有签名...",
+ *               "thumb": "../cache/avatar/94f3f838e8c51ac0eac6c74588403c25.png"
+ *           },
+ *           { }
+ *      ]
+ *   },
+ *   { }
+ * ]
+ */
+function getUserFriends($id)
+{
+    // 查询数据库
+    $db = @MySqlAPI::getInstance();
+    if (!$db) {
+        errorReply(600);
+        $db->close();
+        die;
+    }
+    $res = $db->getAll(
+        'SELECT `FID`,`HostAddress`,`Remark`,`Top`,`NickName`,`Signature`,`Gender`,`Subgroup`
+        FROM GetUserFriends
+        WHERE `UID`=' . $id
+    );
+    $db->close();
+
+    $group = [];
+    foreach ($res as $_ => $value) {
+        $subgroup = $value['Subgroup'];
+        unset($value['Subgroup']);
+
+        // 将用户分配到分组中
+        for($i = 0; $i < count($group); $i++) {
+            if ($group[$i]['subgroup'] === $subgroup) {
+                array_push($group[$i]['member'], $value);
+                break;
+            }
+        }
+
+        // 没有那个分组则新建，再分配
+        if ($i === count($group)) {
+            array_push($group, ['subgroup' => $subgroup, 'member' => [$value]]);
+        }
+    }
+
+    reply($group);
 }

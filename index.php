@@ -36,6 +36,15 @@
             </form>
         </li>
         <li>
+            查询用户好友：
+            <form action="./api/user/friend.php" method="post">
+                <div>
+                    <input name="id" type="number" value="1">
+                    <button type="submit">测试</button>
+                </div>
+            </form>
+        </li>
+        <li>
             获取图片：
             <form action="./api/image.php" method="get">
                 <div>
