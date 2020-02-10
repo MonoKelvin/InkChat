@@ -11,12 +11,6 @@
 #include <QJsonParseError>
 #include <QQmlContext>
 
-#define EMIT_FAILED_MESSAGE(_JsonDoc_)                           \
-    if (_JsonDoc_.object().contains("msg"))                      \
-        emit failed(_JsonDoc_.object().value("msg").toString()); \
-    else                                                         \
-        emit failed(QStringLiteral("NO_RESPONSE_MESSAGE"));
-
 QPointer<QQmlApplicationEngine> LoginWithQQMail::QmlEngine = nullptr;
 QSharedPointer<User> ILoginOperation::mUser = nullptr;
 
@@ -52,13 +46,13 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
         QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);
         if (success) {
             if (err.error == QJsonParseError::NoError) {
-                parse(jsonDoc.object().toVariantMap());
+                parse(jsonDoc.object());
                 emit verified();
             } else {
                 emit failed(err.errorString());
             }
         } else {
-            EMIT_FAILED_MESSAGE(jsonDoc)
+            EMIT_FAILED_MESSAGE(jsonDoc, failed);
         }
     });
 }
@@ -82,7 +76,7 @@ void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
                 emit failed(err.errorString());
             }
         } else {
-            EMIT_FAILED_MESSAGE(jsonDoc)
+            EMIT_FAILED_MESSAGE(jsonDoc, failed);
         }
     });
 }
@@ -105,43 +99,11 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
     QmlEngine->load(url);
 }
 
-void LoginWithQQMail::parse(const QVariantMap& userJson)
+void LoginWithQQMail::parse(const QJsonObject& json)
 {
     if (mUser.isNull()) {
         mUser = QSharedPointer<User>(new User);
     }
 
-    mUser->mUID = userJson["id"].toString().toUInt();
-    mUser->mNickName = userJson["nickName"].toString();
-    mUser->mAccount = USER_AVATAR_URL(mUser->mUID);
-    mUser->mPassword = userJson["password"].toString();
-    mUser->mAvatar = userJson["avatar"].toString();
-
-    // 请求好友数据
-    HttpRequest* request = new HttpRequest;
-    request->sendRequest(LoginByPasswordUrl, HttpRequest::POST, QString("id=%1").arg(mUser->mUID));
-    connect(request, &HttpRequest::request, [=](bool success, const QByteArray& jsonData) {
-        QJsonParseError err;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);
-        if (success) {
-            if (err.error == QJsonParseError::NoError) {
-
-                // TODO
-                QJsonArray fArr = jsonDoc.array();
-                for (const auto group : fArr) {
-                    for (const auto frd : group.toObject()) {
-                        MyFriend* myFriend = new MyFriend(mUser.data());
-                        const auto obj = frd.toObject();
-                        obj["subgroup"];
-                    }
-                }
-
-                emit verified();
-            } else {
-                emit failed(err.errorString());
-            }
-        } else {
-            EMIT_FAILED_MESSAGE(jsonDoc)
-        }
-    });
+    mUser->fromJson(json);
 }

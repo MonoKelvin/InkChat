@@ -24,7 +24,7 @@ public:
     Q_INVOKABLE void signupRequest(const QVariantMap& mapping) override;
     Q_INVOKABLE void redirect(QQmlApplicationEngine* engine, const QUrl& url) override;
 
-    void parse(const QVariantMap& userJson) override;
+    void parse(const QJsonObject& json) override;
 
     /**
      * @brief 设置QML应用的解析引擎。注意：必须先于该类的对象声明

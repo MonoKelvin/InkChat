@@ -37,6 +37,8 @@ Rectangle {
         id: avatar
         anchors.fill: parent
         visible: false
+        sourceSize.width: parent.width
+        sourceSize.height: parent.height
 
         Colorize {
             id: grayAvatar

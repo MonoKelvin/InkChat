@@ -6,21 +6,21 @@
 #include <QGraphicsDropShadowEffect>
 #include <QLabel>
 
-void attachShadowEffect(QWidget *widget, double xoffset, double yoffset, double radius, const QColor &color)
+void attachShadowEffect(QWidget* widget, double xoffset, double yoffset, double radius, const QColor& color)
 {
-    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(widget);
+    QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect(widget);
     effect->setOffset(xoffset, yoffset);
     effect->setColor(color);
     effect->setBlurRadius(radius);
     widget->setGraphicsEffect(effect);
 }
 
-void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode)
+void getElidedText(QLabel* label, int maxWidth, Qt::TextElideMode mode)
 {
     label->setFixedWidth(maxWidth);
 
     const auto fw = label->fontMetrics();
-    const auto et = fw.elidedText(label->text(), mode, maxWidth - 3*fw.averageCharWidth());
+    const auto et = fw.elidedText(label->text(), mode, maxWidth - 3 * fw.averageCharWidth());
 
     label->setText(et);
     label->adjustSize();
@@ -61,17 +61,20 @@ bool isFileExists(const QString& fileName, bool makeIfNull, bool recursion)
     return ok;
 }
 
-void* getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack)
+void getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack)
 {
     HttpRequest* imgRequest = new HttpRequest;
     imgRequest->sendRequest(url);
 
-    //    QObject::connect(imgRequest, &HttpRequest::request, [book](bool success, const QByteArray& data) {
-    //        if (success) {
-    //            QPixmap pixmap;
-    //            if (pixmap.loadFromData(data)) {
-    //                book->mImage->setPixmap(pixmap);
-    //            }
-    //        }
-    //    });
+    QObject::connect(imgRequest, &HttpRequest::request, [callBack](bool success, const QByteArray& data) {
+        if (success) {
+            QPixmap pixmap;
+            if (pixmap.loadFromData(data)) {
+                callBack(pixmap, QStringLiteral(""));
+                return;
+            }
+        }
+
+        callBack(QPixmap(), QStringLiteral("IMAGE_LOAD_FAILED"));
+    });
 }

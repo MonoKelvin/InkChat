@@ -102,7 +102,7 @@ bool isFileExists(const QString& fileName, bool makeIfNull = false, bool recursi
  * @param callBack 回调函数，当获取图片或失败后做的事
  * @see DealWithPixmapFunc
  */
-void* getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack);
+void getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack);
 
 /**
  * @brief 继承自QWidget的类如果不实现自己的paintEvent方法，那么该类就无法使用样式表

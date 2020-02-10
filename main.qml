@@ -3,6 +3,7 @@ import QtQuick.Window 2.3
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
 import "qrc:/Navigation/"
+import "qrc:/js/js/Utility.js" as Utility
 
 Window {
     id: window
@@ -15,6 +16,12 @@ Window {
 
     minimumWidth: 720
     minimumHeight: 460
+
+    // 处理所有失败消息槽函数
+    function slotFailed(msg)
+    {
+        Utility.createToast(msg, window);
+    }
 
     NumberAnimation {
         id: opacityAnimation
@@ -31,15 +38,20 @@ Window {
     Component.onCompleted: {
         opacityAnimation.start();
         pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
-        UserModel.cacheUserData();
+
+        UserModel.failed.connect(slotFailed);
     }
 
     Navigation {
         id: navigation
         anchors.left: parent.left
         height: parent.height
-        userAvatar: UserModel.Avatar
-        nickName: UserModel.NickName
+        userAvatar: UserModel.avatar
+        nickName: UserModel.nickName
+
+        Component.onCompleted: {
+            UserModel.cacheData();
+        }
 
         onNavigate: {
             switch(index)

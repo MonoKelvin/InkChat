@@ -22,7 +22,7 @@
 #define SignupUrl QString(ApiBaseUrl + "/user/signup.php")
 
 /** 获取好友信息 */
-#define MyFriendUrl QString(ApiBaseUrl + "/user/friend.php");
+#define MyFriendUrl QString(ApiBaseUrl + "/user/friend.php")
 
 #define CHAT_MAJOR_VERSION 1
 #define CHAT_MINOR_VERSION  0
@@ -72,5 +72,15 @@
 #define VIDEO_CACHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/video/")
 // 聊天缓存音频文件夹
 #define AUDIO_CACHE_DIR(_ID_) (USER_DIR(_ID_) + "/cache/audio/")
+
+// 解析消息出错时发送失败信号
+#define EMIT_FAILED_MESSAGE(_JsonDoc_, _FailSignal_)                        \
+    do {                                                                    \
+        const auto obj = _JsonDoc_.object();                                \
+        if (obj.contains(QStringLiteral("msg")))                            \
+            emit _FailSignal_(obj.value(QStringLiteral("msg")).toString()); \
+        else                                                                \
+            emit _FailSignal_(QStringLiteral("SERVER_NO_RESPONSE"));        \
+    } while (0)
 
 #endif // INKCHATAPI_H

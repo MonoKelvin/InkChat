@@ -1,36 +1,66 @@
 ﻿#include "MyFriend.h"
 
+#include <Http/HttpRequest.h>
+#include <InkChatApi.h>
+#include <User.h>
+#include <Utility.h>
+
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
 
 MyFriend::MyFriend(QObject* parent)
-    : QObject(parent)
+    : IPerson(parent)
 {
+}
+
+void MyFriend::requestFriendsData(User* user)
+{
+    // 请求好友数据
+    HttpRequest* request = new HttpRequest;
+    request->sendRequest(MyFriendUrl, HttpRequest::POST, QString("id=%1").arg(user->getID()));
+    connect(request, &HttpRequest::request, [this, user](bool success, const QByteArray& jsonData) {
+        QJsonParseError err;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);
+        if (success) {
+            if (err.error == QJsonParseError::NoError) {
+                // 解析好友数据
+                for (const auto frd : jsonDoc.array()) {
+                    try {
+                        MyFriend* myFriend = new MyFriend(user);
+                        myFriend->fromJson(frd.toObject());
+                        user->addFriend(myFriend);
+                    } catch (const QString&) {
+                        emit failed(QStringLiteral("JSON_PARSE_FAILED"));
+                        break;
+                    }
+                }
+            } else {
+                emit failed(err.errorString());
+            }
+        } else {
+            EMIT_FAILED_MESSAGE(jsonDoc, failed);
+        }
+    });
 }
 
 void MyFriend::fromJson(const QJsonObject& json)
 {
-    UID = json.value("id").toString().toUInt();
-    Gender = json.value("gender").toString()[0].toLatin1();
-    IsTop = json.value("isTop").toBool();
-    Remark = json.value("remark").toString();
-    Signature = json.value("signature").toString();
-    Thumb = json.value("thumb").toString();
-    Subgroup = json.value("subgroup").toString();
-    HostAddress = json.value("hostAddress").toString();
+    mIsTop = json.value("top").toBool();
+    mRemark = json.value("remark").toString();
+    mSubgroup = json.value("subgroup").toString();
+    mHostAddress = json.value("hostAddress").toString();
+
+    return IPerson::fromJson(json);
 }
 
 QJsonObject MyFriend::toJson()
 {
-    QJsonObject jsonObj;
+    auto json = IPerson::toJson();
 
-    jsonObj.insert("id", QString::number(UID));
-    jsonObj.insert("gender", Gender);
-    jsonObj.insert("isTop", IsTop);
-    jsonObj.insert("remark", Remark);
-    jsonObj.insert("signature", Signature);
-    jsonObj.insert("thumb", Thumb);
-    jsonObj.insert("subgroup", Subgroup);
-    jsonObj.insert("hostAddress", HostAddress);
+    json.insert("top", mIsTop);
+    json.insert("remark", mRemark);
+    json.insert("subgroup", mSubgroup);
 
-    return jsonObj;
+    return json;
 }

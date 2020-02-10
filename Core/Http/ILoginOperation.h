@@ -56,9 +56,9 @@ public:
 protected slots:
     /**
      * @brief 解析用户数据的方法
-     * @param userJson 传入的用户json数据
+     * @param json 传入的用户json数据
      */
-    virtual void parse(const QVariantMap& userJson) = 0;
+    virtual void parse(const QJsonObject& json) = 0;
 
     /**
      * @brief 重定向方法。主要针对使用QWidget作为界面的开发

@@ -12,10 +12,37 @@
 #include <thread>
 using std::thread;
 
+User::User(QObject* parent)
+    : IPerson(parent)
+{
+}
+
 User::~User()
 {
     qDeleteAll(mFriends);
     mFriends.clear();
+}
+
+void User::fromJson(const QJsonObject& json)
+{
+    mAccount = json.value(QStringLiteral("account")).toString();
+
+    return IPerson::fromJson(json);
+}
+
+QJsonObject User::toJson()
+{
+    auto json = IPerson::toJson();
+
+    json.insert("account", QJsonValue(mAccount));
+
+    QJsonArray friends;
+    for (const auto i : mFriends) {
+        friends.append(i->toJson());
+    }
+    json.insert("friends", friends);
+
+    return json;
 }
 
 QQmlListProperty<MyFriend> User::getFriends()
@@ -23,40 +50,37 @@ QQmlListProperty<MyFriend> User::getFriends()
     return QQmlListProperty<MyFriend>(this, this->mFriends);
 }
 
-bool User::cacheUserData()
+void User::addFriend(MyFriend* myFriend)
 {
-    auto fileName = USER_DATA_FILE(mUID);
-    if (isFileExists(fileName, true)) {
+    mFriends.append(myFriend);
+}
 
+void User::cacheData()
+{
+    auto fileName = USER_DATA_FILE(mID);
+    if (isFileExists(fileName, true)) {
         std::thread writeFileThread([this, fileName] {
             QFile file(fileName);
-            file.open(QFile::WriteOnly | QFile::Text);
+            try {
+                if (!file.open(QFile::WriteOnly | QFile::Text)) {
+                    throw tr("用户数据文件打开失败！");
+                }
 
-            QJsonObject jsonObj;
+                // TODO
+                // jsonObj.insert("groups", QJsonArray());
 
-            jsonObj.insert("id", QJsonValue(QString::number(mUID)));
-            jsonObj.insert("nickName", QJsonValue(mNickName));
-            jsonObj.insert("signature", QJsonValue(mSignature));
-            jsonObj.insert("account", QJsonValue(mAccount));
-            jsonObj.insert("gender", QJsonValue(mGender));
-
-            QJsonArray friends;
-            for (const auto i : mFriends) {
-                friends.append(i->toJsonObject());
+                QJsonDocument jsonDoc(toJson());
+                if (file.write(jsonDoc.toJson(QJsonDocument::Indented /*Compact*/)) == -1) {
+                    throw tr("用户数据文件写入失败！");
+                }
+            } catch (const QString& msg) {
+                file.close();
+                emit failed(msg);
             }
-            jsonObj.insert("friends", friends);
-
-            // TODO
-            // jsonObj.insert("groups", QJsonArray());
-
-            QJsonDocument jsonDoc(jsonObj);
-            file.write(jsonDoc.toJson(QJsonDocument::Indented /*Compact*/));
-
-            file.close();
         });
 
         writeFileThread.join();
+    } else {
+        emit failed(tr("数据缓存失败！"));
     }
-
-    return false;
 }
