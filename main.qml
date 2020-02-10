@@ -50,7 +50,7 @@ Window {
         nickName: UserModel.nickName
 
         Component.onCompleted: {
-            UserModel.cacheData();
+            UserModel.loadData();
         }
 
         onNavigate: {

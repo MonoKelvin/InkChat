@@ -55,12 +55,6 @@ public:
 
 protected slots:
     /**
-     * @brief 解析用户数据的方法
-     * @param json 传入的用户json数据
-     */
-    virtual void parse(const QJsonObject& json) = 0;
-
-    /**
      * @brief 重定向方法。主要针对使用QWidget作为界面的开发
      * @param const QWidget& 传入的QWidget控件
      * @note 在登录成功（或注册成功）后，虽然@see verified 信号是立刻发生的，但UI页面可能
@@ -81,7 +75,7 @@ protected slots:
      */
     Q_INVOKABLE virtual void redirect(QQmlApplicationEngine*, const QUrl&) {}
 
-signals:
+Q_SIGNALS:
     /**
      * @brief 信号：成功登录
      * @note 一般在登录成功后跳转到主页面，还需要释放自身资源，即调用deleteLater

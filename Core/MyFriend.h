@@ -41,9 +41,6 @@ public:
         emit subgroupChanged();
     }
 
-public slots:
-    void requestFriendsData(User *user);
-
 Q_SIGNALS:
     void failed(const QString &);
 

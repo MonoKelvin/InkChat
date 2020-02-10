@@ -3,10 +3,10 @@
 
 #include <QObject>
 
-#define NAVIGATION_INITIALIZA \
-{ \
-    qmlRegisterType<ChatView>("Navigation", 1, 0, "Navigation"); \
-}
+#define NAVIGATION_INITIALIZA                                                \
+    {                                                                        \
+        qmlRegisterType<Navigation>("Navigation", 1, 0, "NavigationManage"); \
+    }
 
 class Navigation : public QObject
 {

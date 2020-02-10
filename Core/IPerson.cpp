@@ -1,5 +1,6 @@
 ﻿#include "IPerson.h"
 
+#include <QDebug>
 #include <QJsonObject>
 
 IPerson::IPerson(QObject* parent)
@@ -12,7 +13,7 @@ IPerson::IPerson(QObject* parent)
 void IPerson::fromJson(const QJsonObject& json)
 {
     mID = json.value(QStringLiteral("id")).toString().toUInt();
-    mGender = json.value(QStringLiteral("gender")).toString()[0].toLatin1();
+    mGender = json.value(QStringLiteral("gender")).toString("-").front().toLatin1();
     mNickName = json.value(QStringLiteral("nickName")).toString();
     mSignature = json.value(QStringLiteral("signature")).toString();
     mHostAddress = json.value(QStringLiteral("hostAddress")).toString();

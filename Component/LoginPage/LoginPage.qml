@@ -1,11 +1,12 @@
 ﻿import QtQuick 2.7
-import QtQuick.Window 2.3
+import QtQuick.Window 2.14
 import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
 import "qrc:/js/js/Utility.js" as ToastJs
+import LoginWithQQMail 1.0
 
-Window {
+ApplicationWindow {
     id: window
     title: "InkChat"
     width: 810
@@ -18,9 +19,10 @@ Window {
     minimumHeight: 460
 
     enum EAction {
-        Login,
-        Signup,
-        Exit
+        Login,      // 登录
+        Signup,     // 注册
+        JumpLogin,  // 跳过登录，一般登录过后会保存用户数据到本地
+        Exit        // 退出或关闭登录界面
     }
 
     // 是否是进行登录（否则为注册）
@@ -29,53 +31,57 @@ Window {
     // 是否正在进行请求，包括登录、注册请求
     property bool isRequesting: false
 
-    // 当登录失败或者注册失败时被调用的槽函数
-    function slotFailed(msg) {
-        loadingDialog.closeDialog();
-        ToastJs.createToast(qsTr("操作失败，原因：" + msg), window);
-        isRequesting = false;
-    }
+    AppTheme { id: appTheme }
 
-    // 当登录成功时被调用的槽函数
-    function slotVerified() {
-        loadingDialog.delayCloseDialog(qsTr("登录成功"), function(){
+    LoginWithQQMail {
+        id: loginOperation
+        onFailed: function (msg) {
+            loadingDialog.closeDialog();
+            ToastJs.createToast(qsTr("操作失败，原因：" + msg), window);
+            isRequesting = false;
+        }
+        onVerified: {
+            loadingDialog.delayCloseDialog(qsTr("登录成功"), function() {
 
-            // 重定向到主页面
-            loginOperation.redirect(null, "qrc:/main.qml");
+                // 重定向到主页面
+                redirect(null, "qrc:/main.qml");
 
-            // 动作为：退出登录页面
-            action = LoginPage.Exit;
-        });
-    }
+                // 动作为：退出登录页面
+                action = LoginPage.Exit;
+            });
+        }
+        onRegistered: {
+            loadingDialog.delayCloseDialog(qsTr("注册成功"));
 
-    // 当注册成功时被调用的槽函数
-    function slotRegistered() {
-        loadingDialog.delayCloseDialog(qsTr("注册成功"));
+            ibNickName.clear();
+            ibAccount.clear();
+            ibPassword.clear();
+            ibRecheckPwd.clear();
 
-        ibNickName.clear();
-        ibAccount.clear();
-        ibPassword.clear();
-        ibRecheckPwd.clear();
-
-        isRequesting = false;
+            isRequesting = false;
+        }
+        onJumpLogin: {
+            ibAccount.text = account;
+            ibPassword.text = password;
+        }
     }
 
     Component.onCompleted: {
         opacityAnimation.start();
 
-        // 关联信号槽
-        loginOperation.failed.connect(window.slotFailed);
-        loginOperation.verified.connect(window.slotVerified);
-        loginOperation.registered.connect(window.slotRegistered);
+        loginOperation.loginRequest({});
+        loadingDialog.showDialog(window.contentItem, qsTr("正在登录..."));
 
-        // TODO: REMOVE THIS
-        ibAccount.text = "15007083506@qq.com";
-        ibPassword.text = "123456";
+        //        // TODO: REMOVE THIS
+        //        ibAccount.text = "15007083506@qq.com";
+        //        ibPassword.text = "123456";
     }
 
-    LoadingDialog {
-        id: loadingDialog
+    onClosing: {
+        loginOperation.destroy();
     }
+
+    LoadingDialog { id: loadingDialog }
 
     NumberAnimation {
         id: opacityAnimation
@@ -83,10 +89,6 @@ Window {
         property: "opacity"
         duration: 300
         to: 1
-    }
-
-    AppTheme {
-        id: appTheme
     }
 
     // app信息展示区域
@@ -249,7 +251,6 @@ Window {
                     isRequesting = true;
 
                     if(window.action === LoginPage.Login) {
-                        // 打包数据成json交付给C++处理
                         loginOperation.loginRequest({
                                                         account: ibAccount.text,
                                                         password: ibPassword.text

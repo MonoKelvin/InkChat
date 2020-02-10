@@ -3,10 +3,10 @@
 
 #include <QObject>
 
-#define CHATVIEW_INITIALIZA \
-{ \
-    qmlRegisterType<ChatView>("ChatView", 1, 0, "ChatView"); \
-}
+#define CHATVIEW_INITIALIZA                                            \
+    {                                                                  \
+        qmlRegisterType<ChatView>("ChatView", 1, 0, "ChatPageManage"); \
+    }
 
 class User;
 

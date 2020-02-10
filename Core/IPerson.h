@@ -40,8 +40,6 @@ public:
     virtual void fromJson(const QJsonObject& json) = 0;
     virtual QJsonObject toJson(void) = 0;
 
-    virtual void cacheData() {}
-
     inline unsigned int getID(void) const { return mID; }
 
     inline const QString getNickName(void) const { return mNickName; }
@@ -82,6 +80,10 @@ public:
 
     inline QString getHostAddress(void) const { return mHostAddress; }
 
+public slots:
+    virtual bool cacheData() { return true; }
+    virtual bool loadData() { return true; }
+
 Q_SIGNALS:
     void failed(const QString&);
 
@@ -95,7 +97,7 @@ protected:
     // 用户ID
     unsigned int mID;
 
-    // 性别。0男，1女，'\0'（空字符）保密
+    // 性别。1男，0女，'-'（减号）保密
     char mGender;
 
     // 用户昵称

@@ -3,10 +3,10 @@
 
 #include <QObject>
 
-#define MESSAGELIST_INITIALIZA \
-{                                                                                           \
-    qmlRegisterType<MessageList>("MessageList", 1, 0, "MessageList");   \
-}
+#define MESSAGELIST_INITIALIZA                                                  \
+    {                                                                           \
+        qmlRegisterType<MessageList>("MessageList", 1, 0, "MessageListManage"); \
+    }
 
 class MessageList : public QObject
 {

@@ -3,10 +3,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+#include <FriendPage.h>
 #include <LoginWithQQMail.h>
 #include <MessagePage.h>
-#include <Navigation.h>
-#include <QDebug>
 #include <User.h>
 
 int main(int argc, char* argv[])
@@ -23,13 +22,12 @@ int main(int argc, char* argv[])
     // 注册C++类型到QML
     qmlRegisterType<User>("User", 1, 0, "User");
 
-    NAVIGATION_INITIALIZA
+    LOGINOPERATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA
+    FRIENDPAGE_INITIALIZA
 
     QQmlApplicationEngine engine;
-    LoginWithQQMail::SetQmlApplicationEngine(&engine);
-
-    LoginWithQQMail loginWithQQ(QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
+    LoginWithQQMail::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
 
     return app.exec();
 }

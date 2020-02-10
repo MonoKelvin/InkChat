@@ -5,7 +5,7 @@ RESOURCES += \
     $$PWD/FriendPage.qrc
 
 HEADERS += \
-    $$PWD/MyFriend.h
+    $$PWD/FriendPage.h
 
 SOURCES += \
-    $$PWD/MyFriend.cpp
+    $$PWD/FriendPage.cpp

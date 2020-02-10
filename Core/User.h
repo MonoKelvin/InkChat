@@ -49,9 +49,8 @@ public:
     void addFriend(MyFriend* myFriend);
 
 protected slots:
-    void cacheData() override;
-
-    //    bool cacheAvatar(const QUrl& path);
+    bool cacheData() override;
+    bool loadData() override;
 
 private:
     Q_DISABLE_COPY(User)

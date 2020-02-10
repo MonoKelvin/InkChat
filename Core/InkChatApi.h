@@ -38,6 +38,9 @@
 // APP数据文件夹
 #define APP_DATA_DIR (APP_DIR + QStringLiteral("/data/"))
 
+// APP配置文件
+#define APP_CONFIG_FILE (APP_DATA_DIR + QStringLiteral("config.ini"))
+
 // 用户文件夹
 #define USER_DIR(_ID_) (APP_DATA_DIR + QString::number(_ID_))
 // 用户数据文件夹
