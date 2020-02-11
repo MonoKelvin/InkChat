@@ -1,4 +1,6 @@
 ﻿import QtQuick 2.0
+
+
 /**
  * - 亮色主题配色表 -
  * 背景色：#ffffff
@@ -53,7 +55,6 @@
  * !单纯使用width无效，height也是一样
  *
  */
-
 QtObject {
     property color primaryColor1: "#4D7CFE"
     property color primaryActiveColor1: Qt.darker(primaryColor1, 1.3)
@@ -82,6 +83,7 @@ QtObject {
     property color leftBubbleTextColor: backgroundColor
     property color rightBubbleColor: tintColor
     property color rightBubbleTextColor: mainTextColor
+    property color borderLineColor: tintColor
 
     readonly property int tinySpacing: 5
     readonly property int narrowSpacing: 10
@@ -99,14 +101,14 @@ QtObject {
     readonly property int smallTextSize: 12
     readonly property int tinyTextSize: 10
 
-    property color onlineStateColor: primaryColor4;
-    property color offlineStateColor: subTextColor;
-    property color busyStateColor: primaryColor2;
+    property color onlineStateColor: primaryColor4
+    property color offlineStateColor: subTextColor
+    property color busyStateColor: primaryColor2
 
     property int stdWidgetHeight: 32
     property int stdBadgeHeight: 18
 
     function getDefaultUrl() {
-        return "qrc:/AppResource/Icon/default_avatar.png";
+        return "qrc:/AppResource/Icon/default_avatar.png"
     }
 }

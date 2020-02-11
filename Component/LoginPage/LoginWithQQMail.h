@@ -16,10 +16,6 @@ class LoginWithQQMail : public ILoginOperation
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE void loginRequest(const QVariantMap &mapping) override;
-    Q_INVOKABLE void signupRequest(const QVariantMap& mapping) override;
-    Q_INVOKABLE void redirect(QQmlApplicationEngine* engine, const QUrl& url) override;
-
     /**
      * @brief 初始化登录页面。
      * @param qmlEngine QML应用的解析引擎
@@ -32,8 +28,19 @@ public:
         return QmlEngine;
     }
 
+    Q_INVOKABLE void loginRequest(const QVariantMap &mapping) override;
+    Q_INVOKABLE void signupRequest(const QVariantMap& mapping) override;
+    Q_INVOKABLE void redirect(QQmlApplicationEngine* engine, const QUrl& url) override;
+
+    /**
+     * @brief 自动登录请求
+     * @return bool 如果可以自动登录，则返回true，否则为false
+     * @note 同时，如果用户数据解析成功，则发送 @see autoLogin 信号
+     */
+    Q_INVOKABLE bool autoLoginRequest();
+
 Q_SIGNALS:
-    void jumpLogin(const QString& account, const QString& password);
+    void autoLogin(const QVariantMap& data = QVariantMap());
 
 private:
     static QPointer<QQmlApplicationEngine> QmlEngine;

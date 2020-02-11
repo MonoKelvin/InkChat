@@ -16,7 +16,7 @@ Rectangle {
         anchors.top: parent.top
         padding: appTheme.wideSpacing
         horizontalAlignment: Text.AlignHCenter
-        color: appTheme.subTextColor
+        color: appTheme.mainTextColor
     }
 
     Item {
@@ -32,7 +32,7 @@ Rectangle {
                 clickedColor: appTheme.primaryColor1
                 checked: true
             }
-            anchors{
+            anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
                 right: toolBtn.left
@@ -48,7 +48,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width: appTheme.stdWidgetHeight
             height: appTheme.stdWidgetHeight
-            checked: true   //test
+            checked: true //test
         }
     }
 
@@ -60,12 +60,12 @@ Rectangle {
         clip: true
         focus: true
 
-        model: ListModel{
+        model: ListModel {
             id: messageListModel
         }
 
         delegate: Loader {
-            id:loader
+            id: loader
             width: messageListView.width
             source: "MessageItem.qml"
         }
@@ -83,8 +83,8 @@ Rectangle {
         clickedColor: appTheme.primaryActiveColor1
         layer.enabled: true
         layer.effect: DropShadow {
-//            anchors.fill: navigation
-//            source: navigation
+            //            anchors.fill: navigation
+            //            source: navigation
             radius: 12
             samples: 17
             color: Qt.lighter(appTheme.primaryColor1, 1.2)
@@ -93,21 +93,20 @@ Rectangle {
     }
 
     function refresh(items) {
-        messageListModel.clear();
+        messageListModel.clear()
 
-        for (var index = 0; index < items.length; index++){
-            var buf = items[index];
+        for (var index = 0; index < items.length; index++) {
+            var buf = items[index]
             messageListModel.append({
-                                        _id: buf["id"],
-                                        _avatar: buf["avatar"],
-                                        _name: buf["name"],
-                                        _message: buf["message"],
-                                        _loginState: buf["loginState"],
-                                        _unreadMessageNumber: buf["unreadMessageNumber"],
-                                        _read: buf["read"],
-                                        _messageTime: buf["messageTime"]
-                                    });
+                                        "_id": buf["id"],
+                                        "_avatar": buf["avatar"],
+                                        "_name": buf["name"],
+                                        "_message": buf["message"],
+                                        "_loginState": buf["loginState"],
+                                        "_unreadMessageNumber": buf["unreadMessageNumber"],
+                                        "_read": buf["read"],
+                                        "_messageTime": buf["messageTime"]
+                                    })
         }
     }
-
 }

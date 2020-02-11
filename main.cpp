@@ -1,12 +1,13 @@
-﻿#include <QFont>
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
-
+﻿#include <AppSettings.h>
 #include <FriendPage.h>
 #include <LoginWithQQMail.h>
 #include <MessagePage.h>
 #include <User.h>
+
+#include <QFont>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 int main(int argc, char* argv[])
 {
@@ -15,8 +16,10 @@ int main(int argc, char* argv[])
     // 主程序
     QGuiApplication app(argc, argv);
 
-#if defined(Q_OS_WINDOWS)
-    app.setFont(QFont(QStringLiteral("微软雅黑")));
+    QFont font = AppSettings::Instance()->value("app/font", "微软雅黑").toString();
+
+#if defined(Q_OS_WIN)
+    app.setFont(font);
 #endif
 
     // 注册C++类型到QML

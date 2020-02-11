@@ -6,48 +6,51 @@ Rectangle {
     property int msgId: -1
     property int unreadMsgNumber: -1
     property bool hasRead: true
+    property string message
     property string msgTime: new Date().toString()
 
     height: 70
-    color: (messageListView.currentIndex === index)?appTheme.widgetColor:"transparent"
+    color: (messageListView.currentIndex === index) ? appTheme.widgetColor : "transparent"
 
     Component.onCompleted: {
-        msgId = _id;
-        hasRead = _read;
-        msgTime = _messageTime;
-        unreadMsgNumber = _unreadMessageNumber;
+        msgId = _id
+        hasRead = _read
+        msgTime = _messageTime
+        unreadMsgNumber = _unreadMessageNumber
+        message = _message
     }
 
     onHasReadChanged: {
-        if(hasRead) {
-            unreadMsgRect.width = 0;
-            unreadMsgRect.visible = false;
+        if (hasRead) {
+            unreadMsgRect.width = 0
+            unreadMsgRect.visible = false
         } else {
             if (unreadMsgNumber <= 0) {
-                return;
+                return
             }
 
-            unreadMsgRect.visible = true;
-            unreadMsgRect.width = unreadMsgNumText.contentWidth + 14
+            unreadMsgRect.visible = true
+            unreadMsgRect.width = unreadMsgRect.contentWidth + 10
         }
     }
 
     onUnreadMsgNumberChanged: {
-        if(hasRead) return;
+        if (hasRead)
+            return
 
-        if(unreadMsgNumber <= 0) {
-            unreadMsgRect.width = 0;
-            unreadMsgRect.visible = false;
-            return;
+        if (unreadMsgNumber <= 0) {
+            unreadMsgRect.width = 0
+            unreadMsgRect.visible = false
+            return
         }
 
-        unreadMsgRect.visible = true;
-        if(unreadMsgNumber <= 99) {
-            unreadMsgNumText.text = unreadMsgNumber;
+        unreadMsgRect.visible = true
+        if (unreadMsgNumber <= 99) {
+            unreadMsgRect.text = unreadMsgNumber
         } else {
-            unreadMsgNumText.text = "99+";
+            unreadMsgRect.text = "99+"
         }
-        unreadMsgRect.width = unreadMsgNumText.contentWidth + 14
+        unreadMsgRect.width = unreadMsgRect.contentWidth + 14
     }
 
     Avatar {
@@ -59,71 +62,85 @@ Rectangle {
         anchors.leftMargin: appTheme.stdSpacing
 
         onOnlineStateChanged: {
-            switch(onlineState) {
+            switch (onlineState) {
             case User.Online:
-                nameText.color = appTheme.mainTextColor;
-                unreadMsgRect.color = appTheme.subColor3;
-                unreadMsgNumText.color = appTheme.primaryColor3;
-                break;
+                nameText.color = appTheme.mainTextColor
+                unreadMsgRect.color = appTheme.subColor3
+                unreadMsgRect.textColor = appTheme.primaryColor3
+                break
             case User.Offline:
-                nameText.color = appTheme.subTextColor;
-                unreadMsgRect.color = appTheme.tintColor;
-                unreadMsgNumText.color = appTheme.subTextColor;
-                break;
+                nameText.color = appTheme.subTextColor
+                unreadMsgRect.color = appTheme.tintColor
+                unreadMsgRect.textColor = appTheme.subTextColor
+                break
             }
         }
     }
 
     Column {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: avatar.right
-        anchors.leftMargin: appTheme.stdSpacing
-        anchors.right: unreadMsgRect.left
-        anchors.rightMargin: appTheme.stdSpacing
+        id: column_name_msg
+        height: parent.height - appTheme.wideSpacing
         spacing: appTheme.tinySpacing
+        anchors {
+            left: avatar.right
+            leftMargin: appTheme.stdSpacing
+            verticalCenter: parent.verticalCenter
+            right: column_time_badge.left
+            rightMargin: appTheme.tinySpacing
+        }
 
         Text {
             id: nameText
+            width: parent.width
             font.bold: true
+            verticalAlignment: Text.AlignBottom
             font.pixelSize: appTheme.stdTextSize
             color: appTheme.mainTextColor
-            width: parent.width
             elide: Text.ElideRight
             text: _name
         }
         Text {
             id: messageText
+            width: parent.width
             font.pixelSize: appTheme.smallTextSize
             color: appTheme.subTextColor
-            width: parent.width
             elide: Text.ElideRight
-            text: _message
+            text: message
         }
     }
 
-    Rectangle {
-        id: unreadMsgRect
-        color: appTheme.subColor3
-        height: appTheme.stdBadgeHeight
-        radius: appTheme.stdBadgeHeight / 2
-        width: unreadMsgNumText.contentWidth + 20
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
-        anchors.rightMargin: appTheme.stdSpacing
+    Item {
+        id: column_time_badge
+        height: column_name_msg.height
+        width: Math.max(timeText.implicitWidth, unreadMsgRect.implicitWidth)
+        anchors {
+            right: parent.right
+            rightMargin: appTheme.stdSpacing
+            verticalCenter: parent.verticalCenter
+        }
 
         Text {
-            id: unreadMsgNumText
+            id: timeText
+            verticalAlignment: Text.AlignBottom
             font.pixelSize: appTheme.smallTextSize
-            anchors.centerIn: parent
-            color: appTheme.primaryColor3
+            color: appTheme.subTextColor
+            text: msgTime
+            y: nameText.y
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        Badge {
+            id: unreadMsgRect
+            text: unreadMsgNumber
+            y: messageText.y
+            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            messageListView.currentIndex = index;
-            messageList.itemClicked(msgId);
+            messageListView.currentIndex = index
+            messageList.itemClicked(msgId)
         }
     }
 }

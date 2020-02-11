@@ -1,7 +1,6 @@
 ﻿import QtQuick 2.14
 import QtQuick.Controls 2.0
-import QtGraphicalEffects 1.0
-import ChatView 1.0
+import ChatPageManage 1.0
 import "qrc:/Element/"
 
 Item {
@@ -12,12 +11,12 @@ Item {
      * _name
      * _message
      * _sendTime
-     * _sendState : ChatView.ESendState
-     * _sender : ChatView.ESender
+     * _sendState : ChatPageManage.ESendState
+     * _sender : ChatPageManage.ESender
      * _messageType
      */
     property string sendTime: {const t = new Date(); return t.getHours() + ":" + t.getMinutes()}
-    property var sendState: ChatView.Sending
+    property var sendState: ChatPageManage.Sending
 
     onSendStateChanged: {
         // todo
@@ -91,7 +90,7 @@ Item {
         avatar.y = appTheme.stdSpacing;
         message.anchors.top = avatar.verticalCenter;
 
-        if(_sender !== ChatView.Me) {
+        if(_sender !== ChatPageManage.Me) {
             // 头像
             avatar.x = appTheme.stdSpacing;
 
@@ -124,7 +123,7 @@ Item {
         }
 
         // 名称
-        if(_sender !== ChatView.Other) {
+        if(_sender !== ChatPageManage.Other) {
             name.visible = false;
         } else {
             name.anchors.left = message.left;

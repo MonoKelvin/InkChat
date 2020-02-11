@@ -36,7 +36,7 @@
 #define APP_DIR QCoreApplication::applicationDirPath()
 
 // APP数据文件夹
-#define APP_DATA_DIR (APP_DIR + QStringLiteral("/data/"))
+#define APP_DATA_DIR AppSettings::Instance()->value("app/dataPath", APP_DIR).toString();
 
 // APP配置文件
 #define APP_CONFIG_FILE (APP_DATA_DIR + QStringLiteral("config.ini"))

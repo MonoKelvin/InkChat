@@ -6,25 +6,42 @@
 
 class AppSettings : public QSettings {
     Q_OBJECT
-public:
+
+    Q_DISABLE_COPY_MOVE(AppSettings)
+
     AppSettings(const QString& fileName, QObject* parent = nullptr);
 
-    static AppSettings* Instance()
+public:
+    static AppSettings* Instance(void)
     {
-        if (appSettings == nullptr) {
-            appSettings = new AppSettings(APP_CONFIG_FILE);
+        if (nullptr == mInstance) {
+            mInstance = new AppSettings(APP_CONFIG_FILE);
         }
 
-        return appSettings;
+        return mInstance;
     }
 
-    bool save();
+    static void LoadAppTheme(const QString& themeFile);
 
 Q_SIGNALS:
-    void settingsChanged();
+    void onAppThemeChanged();
 
 private:
-    static AppSettings* appSettings;
+    static AppSettings* mInstance;
+
+    // 垃圾回收类
+    class _GarbageCollection {
+    public:
+        _GarbageCollection() = default;
+        ~_GarbageCollection()
+        {
+            if (mInstance != nullptr) {
+                delete mInstance;
+                mInstance = nullptr;
+            }
+        }
+    };
+    static _GarbageCollection _GC;
 };
 
 #endif // APPSETTINGS_H

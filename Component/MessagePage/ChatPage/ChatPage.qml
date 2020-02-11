@@ -1,6 +1,6 @@
 ﻿import QtQuick 2.12
-import ChatView 1.0
 import QtGraphicalEffects 1.0
+import ChatPageManage 1.0
 import "qrc:/Element/"
 
 Rectangle {
@@ -31,15 +31,16 @@ Rectangle {
             // 防止鼠标事件穿透
             MouseArea {
                 anchors.fill: parent
-                onWheel: {}
+                onWheel: {
+
+                }
             }
         }
         footerPositioning: ListView.OverlayFooter
 
         onContentYChanged: {
-            if(contentY > -titleBar.height){
-                blurEffect.update();
-            }
+            if (contentY > -titleBar.height)
+                blurEffect.update()
         }
     }
 
@@ -54,27 +55,28 @@ Rectangle {
         visible: false
     }
 
-    //    Loader {
-    //        id: inputer
-    //        width: parent.width
-    //        height: 200
-    //        anchors.bottom: parent.bottom
-    //        source: "ChatInputer.qml"
-    //    }
+    // 分割线
+    Rectangle {
+        id: nsv_page_line
+        width: parent.width
+        height: 2
+        color: appTheme.borderLineColor
+        anchors.top: titleBar.bottom
+    }
 
     Rectangle {
         id: titleBar
         width: parent.width
         height: 55
         color: appTheme.backgroundColor
-        layer.enabled: true
-        layer.effect: DropShadow {
-            radius: 20.0
-            samples: 17
-            color: appTheme.shadowColor
-            verticalOffset: 1
-        }
 
+        // layer.enabled: true
+        // layer.effect: DropShadow {
+        //     radius: 20.0
+        //     samples: 17
+        //     color: appTheme.shadowColor
+        //     verticalOffset: 1
+        // }
         BlurEffect {
             id: blurEffect
             target: titleBar
@@ -101,29 +103,30 @@ Rectangle {
         }
     }
 
+
     /**
      * 设置为空视图
      */
     function setVoidView() {
-        chatListView.visible = false;
+        chatListView.visible = false
         // chatListModel.clear();
-        nochatText.visible = true;
-        titleName = qsTr("聊天");
+        nochatText.visible = true
+        titleName = qsTr("聊天")
     }
 
     function refresh(items) {
-        chatListModel.clear();
-        for (var index = 0; index < items.length; index++){
-            var buf = items[index];
+        chatListModel.clear()
+        for (var index = 0; index < items.length; index++) {
+            var buf = items[index]
             chatListModel.append({
-                                     _avatar: buf["avatar"]?buf["avatar"]:"",
-                                     _messageType: buf["messageType"],
-                                     _name: buf["name"],
-                                     _message: buf["message"],
-                                     _sendTime: buf["sendTime"],
-                                     _sendState: buf["sendState"]?buf["sendState"]:ChatView.Sending,
-                                     _sender: buf["sender"],
-                                 });
+                                     "_avatar": buf["avatar"] ? buf["avatar"] : "",
+                                     "_messageType": buf["messageType"],
+                                     "_name": buf["name"],
+                                     "_message": buf["message"],
+                                     "_sendTime": buf["sendTime"],
+                                     "_sendState": buf["sendState"] ? buf["sendState"] : ChatPageManage.Sending,
+                                     "_sender": buf["sender"]
+                                 })
         }
     }
 }

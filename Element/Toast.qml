@@ -20,20 +20,19 @@ Item {
     height: window.height
     clip: true
 
-    function show(text, duration, type = Toast.EmergeFromBottom) {
-        theText.text = text;
-        showType = type;
-        if(typeof duration !== "undefined"){
-            if(duration >= 2*fadeTime) {
-                showTime = duration;
-            } else {
-                showTime = 2*fadeTime;
-            }
-        } else {
-            showTime = 2500;
-        }
-        anim.start();
+    function show(text, duration, type) {
+        theText.text = text
+        if (duration === undefined || duration < 2 * fadeTime)
+            showTime = 2 * fadeTime
+        else
+            showTime = duration
+
+        if (type !== undefined)
+            showType = type
+        anim.start()
     }
+
+    Component.onDestruction: console.log('fucking doing')
 
     Rectangle {
         id: toastItem
@@ -44,8 +43,8 @@ Item {
         radius: appTheme.smallRadius
 
         Component.onCompleted: {
-            toastItem.anchors.horizontalCenter = root.horizontalCenter;
-            toastItem.y = root.height;
+            toastItem.anchors.horizontalCenter = root.horizontalCenter
+            toastItem.y = root.height
 
             // switch(showType) {
             // case Toast.EmergeFromTop:
@@ -60,7 +59,7 @@ Item {
             // }
         }
 
-        Text{
+        Text {
             id: theText
             horizontalAlignment: Text.AlignHCenter
             anchors.centerIn: parent
@@ -68,7 +67,7 @@ Item {
             font.pixelSize: appTheme.stdTextSize
         }
 
-        SequentialAnimation{
+        SequentialAnimation {
             id: anim
             running: false
 
@@ -108,7 +107,10 @@ Item {
                 }
             }
 
-            onRunningChanged: if(!running) root.destroy();
+            onRunningChanged: {
+                if (!running)
+                    root.destroy()
+            }
         }
     }
 }

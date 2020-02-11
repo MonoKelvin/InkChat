@@ -1,6 +1,5 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.0
-import QtQuick.Controls.Styles 1.4
 
 TextField {
     property color normalBackgroundColor: appTheme.tintColor
@@ -35,20 +34,20 @@ TextField {
         children: icon
 
         Component.onCompleted: {
-            if(icon) {
-                if(iconAlignment === InputBox.AlignRight) {
-                    icon.anchors.right = right;
-                    textField.rightPadding += appTheme.stdSpacing + icon.width;
-                    icon.anchors.rightMargin = appTheme.tinySpacing;
+            if (icon) {
+                if (iconAlignment === InputBox.AlignRight) {
+                    icon.anchors.right = right
+                    textField.rightPadding += appTheme.stdSpacing + icon.width
+                    icon.anchors.rightMargin = appTheme.tinySpacing
                 } else {
-                    icon.anchors.left = left;
-                    textField.leftPadding += appTheme.stdSpacing + icon.width;
-                    icon.anchors.leftMargin = appTheme.tinySpacing;
+                    icon.anchors.left = left
+                    textField.leftPadding += appTheme.stdSpacing + icon.width
+                    icon.anchors.leftMargin = appTheme.tinySpacing
                 }
 
-                icon.anchors.verticalCenter = verticalCenter;
-                icon.height = height - appTheme.narrowSpacing;
-                icon.width = icon.height;
+                icon.anchors.verticalCenter = verticalCenter
+                icon.height = height - appTheme.narrowSpacing
+                icon.width = icon.height
             }
         }
     }

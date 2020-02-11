@@ -3,3 +3,6 @@ INCLUDEPATH *= \
 
 HEADERS += \
     $$PWD/MessageList.h
+
+SOURCES += \
+    $$PWD/MessageList.cpp

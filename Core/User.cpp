@@ -1,5 +1,6 @@
 ﻿#include "User.h"
 
+#include <AppSettings.h>
 #include <InkChatApi.h>
 #include <MyFriend.h>
 #include <Utility.h>
@@ -97,10 +98,17 @@ bool User::cacheData()
     return true;
 }
 
-#include <QSettings>
 bool User::loadData()
 {
+    // 当前登录的用户
+    auto currentUser = AppSettings::Instance()->value("user/currentUser");
+    if (currentUser.isNull()) {
+        return false;
+    }
+
+    mID = currentUser.toUInt();
     const auto fileName = USER_DATA_FILE(mID);
+
     // 如果有缓存就加载缓存数据，否则从数据库中获取
     if (isFileExists(fileName)) {
         QFile file(fileName);

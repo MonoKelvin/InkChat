@@ -1,10 +1,9 @@
 ﻿import QtQuick 2.7
-import QtQuick.Window 2.14
 import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.0
+import LoginWithQQMail 1.0
 import "qrc:/Element/"
 import "qrc:/js/js/Utility.js" as ToastJs
-import LoginWithQQMail 1.0
 
 ApplicationWindow {
     id: window
@@ -14,15 +13,19 @@ ApplicationWindow {
     visible: true
     opacity: 0
     color: appTheme.backgroundColor
-
+    flags: Qt.Window | Qt.FramelessWindowHint
     minimumWidth: 720
     minimumHeight: 460
 
     enum EAction {
-        Login,      // 登录
-        Signup,     // 注册
-        JumpLogin,  // 跳过登录，一般登录过后会保存用户数据到本地
-        Exit        // 退出或关闭登录界面
+        // 登录
+        Login,
+        // 注册
+        Signup,
+        // 跳过登录，一般登录过后会保存用户数据到本地
+        JumpLogin,
+        // 退出或关闭登录界面
+        Exit
     }
 
     // 是否是进行登录（否则为注册）
@@ -31,46 +34,48 @@ ApplicationWindow {
     // 是否正在进行请求，包括登录、注册请求
     property bool isRequesting: false
 
-    AppTheme { id: appTheme }
+    AppTheme {
+        id: appTheme
+    }
 
     LoginWithQQMail {
         id: loginOperation
         onFailed: function (msg) {
-            loadingDialog.closeDialog();
-            ToastJs.createToast(qsTr("操作失败，原因：" + msg), window);
-            isRequesting = false;
+            ToastJs.createToast(msg, window)
+            loadingDialog.closeDialog()
+            isRequesting = false
         }
         onVerified: {
-            loadingDialog.delayCloseDialog(qsTr("登录成功"), function() {
-
-                // 重定向到主页面
-                redirect(null, "qrc:/main.qml");
+            loadingDialog.delayCloseDialog(qsTr("登录成功"), function () {
 
                 // 动作为：退出登录页面
-                action = LoginPage.Exit;
-            });
+                action = LoginPage.Exit
+                // 重定向到主页面
+                redirect(null, "qrc:/main.qml")
+            })
         }
         onRegistered: {
-            loadingDialog.delayCloseDialog(qsTr("注册成功"));
+            loadingDialog.delayCloseDialog(qsTr("注册成功"))
 
-            ibNickName.clear();
-            ibAccount.clear();
-            ibPassword.clear();
-            ibRecheckPwd.clear();
+            ibNickName.clear()
+            ibAccount.clear()
+            ibPassword.clear()
+            ibRecheckPwd.clear()
 
-            isRequesting = false;
+            isRequesting = false
         }
-        onJumpLogin: {
-            ibAccount.text = account;
-            ibPassword.text = password;
+        onAutoLogin: {
+            ibAccount.text = data["account"]
+            ibPassword.text = data["password"]
+        }
+        Component.onCompleted: {
+            if (autoLoginRequest())
+                loadingDialog.showDialog(window.contentItem, qsTr("自动登录中..."))
         }
     }
 
     Component.onCompleted: {
-        opacityAnimation.start();
-
-        loginOperation.loginRequest({});
-        loadingDialog.showDialog(window.contentItem, qsTr("正在登录..."));
+        opacityAnimation.start()
 
         //        // TODO: REMOVE THIS
         //        ibAccount.text = "15007083506@qq.com";
@@ -78,10 +83,12 @@ ApplicationWindow {
     }
 
     onClosing: {
-        loginOperation.destroy();
+        loginOperation.destroy()
     }
 
-    LoadingDialog { id: loadingDialog }
+    LoadingDialog {
+        id: loadingDialog
+    }
 
     NumberAnimation {
         id: opacityAnimation
@@ -144,7 +151,7 @@ ApplicationWindow {
         id: form
         height: parent.height
         color: appTheme.backgroundColor
-        anchors{
+        anchors {
             left: infoPannel.right
             right: parent.right
             leftMargin: appTheme.extremeSpacing
@@ -185,7 +192,9 @@ ApplicationWindow {
                 width: parent.width
                 placeholderText: qsTr("账号")
                 maximumLength: 36
-                validator: RegExpValidator { regExp: /[0-9a-zA-Z]{1,13}@qq\.com/ }
+                validator: RegExpValidator {
+                    regExp: /[0-9a-zA-Z]{1,13}@qq\.com/
+                }
             }
             InputBox {
                 id: ibPassword
@@ -208,7 +217,9 @@ ApplicationWindow {
             Text {
                 id: forgetPwdText
                 width: parent.width
-                text: '<a href="http://inkchat.com/api/forget_pwd"><span style="text-decoration: underline;color: '+appTheme.primaryColor1+';">'+qsTr('忘记密码？')+'</span></a>'
+                text: '<a href="http://inkchat.com/api/forget_pwd"><span style="text-decoration: underline;color: '
+                      + appTheme.primaryColor1 + ';">' + qsTr(
+                          '忘记密码？') + '</span></a>'
                 textFormat: Text.RichText
                 horizontalAlignment: Text.AlignRight
                 linkColor: appTheme.primaryColor1
@@ -231,38 +242,42 @@ ApplicationWindow {
 
                 // 数据和合法验证
                 onClicked: {
-                    if (ibAccount.text.trim() === '' || ibPassword.text.trim() === '' ||
-                            (window.action === LoginPage.Signup && ibNickName.text.trim() === ''))
-                    {
-                        ToastJs.createToast(qsTr("内容不允许为空"), window);
-                        return;
+                    if (ibAccount.text.trim() === '' || ibPassword.text.trim(
+                                ) === '' || (window.action === LoginPage.Signup
+                                             && ibNickName.text.trim(
+                                                 ) === '')) {
+                        ToastJs.createToast(qsTr("内容不允许为空"), window)
+                        return
                     }
 
-                    if(ibPassword.text.length < 6) {
-                        ToastJs.createToast(qsTr("密码至少位6个字符"), window);
-                        return;
+                    if (ibPassword.text.length < 6) {
+                        ToastJs.createToast(qsTr("密码至少位6个字符"), window)
+                        return
                     }
 
-                    if(window.action === LoginPage.Signup && ibRecheckPwd.text !== ibPassword.text){
-                        ToastJs.createToast(qsTr("两次输入的密码不一样"), window);
-                        return;
+                    if (window.action === LoginPage.Signup
+                            && ibRecheckPwd.text !== ibPassword.text) {
+                        ToastJs.createToast(qsTr("两次输入的密码不一样"), window)
+                        return
                     }
 
-                    isRequesting = true;
+                    isRequesting = true
 
-                    if(window.action === LoginPage.Login) {
+                    if (window.action === LoginPage.Login) {
                         loginOperation.loginRequest({
-                                                        account: ibAccount.text,
-                                                        password: ibPassword.text
-                                                    });
-                        loadingDialog.showDialog(window.contentItem, qsTr("正在登录..."));
+                                                        "account": ibAccount.text,
+                                                        "password": ibPassword.text
+                                                    })
+                        loadingDialog.showDialog(window.contentItem,
+                                                 qsTr("正在登录..."))
                     } else {
                         loginOperation.signupRequest({
-                                                         nickName: ibNickName.text,
-                                                         account: ibAccount.text,
-                                                         password: ibPassword.text
-                                                     });
-                        loadingDialog.showDialog(window.contentItem, qsTr("正在注册..."));
+                                                         "nickName": ibNickName.text,
+                                                         "account": ibAccount.text,
+                                                         "password": ibPassword.text
+                                                     })
+                        loadingDialog.showDialog(window.contentItem,
+                                                 qsTr("正在注册..."))
                     }
                 }
             }
@@ -273,52 +288,52 @@ ApplicationWindow {
                 text: qsTr("注册")
                 height: 40
                 onClicked: {
-                    if(window.action === LoginPage.Login)
-                        window.action = LoginPage.Signup;
+                    if (window.action === LoginPage.Login)
+                        window.action = LoginPage.Signup
                     else
-                        window.action = LoginPage.Login;
+                        window.action = LoginPage.Login
                 }
             }
         }
     }
 
     onIsRequestingChanged: {
-        if(isRequesting) {
-            loginButton.enabled = false;
-            signupButton.enabled = false;
+        if (isRequesting) {
+            loginButton.enabled = false
+            signupButton.enabled = false
         } else {
-            loginButton.enabled = true;
-            signupButton.enabled = true;
+            loginButton.enabled = true
+            signupButton.enabled = true
         }
     }
 
     onActionChanged: {
-        switch(window.action) {
+        switch (window.action) {
         case LoginPage.Login:
-            loginButton.text = qsTr("登录");
-            signupButton.text = qsTr("注册");
+            loginButton.text = qsTr("登录")
+            signupButton.text = qsTr("注册")
 
-            ibNickName.visible = false;
-            ibRecheckPwd.visible = false;
-            forgetPwdText.visible = true;
+            ibNickName.visible = false
+            ibRecheckPwd.visible = false
+            forgetPwdText.visible = true
 
-            ibAccount.placeholderText = qsTr("账号");
-            ibPassword.placeholderText = qsTr("密码");
-            break;
+            ibAccount.placeholderText = qsTr("账号")
+            ibPassword.placeholderText = qsTr("密码")
+            break
         case LoginPage.Signup:
-            loginButton.text = qsTr("注册");
-            signupButton.text = qsTr("返回登录");
+            loginButton.text = qsTr("注册")
+            signupButton.text = qsTr("返回登录")
 
-            ibNickName.visible = true;
-            ibRecheckPwd.visible = true;
-            forgetPwdText.visible = false;
+            ibNickName.visible = true
+            ibRecheckPwd.visible = true
+            forgetPwdText.visible = false
 
-            ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）");
-            ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）");
-            break;
+            ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）")
+            ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）")
+            break
         default:
-            window.close();
-            break;
+            window.close()
+            break
         }
     }
 }

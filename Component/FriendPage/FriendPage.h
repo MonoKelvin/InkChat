@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-#define FRIENDPAGE_INITIALIZA                                                \
-    {                                                                        \
-        qmlRegisterType<FriendPage>("FriendPage", 1, 0, "FriendPageManage"); \
+#define FRIENDPAGE_INITIALIZA                                                      \
+    {                                                                              \
+        qmlRegisterType<FriendPage>("FriendPageManage", 1, 0, "FriendPageManage"); \
     }
 
 class User;

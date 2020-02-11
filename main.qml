@@ -18,9 +18,8 @@ Window {
     minimumHeight: 460
 
     // 处理所有失败消息槽函数
-    function slotFailed(msg)
-    {
-        Utility.createToast(msg, window);
+    function slotFailed(msg) {
+        Utility.createToast(msg, window)
     }
 
     NumberAnimation {
@@ -31,15 +30,15 @@ Window {
         to: 1
     }
 
-    AppTheme{
+    AppTheme {
         id: appTheme
     }
 
     Component.onCompleted: {
-        opacityAnimation.start();
-        pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
+        opacityAnimation.start()
+        pageContains.showPage("qrc:/MessagePage/MessagePage.qml")
 
-        UserModel.failed.connect(slotFailed);
+        UserModel.failed.connect(slotFailed)
     }
 
     Navigation {
@@ -50,42 +49,50 @@ Window {
         nickName: UserModel.nickName
 
         Component.onCompleted: {
-            UserModel.loadData();
+            UserModel.loadData()
         }
 
         onNavigate: {
-            switch(index)
-            {
+            switch (index) {
             case 0:
-                pageContains.showPage("qrc:/MessagePage/MessagePage.qml");
-                break;
+                pageContains.showPage("qrc:/MessagePage/MessagePage.qml")
+                break
             case 1:
-                pageContains.showPage("qrc:/FriendPage/FriendPage.qml");
-                break;
+                pageContains.showPage("qrc:/FriendPage/FriendPage.qml")
+                break
             case 2:
-                console.log("我的主页正在开发中...");
-                break;
+                console.log("我的主页正在开发中...")
+                break
             case 2:
-                console.log("系统设置正在开发中...");
-                break;
+                console.log("系统设置正在开发中...")
+                break
             default:
-                break;
+                break
             }
         }
+    }
+
+    // 分割线
+    Rectangle {
+        id: nsv_page_line
+        height: parent.height
+        width: 2
+        color: appTheme.borderLineColor
+        anchors.left: navigation.right
     }
 
     Item {
         id: pageContains
         height: parent.height
-        width: parent.width - navigation.width
-        anchors.left: navigation.right
+        width: parent.width - navigation.width - nsv_page_line.width
+        anchors.left: nsv_page_line.right
         z: -2
 
         property var pages: new Object
 
         function showPage(pageQrcLocation) {
-            showPageTimer.pageQrcLocation = pageQrcLocation;
-            showPageTimer.start();
+            showPageTimer.pageQrcLocation = pageQrcLocation
+            showPageTimer.start()
         }
 
         Timer {
@@ -97,30 +104,28 @@ Window {
             property string pageQrcLocation
 
             onTriggered: {
-                switch(pageQrcLocation)
-                {
-                case "": break;
+                switch (pageQrcLocation) {
+                case "":
+                    break
                     // case "notSupport": materialUI.showSnackbarMessage( "此功能暂未开放" ); break;
                 default:
-                    if (!(pageQrcLocation in pageContains.pages))
-                    {
-                        var component = Qt.createComponent(pageQrcLocation);
+                    if (!(pageQrcLocation in pageContains.pages)) {
+                        var component = Qt.createComponent(pageQrcLocation)
 
                         if (component.status === Component.Ready) {
-                            var page = component.createObject(pageContains);
-                            page.anchors.fill = pageContains;
-                            pageContains.pages[pageQrcLocation] = page;
+                            var page = component.createObject(pageContains)
+                            page.anchors.fill = pageContains
+                            pageContains.pages[pageQrcLocation] = page
                         }
                     }
 
-                    for (var key in pageContains.pages)
-                    {
-                        pageContains.pages[key].visible = false;
+                    for (var key in pageContains.pages) {
+                        pageContains.pages[key].visible = false
                     }
 
-                    pageContains.pages[pageQrcLocation].visible = true;
+                    pageContains.pages[pageQrcLocation].visible = true
 
-                    break;
+                    break
                 }
             }
         }
