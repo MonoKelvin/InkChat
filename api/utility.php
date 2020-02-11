@@ -85,7 +85,7 @@ function customHttpCode($code)
 function reply($data)
 {
     httpsCode(200);
-    echo json_encode($data);
+    echo json_encode($data/*, JSON_NUMERIC_CHECK*/);
 }
 
 function errorReply($code)

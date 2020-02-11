@@ -6,14 +6,7 @@ require_once(__DIR__ . '\..\mysql_api.class.php');
  * @param int $id 用户ID
  * @param string $account 账号
  * @param string $password 密码
- * @return 具体返回数据包含
- * [
- *      'account',
- *      'nickName',
- *      'signature',
- *      'gender',
- *      'avatar',
- * ]
+ * @return 之返回成功信息
  * @note id只是辅助快速查询数据库，账号和密码也会进行匹配。
  */
 function verifyLoginById($id, $account, $password)
@@ -39,14 +32,7 @@ function verifyLoginById($id, $account, $password)
             die;
         }
 
-        // 获取信息
-        reply([
-            'account' => $res['Account'],
-            'nickName' => $res['NickName'],
-            'signature' => $res['Signature'],
-            'gender' => $res['Gender'],
-            'avatar' => $res['Avatar']
-        ]);
+        reply(['success' => 1]);
     } else {
         errorReply(701);
     }
@@ -100,11 +86,57 @@ function verifyLoginByPassword($account, $password)
     ]);
 }
 
+
 /**
  * 查询用户的所有好友信息
  * @param int $id 用户id
- * @return array
- * 数组形式是按好友所在组分的
+ * @return array 直接返回每个好友对象
+ *
+ * ```json
+ * [
+ *      {
+ *          "id": 2,
+ *          "hostAddress": "192.64.12.7",
+ *          "isTop": true,
+ *          "gender": "1",
+ *          "remark": "我的好友",
+ *          "nickName": "MonoKelvin",
+ *          "signature": "没有签名...",
+ *          "thumb": "../cache/avatar/94f3f838e8c51ac0eac6c74588403c25.png"
+ *      },
+ *      { }
+ * ]
+ * ```
+ * @see getUsersFriendsForGroup
+ */
+function getUserFriends($id)
+{
+    // 查询数据库
+    $db = @MySqlAPI::getInstance();
+    if (!$db) {
+        errorReply(600);
+        $db->close();
+        die;
+    }
+    $res = $db->getAll(
+        'SELECT `fid` as `id`,`hostAddress` as `hostAddress`,
+        `remark` as `remark`,`top` as `top`,`nickName` as `nickName`,
+        `signature` as `signature`,`gender` as `gender`,`subgroup` as `subgroup`
+        FROM GetUserFriends
+        WHERE `UID`=' . $id
+    );
+    $db->close();
+
+    reply($res);
+}
+
+
+/**
+ * 查询用户的所有好友信息，得到以组为形式的json对象数组
+ * @param int $id 用户id
+ * @return array 数组形式是按好友所在组分的
+ *
+ * ```json
  * [
  *   {
  *      "subgroup": "groupName",
@@ -124,8 +156,10 @@ function verifyLoginByPassword($account, $password)
  *   },
  *   { }
  * ]
+ * ```
+ * @see getUsersFriends
  */
-function getUserFriends($id)
+function getUserFriendsForGroup($id)
 {
     // 查询数据库
     $db = @MySqlAPI::getInstance();
@@ -147,7 +181,7 @@ function getUserFriends($id)
         unset($value['Subgroup']);
 
         // 将用户分配到分组中
-        for($i = 0; $i < count($group); $i++) {
+        for ($i = 0; $i < count($group); $i++) {
             if ($group[$i]['subgroup'] === $subgroup) {
                 array_push($group[$i]['member'], $value);
                 break;

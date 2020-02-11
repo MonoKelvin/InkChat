@@ -13,7 +13,7 @@
     <ul>
         <li>
             登录验证：
-            <form action="./api/user/login.php?verify_method=password" method="post">
+            <form action="./api/user/login.php?verify_method=id" method="post">
                 <div>
                     <select name="verify_method">
                         <option value="id">id</option>
