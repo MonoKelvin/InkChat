@@ -22,17 +22,13 @@ Item {
 
     function show(text, duration, type) {
         theText.text = text
-        if (duration === undefined || duration < 2 * fadeTime)
-            showTime = 2 * fadeTime
-        else
+        if (duration !== undefined && duration > 2 * fadeTime)
             showTime = duration
 
         if (type !== undefined)
             showType = type
         anim.start()
     }
-
-    Component.onDestruction: console.log('fucking doing')
 
     Rectangle {
         id: toastItem

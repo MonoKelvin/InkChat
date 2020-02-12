@@ -1,16 +1,15 @@
 ﻿#ifndef MYFRIEND_H
 #define MYFRIEND_H
 
-#include <IPerson.h>
+#include <IChatObject.h>
 
 class User;
 
-class MyFriend : public IPerson
+class MyFriend : public IChatObject
 {
     Q_OBJECT
     friend class User;
 
-    Q_PROPERTY(bool isTop READ getIsTop WRITE setIsTop NOTIFY isTopChanged)
     Q_PROPERTY(QString remark READ getRemark WRITE setRemark NOTIFY remarkChanged)
     Q_PROPERTY(QString subgroup READ getSubgroup WRITE setSubgroup NOTIFY subgroupChanged)
 
@@ -19,13 +18,6 @@ public:
 
     void fromJson(const QJsonObject& json) override;
     QJsonObject toJson(void) override;
-
-    inline bool getIsTop() const { return mIsTop; }
-    inline void setIsTop(bool isTop)
-    {
-        mIsTop = isTop;
-        emit isTopChanged();
-    }
 
     inline QString getRemark() const { return mRemark; }
     inline void setRemark(const QString &remark)
@@ -42,14 +34,10 @@ public:
     }
 
 Q_SIGNALS:
-    void failed(const QString &);
-
-    void isTopChanged();
     void remarkChanged();
     void subgroupChanged();
 
 private:
-    bool mIsTop;
     QString mRemark;
     QString mSubgroup;
 };

@@ -16,57 +16,6 @@ Item {
     function showChatView(chatObj) {}
 
     Component.onCompleted: {
-
-        messageList.refresh([{
-                                 "id": 1,
-                                 "type": User.Group,
-                                 "avatar": "",
-                                 "name": "Tnoy Stack",
-                                 "message": "昨天发来的100多条消息。",
-                                 "loginState": User.Online,
-                                 "unreadMessageNumber": 10,
-                                 "read": false,
-                                 "messageTime": "昨天"
-                             }, {
-                                 "id": 2,
-                                 "type": User.Friend,
-                                 "avatar": "",
-                                 "name": "Tnoy SAlita",
-                                 "message": "昨天发来lo! how are you?",
-                                 "loginState": User.Offline,
-                                 "unreadMessageNumber": 120,
-                                 "read": false,
-                                 "messageTime": "10:16"
-                             }, {
-                                 "id": 3,
-                                 "type": User.LAN,
-                                 "avatar": "",
-                                 "name": "局域网",
-                                 "message": "昨天发来的100多条消息。",
-                                 "loginState": User.NoneState,
-                                 "unreadMessageNumber": 0,
-                                 "read": true,
-                                 "messageTime": "13:16"
-                             }, {
-                                 "id": 3,
-                                 "avatar": "",
-                                 "name": "Jack Lloyd",
-                                 "message": "1小时前已读的消息。",
-                                 "loginState": User.NoneState,
-                                 "unreadMessageNumber": 100,
-                                 "read": false,
-                                 "messageTime": "13:16"
-                             }, {
-                                 "id": 1,
-                                 "avatar": "",
-                                 "name": "Tnoy Stack",
-                                 "message": "昨天发来的100多条消息。",
-                                 "loginState": User.Online,
-                                 "unreadMessageNumber": 10,
-                                 "read": false,
-                                 "messageTime": "13:16"
-                             }])
-
         const t = new Date()
         const curTime = t.getHours() + ":" + t.getMinutes()
 
@@ -82,21 +31,7 @@ Item {
                               "messageType": ChatPageManage.Message,
                               "sender": ChatPageManage.Me,
                               "name": "Tnoy Stack",
-                              "message": "this is a message",
-                              "sendTime": curTime
-                          }, {
-                              "avatar": null,
-                              "messageType": ChatPageManage.Message,
-                              "sender": ChatPageManage.Ta,
-                              "name": "Tnoy Stack",
-                              "message": "this is a message",
-                              "sendTime": curTime
-                          }, {
-                              "avatar": null,
-                              "messageType": ChatPageManage.Message,
-                              "sender": ChatPageManage.Me,
-                              "name": "Tnoy Stack",
-                              "message": "this is a messaQML debugging is enabled. Only QML debugging is enabled. Only use this in a safe environment.use this in a safe environment.ge",
+                              "message": "this is a messagethis is a messagethis is a messagethis is a messagethis is a messagethis is a message",
                               "sendTime": curTime
                           }])
     }

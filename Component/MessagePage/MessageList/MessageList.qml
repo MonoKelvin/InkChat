@@ -1,5 +1,8 @@
 ﻿import QtQuick 2.14
 import QtGraphicalEffects 1.0
+import MessageListModel 1.0
+import MessageItem 1.0
+import User 1.0
 import "qrc:/Element/"
 
 Rectangle {
@@ -7,6 +10,10 @@ Rectangle {
     color: appTheme.backgroundColor
 
     signal itemClicked(var msgId)
+
+    Component.onCompleted: {
+        model.load("D:/GraduationProject/build-InkChatQml-Desktop_Qt_5_14_0_MinGW_64_bit-Debug/data/1/cache/message")
+    }
 
     Text {
         id: title
@@ -53,21 +60,147 @@ Rectangle {
     }
 
     ListView {
-        id: messageListView
+        id: msgListView
         width: parent.width
         anchors.top: toolBar.bottom
         anchors.bottom: parent.bottom
         clip: true
         focus: true
 
-        model: ListModel {
-            id: messageListModel
+        model: MessageListModel {
+            id: model
         }
 
-        delegate: Loader {
-            id: loader
-            width: messageListView.width
-            source: "MessageItem.qml"
+        delegate: Rectangle {
+            height: 70
+            width: msgListView.width
+            color: (msgListView.currentIndex === index) ? appTheme.widgetColor : "transparent"
+
+            MessageItem {
+                id: messageItem
+                onReadFlagChanged: {
+                    if (readFlag) {
+                        msgBadge.width = 0
+                        msgBadge.visible = false
+                    } else {
+                        if (unreadMsgCount <= 0) {
+                            return
+                        }
+
+                        msgBadge.visible = true
+                        msgBadge.width = msgBadge.contentWidth + 10
+                    }
+                }
+
+                onUnreadMsgCountChanged: {
+                    if (readFlag)
+                        return
+
+                    if (unreadMsgCount <= 0) {
+                        msgBadge.width = 0
+                        msgBadge.visible = false
+                        return
+                    }
+
+                    msgBadge.visible = true
+                    if (unreadMsgCount <= 99) {
+                        msgBadge.text = unreadMsgCount
+                    } else {
+                        msgBadge.text = "99+"
+                    }
+                    msgBadge.width = msgBadge.contentWidth + 14
+                }
+            }
+
+            Avatar {
+                id: avatar
+                onlineState: messageItem.chatObject.onlineState
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: appTheme.stdSpacing
+
+                onOnlineStateChanged: {
+                    switch (onlineState) {
+                    case User.Online:
+                        nameText.color = appTheme.mainTextColor
+                        msgBadge.color = appTheme.subColor3
+                        msgBadge.textColor = appTheme.primaryColor3
+                        break
+                    case User.Offline:
+                        nameText.color = appTheme.subTextColor
+                        msgBadge.color = appTheme.tintColor
+                        msgBadge.textColor = appTheme.subTextColor
+                        break
+                    }
+                }
+            }
+
+            Column {
+                id: column_name_msg
+                height: parent.height - appTheme.wideSpacing
+                spacing: appTheme.tinySpacing
+                anchors {
+                    left: avatar.right
+                    leftMargin: appTheme.stdSpacing
+                    verticalCenter: parent.verticalCenter
+                    right: column_time_badge.left
+                    rightMargin: appTheme.tinySpacing
+                }
+
+                Text {
+                    id: nameText
+                    width: parent.width
+                    font.bold: true
+                    verticalAlignment: Text.AlignBottom
+                    font.pixelSize: appTheme.stdTextSize
+                    color: appTheme.mainTextColor
+                    elide: Text.ElideRight
+                    text: messageItem.chatObject.name
+                }
+                Text {
+                    id: messageText
+                    width: parent.width
+                    font.pixelSize: appTheme.smallTextSize
+                    color: appTheme.subTextColor
+                    elide: Text.ElideRight
+                    text: messageItem.message
+                }
+            }
+
+            Item {
+                id: column_time_badge
+                height: column_name_msg.height
+                width: Math.max(timeText.implicitWidth, msgBadge.implicitWidth)
+                anchors {
+                    right: parent.right
+                    rightMargin: appTheme.stdSpacing
+                    verticalCenter: parent.verticalCenter
+                }
+
+                Text {
+                    id: timeText
+                    verticalAlignment: Text.AlignBottom
+                    font.pixelSize: appTheme.smallTextSize
+                    color: appTheme.subTextColor
+                    text: messageItem.time
+                    y: nameText.y
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Badge {
+                    id: msgBadge
+                    text: unreadMsgNumber
+                    y: messageText.y
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    msgListView.currentIndex = index
+                    messageList.itemClicked(msgId)
+                }
+            }
         }
     }
 
@@ -89,24 +222,6 @@ Rectangle {
             samples: 17
             color: Qt.lighter(appTheme.primaryColor1, 1.2)
             verticalOffset: 5
-        }
-    }
-
-    function refresh(items) {
-        messageListModel.clear()
-
-        for (var index = 0; index < items.length; index++) {
-            var buf = items[index]
-            messageListModel.append({
-                                        "_id": buf["id"],
-                                        "_avatar": buf["avatar"],
-                                        "_name": buf["name"],
-                                        "_message": buf["message"],
-                                        "_loginState": buf["loginState"],
-                                        "_unreadMessageNumber": buf["unreadMessageNumber"],
-                                        "_read": buf["read"],
-                                        "_messageTime": buf["messageTime"]
-                                    })
         }
     }
 }

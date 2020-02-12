@@ -10,24 +10,23 @@
 #include <QJsonObject>
 
 MyFriend::MyFriend(QObject* parent)
-    : IPerson(parent)
+    : IChatObject(parent)
 {
+    mRoleType = ERoleType::Friend;
 }
 
 void MyFriend::fromJson(const QJsonObject& json)
 {
-    mIsTop = json.value("top").toBool();
     mRemark = json.value("remark").toString();
     mSubgroup = json.value("subgroup").toString();
 
-    return IPerson::fromJson(json);
+    return IChatObject::fromJson(json);
 }
 
 QJsonObject MyFriend::toJson()
 {
-    auto json = IPerson::toJson();
+    auto json = IChatObject::toJson();
 
-    json.insert("top", mIsTop);
     json.insert("remark", mRemark);
     json.insert("subgroup", mSubgroup);
 

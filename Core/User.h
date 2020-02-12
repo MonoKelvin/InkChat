@@ -1,12 +1,12 @@
 ﻿#ifndef USER_H
 #define USER_H
 
-#include <IPerson.h>
+#include <IChatObject.h>
 #include <QQmlListProperty>
 
 class MyFriend;
 
-class User : public IPerson {
+class User : public IChatObject {
     Q_OBJECT
 
     friend class LoginWithQQMail;

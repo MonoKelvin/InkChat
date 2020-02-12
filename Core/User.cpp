@@ -13,8 +13,9 @@
 using std::thread;
 
 User::User(QObject* parent)
-    : IPerson(parent)
+    : IChatObject(parent)
 {
+    mRoleType = ERoleType::Me;
 }
 
 User::~User()
@@ -35,12 +36,12 @@ void User::fromJson(const QJsonObject& json)
         addFriend(f);
     }
 
-    return IPerson::fromJson(json);
+    return IChatObject::fromJson(json);
 }
 
 QJsonObject User::toJson()
 {
-    auto json = IPerson::toJson();
+    auto json = IChatObject::toJson();
 
     json.insert(QStringLiteral("account"), QJsonValue(mAccount));
     json.insert(QStringLiteral("password"), QJsonValue(mPassword));
