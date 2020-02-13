@@ -1,10 +1,10 @@
 ﻿import QtQuick 2.0
 import QtGraphicalEffects 1.14
-import User 1.0
+import ChatObject 1.0
 import "qrc:/Element/"
 
 Rectangle {
-    property var onlineState: User.NoneState
+    property var onlineState: ChatObject.NoneState
     property alias imageSource: avatar.source
 
     width: 46
@@ -13,23 +13,23 @@ Rectangle {
     color: appTheme.subColor1
 
     onOnlineStateChanged: {
-        dot.visible = true;
-        grayAvatar.visible = false;
+        dot.visible = true
+        grayAvatar.visible = false
 
-        switch(onlineState) {
-        case User.Online:
-            dot.color = appTheme.onlineStateColor;
-            break;
-        case User.Offline:
-            dot.color = appTheme.offlineStateColor;
-            grayAvatar.visible = true;
-            break;
-        case User.Busy:
-            dot.color = appTheme.busyStateColor;
-            break;
+        switch (onlineState) {
+        case ChatObject.Online:
+            dot.color = appTheme.onlineStateColor
+            break
+        case ChatObject.Offline:
+            dot.color = appTheme.offlineStateColor
+            grayAvatar.visible = true
+            break
+        case ChatObject.Busy:
+            dot.color = appTheme.busyStateColor
+            break
         default:
-            dot.visible = false;
-            break;
+            dot.visible = false
+            break
         }
     }
 
@@ -51,7 +51,7 @@ Rectangle {
         }
     }
 
-    Rectangle{
+    Rectangle {
         id: mask
         anchors.fill: parent
         radius: width / 2

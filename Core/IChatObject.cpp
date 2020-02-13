@@ -10,6 +10,10 @@ IChatObject::IChatObject(QObject* parent)
 {
 }
 
+IChatObject::~IChatObject()
+{
+}
+
 void IChatObject::fromJson(const QJsonObject& json)
 {
     mID = json.value(QStringLiteral("id")).toString().toUInt();

@@ -1,6 +1,5 @@
 ﻿import QtQuick 2.0
 import QtGraphicalEffects 1.0
-import User 1.0
 import ChatPageManage 1.0
 import "qrc:/Element/"
 import "qrc:/MessagePage/ChatPage"

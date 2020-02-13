@@ -8,7 +8,7 @@ class IChatObject : public QObject {
 
     Q_PROPERTY(unsigned int id READ getID CONSTANT)
     Q_PROPERTY(bool isTop READ getIsTop WRITE setIsTop NOTIFY isTopChanged)
-    Q_PROPERTY(char gender READ getGender WRITE setGender)
+    Q_PROPERTY(char gender READ getGender WRITE setGender NOTIFY genderChanged)
     Q_PROPERTY(QString nickName READ getNickName WRITE setNickName NOTIFY nickNameChanged)
     Q_PROPERTY(QString signature READ getSignature WRITE setSignature NOTIFY signatureChanged)
     Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar NOTIFY avatarChanged)
@@ -17,6 +17,7 @@ class IChatObject : public QObject {
 
 public:
     explicit IChatObject(QObject* parent = nullptr);
+    virtual ~IChatObject();
 
     enum EOnlineState {
         Online,
@@ -29,13 +30,13 @@ public:
     Q_ENUM(EOnlineState)
 
     enum ERoleType {
-        Me,
-        Friend,
-        Stranger,
-        LAN,
-        Group,
+        Me = 0x0001,
+        Friend = 0x0002,
+        Stranger = 0x0004,
+        LAN = 0x0008,
+        Group = 0x0010,
         // BlackList,
-        AllUser = Me | Friend | Stranger | Group | LAN,
+        AllUser = Me | Friend | Stranger | LAN | Group,
     };
     Q_ENUM(ERoleType)
 

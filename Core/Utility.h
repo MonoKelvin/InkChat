@@ -59,7 +59,7 @@ inline const QString encryptTextByMD5(const QString& source, bool isHalf = false
     QCryptographicHash hash(QCryptographicHash::Md5);
     hash.addData(source.toLatin1());
     auto result = QString(hash.result().toHex());
-    return isHalf ? result.mid(8, 24) : result;
+    return isHalf ? result.mid(8, 16) : result;
 }
 
 /** 向上取整，返回的是int类型 */

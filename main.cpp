@@ -2,7 +2,6 @@
 #include <FriendPage.h>
 #include <LoginWithQQMail.h>
 #include <MessagePage.h>
-#include <User.h>
 
 #include <QFont>
 #include <QGuiApplication>
@@ -23,7 +22,7 @@ int main(int argc, char* argv[])
 #endif
 
     // 注册C++类型到QML
-    qmlRegisterType<User>("User", 1, 0, "User");
+    qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is a interface");
 
     LOGINOPERATION_INITIALIZA
     MESSAGEPAGE_INITIALIZA

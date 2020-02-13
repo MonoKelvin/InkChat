@@ -2,7 +2,7 @@
 import QtGraphicalEffects 1.0
 import MessageListModel 1.0
 import MessageItem 1.0
-import User 1.0
+import ChatObject 1.0
 import "qrc:/Element/"
 
 Rectangle {
@@ -12,7 +12,8 @@ Rectangle {
     signal itemClicked(var msgId)
 
     Component.onCompleted: {
-        model.load("D:/GraduationProject/build-InkChatQml-Desktop_Qt_5_14_0_MinGW_64_bit-Debug/data/1/cache/message")
+        listModel.load(
+                    "D:/GraduationProject/build-InkChatQml-Desktop_Qt_5_14_0_MinGW_64_bit-Debug/data/1/cache/message")
     }
 
     Text {
@@ -68,7 +69,7 @@ Rectangle {
         focus: true
 
         model: MessageListModel {
-            id: model
+            id: listModel
         }
 
         delegate: Rectangle {
@@ -76,57 +77,61 @@ Rectangle {
             width: msgListView.width
             color: (msgListView.currentIndex === index) ? appTheme.widgetColor : "transparent"
 
-            MessageItem {
-                id: messageItem
-                onReadFlagChanged: {
-                    if (readFlag) {
-                        msgBadge.width = 0
-                        msgBadge.visible = false
-                    } else {
-                        if (unreadMsgCount <= 0) {
-                            return
-                        }
+            property var msgItem: model.msgObject
 
-                        msgBadge.visible = true
-                        msgBadge.width = msgBadge.contentWidth + 10
-                    }
-                }
-
-                onUnreadMsgCountChanged: {
-                    if (readFlag)
-                        return
-
-                    if (unreadMsgCount <= 0) {
-                        msgBadge.width = 0
-                        msgBadge.visible = false
+            function onReadFlagChanged() {
+                if (msgItem.readFlag) {
+                    msgBadge.width = 0
+                    msgBadge.visible = false
+                } else {
+                    if (msgItem.unreadMsgCount <= 0) {
                         return
                     }
 
                     msgBadge.visible = true
-                    if (unreadMsgCount <= 99) {
-                        msgBadge.text = unreadMsgCount
-                    } else {
-                        msgBadge.text = "99+"
-                    }
-                    msgBadge.width = msgBadge.contentWidth + 14
+                    msgBadge.width = msgBadge.contentWidth + 10
                 }
+            }
+
+            function onUnreadMsgCountChanged() {
+                if (msgItem.readFlag)
+                    return
+
+                if (msgItem.unreadMsgCount <= 0) {
+                    msgBadge.width = 0
+                    msgBadge.visible = false
+                    return
+                }
+
+                msgBadge.visible = true
+                if (msgItem.unreadMsgCount <= 99) {
+                    msgBadge.text = msgItem.unreadMsgCount
+                } else {
+                    msgBadge.text = "99+"
+                }
+                msgBadge.width = msgBadge.contentWidth + 14
+            }
+
+            Component.onCompleted: {
+                msgItem.readFlagChanged.connect(onReadFlagChanged)
+                msgItem.unreadMsgCountChanged.connect(onUnreadMsgCountChanged)
             }
 
             Avatar {
                 id: avatar
-                onlineState: messageItem.chatObject.onlineState
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: appTheme.stdSpacing
+                onlineState: msgItem.chatObject.onlineState
 
                 onOnlineStateChanged: {
                     switch (onlineState) {
-                    case User.Online:
+                    case ChatObject.Online:
                         nameText.color = appTheme.mainTextColor
                         msgBadge.color = appTheme.subColor3
                         msgBadge.textColor = appTheme.primaryColor3
                         break
-                    case User.Offline:
+                    case ChatObject.Offline:
                         nameText.color = appTheme.subTextColor
                         msgBadge.color = appTheme.tintColor
                         msgBadge.textColor = appTheme.subTextColor
@@ -155,7 +160,7 @@ Rectangle {
                     font.pixelSize: appTheme.stdTextSize
                     color: appTheme.mainTextColor
                     elide: Text.ElideRight
-                    text: messageItem.chatObject.name
+                    text: msgItem.chatObject.nickName
                 }
                 Text {
                     id: messageText
@@ -163,7 +168,7 @@ Rectangle {
                     font.pixelSize: appTheme.smallTextSize
                     color: appTheme.subTextColor
                     elide: Text.ElideRight
-                    text: messageItem.message
+                    text: msgItem.message
                 }
             }
 
@@ -182,15 +187,16 @@ Rectangle {
                     verticalAlignment: Text.AlignBottom
                     font.pixelSize: appTheme.smallTextSize
                     color: appTheme.subTextColor
-                    text: messageItem.time
                     y: nameText.y
                     anchors.horizontalCenter: parent.horizontalCenter
+                    text: msgItem.time
                 }
                 Badge {
                     id: msgBadge
-                    text: unreadMsgNumber
+                    visible: true
                     y: messageText.y
                     anchors.horizontalCenter: parent.horizontalCenter
+                    text: msgItem.unreadMsgCount
                 }
             }
 
@@ -198,7 +204,8 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     msgListView.currentIndex = index
-                    messageList.itemClicked(msgId)
+                    messageList.itemClicked(msgItem.chatObject.id)
+                    msgItem.unreadMsgCount = 0
                 }
             }
         }
@@ -216,8 +223,6 @@ Rectangle {
         clickedColor: appTheme.primaryActiveColor1
         layer.enabled: true
         layer.effect: DropShadow {
-            //            anchors.fill: navigation
-            //            source: navigation
             radius: 12
             samples: 17
             color: Qt.lighter(appTheme.primaryColor1, 1.2)

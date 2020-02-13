@@ -131,7 +131,7 @@ QVariant MessageList::data(const QModelIndex& index, int role) const
         }
     }
 
-    return QVariant(0);
+    return QVariant();
 }
 
 bool MessageList::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -145,6 +145,18 @@ bool MessageList::setData(const QModelIndex& index, const QVariant& value, int r
         }
     }
     return false;
+}
+
+QHash<int, QByteArray> MessageList::roleNames() const
+{
+    QHash<int, QByteArray> names;
+    names[IChatObject::Me] = QByteArrayLiteral("me");
+    names[IChatObject::Friend] = QByteArrayLiteral("friend");
+    names[IChatObject::Stranger] = QByteArrayLiteral("stranger");
+    names[IChatObject::LAN] = QByteArrayLiteral("lan");
+    names[IChatObject::Group] = QByteArrayLiteral("group");
+    names[IChatObject::AllUser] = QByteArrayLiteral("msgObject");
+    return names;
 }
 
 bool MessageList::refresh()
@@ -166,54 +178,52 @@ void MessageList::load(const QString& crFolder /*, MessageList::EMessageFilter f
     for (auto i : list) {
         QFile crFile(i.filePath());
         try {
-            if (crFile.open(QFile::ReadOnly | QFile::Text)) {
-
-                // TODO: 解密
-
-                jsonDoc = QJsonDocument::fromJson(crFile.readAll(), &jsonError);
+            if (!crFile.open(QFile::ReadOnly | QFile::Text)) {
                 crFile.close();
-
-                if (jsonError.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
-                    throw;
-                }
-
-                json = jsonDoc.object();
-
-                if (!json.value(QStringLiteral("chat")).toBool(false)) {
-                    throw;
-                }
-
-                const auto id = json.value(QStringLiteral("id")).toString("-1");
-                if (i.baseName() != encryptTextByMD5(id, true)) {
-                    throw "聊天记录数据不匹配";
-                }
-
-                // 读取发送者
-                IChatObject* chatObj = nullptr;
-                const auto roleType = json.value(QStringLiteral("roleType")).toInt(-1);
-                switch (roleType) {
-                case IChatObject::Friend:
-                    chatObj = new MyFriend;
-                    chatObj->setID(id.toUInt());
-                    // TODO: 获取头像和名字
-                    break;
-                default:
-                    throw "无法识别消息发送对象";
-                }
-
-                // 生成聊天消息数据
-                MessageItem* message = new MessageItem(chatObj);
-                message->mTime = json.value(QStringLiteral("lastTime")).toString();
-                message->mMessage = json.value(QStringLiteral("lastMsg")).toString();
-                message->mReadFlag = json.value(QStringLiteral("readFlag")).toBool(true);
-                message->mUnreadMsgCount = json.value(QStringLiteral("unreadMsgCount")).toInt(0);
-
-                appendMessage(message);
-            } else {
-                crFile.close();
+                throw QStringLiteral("FILE_OPEN_FAILED: ") + i.filePath();
             }
 
-        } catch (const char* err) {
+            // TODO: 解密
+
+            jsonDoc = QJsonDocument::fromJson(crFile.readAll(), &jsonError);
+            crFile.close();
+
+            if (jsonError.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
+                throw QStringLiteral("DATA_FORMAT_ERROR: ") + jsonError.errorString();
+            }
+
+            json = jsonDoc.object();
+
+            if (!json.value(QStringLiteral("chat")).toBool(false)) {
+                continue;
+            }
+
+            // ID数据是否和文件名匹配，匹配说明数据可能为未篡改
+            const auto id = unsigned(json.value(QStringLiteral("id")).toDouble(0));
+            if (i.baseName() != encryptTextByMD5(QString::number(id), true)) {
+                throw QStringLiteral("DATA_MISMATCH: VALUE=id");
+            }
+
+            // 读取发送者
+            IChatObject* chatObj = nullptr;
+            const auto roleType = json.value(QStringLiteral("roleType")).toInt(-1);
+            switch (roleType) {
+            case IChatObject::Friend:
+                chatObj = new MyFriend;
+                chatObj->setID(id);
+                // TODO: 获取头像和名字
+                break;
+            default:
+                throw QStringLiteral("CHAT_OBJECT_NOT_FOUND: VALUE=%1").arg(roleType);
+            }
+
+            // 生成聊天消息数据
+            MessageItem* message = new MessageItem(chatObj, new QJsonObject(json));
+            message->update();
+
+            appendMessage(message);
+            emit loaded();
+        } catch (const QString& err) {
             // todo: log
             qDebug() << err;
         }
