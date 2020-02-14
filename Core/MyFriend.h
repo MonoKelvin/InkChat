@@ -16,7 +16,7 @@ class MyFriend : public IChatObject
 public:
     explicit MyFriend(QObject *parent = nullptr);
 
-    void fromJson(const QJsonObject& json) override;
+    void fromJson(const QJsonObject& json, bool cache = true) override;
     QJsonObject toJson(void) override;
 
     inline QString getRemark() const { return mRemark; }

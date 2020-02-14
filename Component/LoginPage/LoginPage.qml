@@ -47,7 +47,6 @@ ApplicationWindow {
         }
         onVerified: {
             loadingDialog.delayCloseDialog(qsTr("登录成功"), function () {
-
                 // 动作为：退出登录页面
                 action = LoginPage.Exit
                 // 重定向到主页面
@@ -76,10 +75,6 @@ ApplicationWindow {
 
     Component.onCompleted: {
         opacityAnimation.start()
-
-        //        // TODO: REMOVE THIS
-        //        ibAccount.text = "15007083506@qq.com";
-        //        ibPassword.text = "123456";
     }
 
     onClosing: {

@@ -160,7 +160,12 @@ Rectangle {
                     font.pixelSize: appTheme.stdTextSize
                     color: appTheme.mainTextColor
                     elide: Text.ElideRight
-                    text: msgItem.chatObject.nickName
+                    text: {
+                        if (msgItem.chatObject.roleType === ChatObject.Friend
+                                && msgItem.friend.remark !== '')
+                            return msgItem.friend.remark
+                        return msgItem.chatObject.nickName
+                    }
                 }
                 Text {
                     id: messageText

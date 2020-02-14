@@ -16,6 +16,9 @@ class LoginWithQQMail : public ILoginOperation
 {
     Q_OBJECT
 public:
+    explicit LoginWithQQMail(QObject* parent = nullptr);
+    ~LoginWithQQMail() override;
+
     /**
      * @brief 初始化登录页面。
      * @param qmlEngine QML应用的解析引擎

@@ -1,5 +1,5 @@
 ﻿import QtQuick 2.0
-import User 1.0
+import ChatObject 1.0
 import "qrc:/Element/"
 
 Item {
@@ -63,17 +63,16 @@ Item {
                 anchors.centerIn: parent
                 color: appTheme.primaryColor2
                 text: "ID:" + _id
-
             }
 
             MouseArea {
                 anchors.fill: parent
                 onPressed: {
-                    idText.text = _id;
-                    idText.selectAll();
-                    idText.copy();
-                    idText.deselect();
-                    idText.text = "ID:" + _id;
+                    idText.text = _id
+                    idText.selectAll()
+                    idText.copy()
+                    idText.deselect()
+                    idText.text = "ID:" + _id
                 }
             }
         }

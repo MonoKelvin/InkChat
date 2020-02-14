@@ -3,7 +3,8 @@
 
 #include <QCryptographicHash>
 #include <QPixmap>
-
+#include <functional>
+using std::function;
 /**
  * @brief 图片处理函数
  * @param pixmap 要处理的图片
@@ -64,5 +65,14 @@ inline const QString encryptTextByMD5(const QString& source, bool isHalf = false
 
 /** 向上取整，返回的是int类型 */
 #define Ceil(x) int(float(x)+0.500000f)
+
+/** 安全删除指针 */
+#define SAFE_DELETE(_Pointer_)   \
+    do {                         \
+        if (_Pointer_) {         \
+            delete _Pointer_;    \
+            _Pointer_ = nullptr; \
+        }                        \
+    } while (0)
 
 #endif // UTILITY_H

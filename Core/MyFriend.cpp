@@ -1,12 +1,8 @@
 ﻿#include "MyFriend.h"
 
 #include <Http/HttpRequest.h>
-#include <InkChatApi.h>
-#include <User.h>
 #include <Utility.h>
 
-#include <QJsonArray>
-#include <QJsonDocument>
 #include <QJsonObject>
 
 MyFriend::MyFriend(QObject* parent)
@@ -15,15 +11,19 @@ MyFriend::MyFriend(QObject* parent)
     mRoleType = ERoleType::Friend;
 }
 
-void MyFriend::fromJson(const QJsonObject& json)
+void MyFriend::fromJson(const QJsonObject& json, bool cache)
 {
     mRemark = json.value("remark").toString();
     mSubgroup = json.value("subgroup").toString();
 
-    return IChatObject::fromJson(json);
+    if (cache) {
+        cacheAvatar();
+    }
+
+    return IChatObject::fromJson(json, cache);
 }
 
-QJsonObject MyFriend::toJson()
+QJsonObject MyFriend::toJson(void)
 {
     auto json = IChatObject::toJson();
 

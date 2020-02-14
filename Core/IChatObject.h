@@ -14,6 +14,7 @@ class IChatObject : public QObject {
     Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar NOTIFY avatarChanged)
     Q_PROPERTY(EOnlineState onlineState READ getOnlineState WRITE setOnlineState NOTIFY onlineStateChanged)
     Q_PROPERTY(QString hostAddress READ getHostAddress CONSTANT)
+    Q_PROPERTY(ERoleType roleType READ getRoleType CONSTANT)
 
 public:
     explicit IChatObject(QObject* parent = nullptr);
@@ -40,11 +41,23 @@ public:
     };
     Q_ENUM(ERoleType)
 
-    virtual void fromJson(const QJsonObject& json) = 0;
-    virtual QJsonObject toJson(void) = 0;
+    /** 头像尺寸枚举 */
+    enum EAvatarSize {
+        AvatarSize45x45 = 45,
+        AvatarSize64x64 = 64,
+        AvatarSize128x128 = 128,
+        AvatarSize256x256 = 256,
+        AvatarSize512x512 = 512,
+
+        AvatarSizeThumb = AvatarSize45x45,
+        AvatarSizeMax = AvatarSize45x45
+    };
+    Q_ENUM(EAvatarSize)
 
     inline unsigned int getID(void) const { return mID; }
     inline void setID(unsigned int id) { mID = id; }
+
+    inline const QString getMD5(void) const { return mMD5; }
 
     inline bool getIsTop() const { return mIsTop; }
     inline void setIsTop(bool isTop)
@@ -67,13 +80,8 @@ public:
         emit signatureChanged();
     }
 
-    // todo
-    inline const QString getAvatar(void) const { return mAvatar; }
-    inline void setAvatar(const QString& value)
-    {
-        mAvatar = value;
-        emit avatarChanged();
-    }
+    const QString getAvatar(void) const;
+    void setAvatar(const QString& value);
 
     inline char getGender(void) const { return mGender; }
     inline void setGender(char gender)
@@ -92,14 +100,37 @@ public:
     inline QString getHostAddress(void) const { return mHostAddress; }
 
     inline ERoleType getRoleType(void) const { return mRoleType; }
-    inline void setRoleType(ERoleType roleType) { mRoleType = roleType; }
 
-public Q_SLOTS:
-    virtual bool cacheData() { return true; }
-    virtual bool loadData() { return true; }
+    /**
+     * @brief 解析json数据，一般是来自数据库的数据
+     * @param json json对象
+     * @param cache 是否缓存数据
+     * @note 任何出错信息将以throw的形式抛出，所以尽量在外部使用try-catch块捕捉
+     */
+    virtual void fromJson(const QJsonObject& json, bool cache = true) = 0;
+
+    /**
+     * @brief 将数据转换成json格式
+     * @param fetchIfNull 如果数据为空就先从数据库中获取，然后再返回，如果获取失败则返回空Json对象
+     * @return QJsonObject json对象
+     */
+    virtual QJsonObject toJson(/*bool fetchIfNull = true*/) = 0;
+
+public slots:
+    /** 从数据库中获取对象的头像并缓存
+     * @note 缓存或失败都会发送信号 @see avatarCached
+     */
+    virtual void cacheAvatar(EAvatarSize size = AvatarSizeThumb);
 
 Q_SIGNALS:
+    /** 信号：任何操作失败时发射的信号 */
     void failed(const QString&);
+
+    /** 信号：当头像缓存（可能缓存失败）后发送的信号
+     * @param 缓存成功ok = true，否则为false
+     * @param 一些消息或日志
+     */
+    void avatarCached(bool ok, const QString& msg);
 
     void isTopChanged();
     void nickNameChanged();
@@ -109,8 +140,18 @@ Q_SIGNALS:
     void onlineStateChanged();
 
 protected:
+    /**
+     * @brief 加载缓存数据
+     * @return 加成功返回true，否则返回false
+     */
+    virtual bool loadCache(void) { return true; }
+
+protected:
     // 用户ID
     unsigned int mID;
+
+    // 数据完整性校验
+    QString mMD5;
 
     // 性别。1男，0女，'-'（减号）保密或无（组和局域网）
     char mGender;
@@ -126,9 +167,6 @@ protected:
 
     // 签名或简介
     QString mSignature;
-
-    // 头像地址
-    QString mAvatar;
 
     // 在线状态
     EOnlineState mOnlineState;

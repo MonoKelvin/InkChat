@@ -1,35 +1,40 @@
 ﻿import QtQuick 2.14
-import User 1.0
+import ChatObject 1.0
 
 Item {
     id: groupItem
     height: 32
     clip: true
 
-    Behavior on height { NumberAnimation { easing.type: Easing.InOutQuad; duration: 350 } }
+    Behavior on height {
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 350
+        }
+    }
 
     Component.onCompleted: {
-        for ( var index = 0; index < _members.count; ++index ) {
-            var buf = _members.get(index);
+        for (var index = 0; index < _members.count; ++index) {
+            var buf = _members.get(index)
 
-            var data = {};
-            data._type = buf["type"];
-            data._id = buf["id"];
-            data._avatar = buf["avatar"];
-            data._onlineState = buf["onlineState"];
-            data._name = buf["name"];
-            data._signature = buf["signature"];
+            var data = {}
+            data._type = buf["type"]
+            data._id = buf["id"]
+            data._avatar = buf["avatar"]
+            data._onlineState = buf["onlineState"]
+            data._name = buf["name"]
+            data._signature = buf["signature"]
 
-            if(data._type === User.Stranger) {
-                data._friendCount = buf["friendCount"];
-                data._onlineDays = buf["onlineDays"];
+            if (data._type === ChatObject.Stranger) {
+                data._friendCount = buf["friendCount"]
+                data._onlineDays = buf["onlineDays"]
             }
 
-            friendListModel.append(data);
+            friendListModel.append(data)
         }
 
-        friendListView.height = _members.count * 85;
-        friendListView.y = -friendListView.height;
+        friendListView.height = _members.count * 85
+        friendListView.y = -friendListView.height
     }
 
     Item {
@@ -41,7 +46,8 @@ Item {
 
         ListView {
             id: friendListView
-            x: 0; y: 0
+            x: 0
+            y: 0
             width: parent.width
             height: 0
             spacing: appTheme.tinySpacing
@@ -52,7 +58,12 @@ Item {
                 id: friendListModel
             }
 
-            Behavior on y { NumberAnimation { easing.type: Easing.InOutQuad; duration: 350 } }
+            Behavior on y {
+                NumberAnimation {
+                    easing.type: Easing.InOutQuad
+                    duration: 350
+                }
+            }
 
             delegate: Loader {
                 width: friendListView.width
@@ -99,16 +110,14 @@ Item {
             onClicked: {
                 if (friendListModel.count) {
                     if (friendListView.visible) {
-                        friendListView.y = -friendListView.height;
-                        groupItem.height = 32;
+                        friendListView.y = -friendListView.height
+                        groupItem.height = 32
                     } else {
-                        friendListView.y = 0;
-                        groupItem.height = 32 + friendListView.height;
+                        friendListView.y = 0
+                        groupItem.height = 32 + friendListView.height
                     }
                 }
             }
-
         }
     }
 }
-

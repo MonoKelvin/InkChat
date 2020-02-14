@@ -19,7 +19,7 @@ Item {
         const curTime = t.getHours() + ":" + t.getMinutes()
 
         chatPage.refresh([{
-                              "avatar": null,
+                              "avatar": "file:///D:/GraduationProject/build-InkChatQml-Desktop_Qt_5_14_0_MinGW_64_bit-Debug/app/icon/default_avatar.png",
                               "messageType": ChatPageManage.Message,
                               "sender": ChatPageManage.Ta,
                               "name": "Tnoy Stack",

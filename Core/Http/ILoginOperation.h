@@ -22,14 +22,7 @@ public:
     {
     }
 
-    virtual ~ILoginOperation()
-    {
-        if (!mUser.isNull())
-        {
-            mUser.clear();
-            mUser = nullptr;
-        }
-    }
+    virtual ~ILoginOperation() {}
 
     /**
      * @brief 发起登录请求，验证是否登录成功
@@ -50,8 +43,6 @@ public:
      * @note 该方法不是必须继承实现的
      */
     virtual void forgetPassword(const QVariantMap &) {}
-
-    static inline const QSharedPointer<User> &getUser() { return mUser; }
 
 protected slots:
     /**
@@ -91,10 +82,6 @@ Q_SIGNALS:
      * @brief 信号：登录、注册失败时发送
      */
     void failed(const QString&);
-
-protected:
-    // 保存的用户信息
-    static QSharedPointer<User> mUser;
 
 private:
     Q_DISABLE_COPY(ILoginOperation)

@@ -1,16 +1,16 @@
 ﻿#include "User.h"
 
 #include <AppSettings.h>
-#include <InkChatApi.h>
 #include <MyFriend.h>
-#include <Utility.h>
 
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <thread>
-using std::thread;
+
+QMutex User::mMutex(QMutex::Recursive);
+User* User::mInstance = nullptr;
+User::_GarbageCollection User::_GC;
 
 User::User(QObject* parent)
     : IChatObject(parent)
@@ -24,19 +24,36 @@ User::~User()
     mFriends.clear();
 }
 
-void User::fromJson(const QJsonObject& json)
+void User::fromJson(const QJsonObject& json, bool cache)
 {
+    IChatObject::fromJson(json);
+
     mAccount = json.value(QStringLiteral("account")).toString();
     mPassword = json.value(QStringLiteral("password")).toString();
 
     QJsonArray friends = json.value(QStringLiteral("friends")).toArray();
     for (const auto i : friends) {
-        MyFriend* f = new MyFriend(this);
+        MyFriend* f = new MyFriend();
         f->fromJson(i.toObject());
         addFriend(f);
     }
 
-    return IChatObject::fromJson(json);
+    if (cache) {
+        const auto fileName = AppPaths::UserDataFile();
+        isFileExists(fileName, true); // 总是返回true
+
+        QFile file(fileName);
+        if (!file.open(QFile::WriteOnly | QFile::Text)) {
+            throw tr("用户数据文件打开失败！");
+        }
+
+        // TODO: ARS加密文件、MD5生成文件名
+
+        QJsonDocument jsonDoc(json);
+        if (file.write(jsonDoc.toJson(QJsonDocument::Indented /*Compact*/)) == -1) {
+            throw tr("用户数据文件写入失败！");
+        }
+    }
 }
 
 QJsonObject User::toJson()
@@ -60,74 +77,50 @@ QQmlListProperty<MyFriend> User::getFriends()
     return QQmlListProperty<MyFriend>(this, this->mFriends);
 }
 
+MyFriend* User::getFriendById(unsigned int id)
+{
+    for (int i = 0; i < mFriends.size(); i++) {
+        if (mFriends.at(i)->getID() == id) {
+            return mFriends[i];
+        }
+    }
+
+    return nullptr;
+}
+
 void User::addFriend(MyFriend* myFriend)
 {
     mFriends.append(myFriend);
 }
 
-bool User::cacheData()
-{
-    const auto fileName = USER_DATA_FILE(mID);
-    if (isFileExists(fileName, true)) {
-        std::thread writeFileThread([this, fileName] {
-            QFile file(fileName);
-            try {
-                if (!file.open(QFile::WriteOnly | QFile::Text)) {
-                    throw tr("用户数据文件打开失败！");
-                }
-
-                // TODO: ARS加密文件、MD5生成文件名
-
-                QJsonDocument jsonDoc(toJson());
-                if (file.write(jsonDoc.toJson(QJsonDocument::Indented /*Compact*/)) != -1) {
-                    throw tr("用户数据文件写入失败！");
-                }
-            } catch (const QString& msg) {
-                file.close();
-                // 暂停1s，防止主页面未加载完就显示错误提示
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                emit failed(msg);
-            }
-        });
-
-        writeFileThread.detach();
-    } else {
-        emit failed(tr("数据缓存失败！"));
-        return false;
-    }
-
-    return true;
-}
-
-bool User::loadData()
+bool User::loadCache()
 {
     // 当前登录的用户
-    auto currentUser = AppSettings::Instance()->value("user/currentUser");
-    if (currentUser.isNull()) {
+    mID = AppPaths::GetCurrentUserId();
+    if (mID == 0) {
         return false;
     }
 
-    mID = currentUser.toUInt();
-    const auto fileName = USER_DATA_FILE(mID);
+    const auto fileName = AppPaths::UserDataFile();
 
     // 如果有缓存就加载缓存数据，否则从数据库中获取
     if (isFileExists(fileName)) {
         QFile file(fileName);
         try {
             if (!file.open(QFile::ReadOnly | QFile::Text)) {
-                throw "读取用户缓存文件失败";
+                throw "FILE_READ_FAILED: " + fileName;
             }
 
             // TODO: 解密、校验数据是否被篡改
 
             auto jsonDoc = QJsonDocument::fromJson(file.readAll());
             if (jsonDoc.isNull() || !jsonDoc.isObject()) {
-                throw "解析用户缓存数据失败";
+                throw "FILE_PARSE_FAILED: " + fileName;
             } else {
                 fromJson(jsonDoc.object());
                 return true;
             }
-        } catch (const char* msg) {
+        } catch (const QString& msg) {
             file.close();
             // TODO: 日志
             qDebug() << msg;

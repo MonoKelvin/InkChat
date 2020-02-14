@@ -2,11 +2,14 @@
 #define MESSAGEITEM_H
 
 #include <IChatObject.h>
+#include <QJsonObject>
 
 #define MESSAGEITEM_INITIALIZA                                            \
     {                                                                     \
         qmlRegisterType<MessageItem>("MessageItem", 1, 0, "MessageItem"); \
     }
+
+class QFileInfo;
 
 class MessageItem : public QObject {
     Q_OBJECT
@@ -21,7 +24,6 @@ class MessageItem : public QObject {
 
 public:
     explicit MessageItem(QObject* parent = nullptr);
-    explicit MessageItem(IChatObject* chatObject, QJsonObject* jsonObject, QObject* parent = nullptr);
     ~MessageItem();
 
     inline bool getDirty(void) const { return mDirty; }
@@ -49,8 +51,18 @@ Q_SIGNALS:
     void unreadMsgCountChanged();
 
 public slots:
-    void cache();
     void update();
+
+private:
+    /**
+     * @brief 加载缓存消息
+     * @param fileInfo 文件信息
+     * @return bool 当不需要加载，即虽然内部有数据，但无需在界面中显示时返回false，否则返回true。
+     * @note 该函数内部解析出错将会抛出异常，所以外部应设置try-catch块
+     * @warning 另外，该函数只应该被调用一次用以初始化内部数据，当任何数据被修改需要更新到文件时
+     * 请使用 @see update 函数。
+     */
+    bool load(const QFileInfo& fileInfo);
 
 private:
     /** 脏位。只有内部数据修改后该值位true，否则位false，方便保存减少数据的保存 */
@@ -72,7 +84,7 @@ private:
     IChatObject* mChatObject;
 
     /** 保存一个JsonObject对象，方便写入数据保存到文件 */
-    QJsonObject* mJsonObject;
+    QJsonObject mJsonObject;
 };
 
 #endif // MESSAGEITEM_H

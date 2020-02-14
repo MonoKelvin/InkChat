@@ -1,7 +1,7 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtGraphicalEffects 1.0
-import User 1.0
+import ChatObject 1.0
 import "qrc:/Element/"
 
 Item {
@@ -11,26 +11,26 @@ Item {
                                    "groupName": "默认分组",
                                    "groupMaxCount": 200,
                                    "members": [{
-                                           "type": User.Friend,
+                                           "type": ChatObject.Friend,
                                            "id": 1,
                                            "avatar": "https://static.collectui.com/shots/3691930/sign-in-and-sign-up-views-dark-theme-large",
-                                           "onlineState": User.Online,
+                                           "onlineState": ChatObject.Online,
                                            "name": "墨痕轻琐",
                                            "signature": "阶前雨下客，窗后书中人"
                                        }, {
-                                           "type": User.Stranger,
+                                           "type": ChatObject.Stranger,
                                            "id": 1250,
                                            "avatar": "",
-                                           "onlineState": User.Online,
+                                           "onlineState": ChatObject.Online,
                                            "name": "一个小组",
                                            "signature": "组的介绍签名",
                                            "friendCount": 36,
                                            "onlineDays": 233
                                        }, {
-                                           "type": User.Stranger,
+                                           "type": ChatObject.Stranger,
                                            "id": 51310,
                                            "avatar": "",
-                                           "onlineState": User.Online,
+                                           "onlineState": ChatObject.Online,
                                            "name": "一个小组",
                                            "signature": "组的介绍签名",
                                            "friendCount": -1,
@@ -40,38 +40,38 @@ Item {
                                    "groupName": "我的好友",
                                    "groupMaxCount": 100,
                                    "members": [{
-                                           "type": User.Friend,
+                                           "type": ChatObject.Friend,
                                            "id": 1,
                                            "avatar": "",
-                                           "onlineState": User.Online,
+                                           "onlineState": ChatObject.Online,
                                            "name": "墨痕轻琐",
                                            "signature": "阶前雨下客，窗后书中人"
                                        }, {
-                                           "type": User.Friend,
+                                           "type": ChatObject.Friend,
                                            "id": 451,
                                            "avatar": "",
-                                           "onlineState": User.Offline,
+                                           "onlineState": ChatObject.Offline,
                                            "name": "墨痕轻琐",
                                            "signature": "阶前雨下客，窗后书中人"
                                        }, {
-                                           "type": User.Friend,
+                                           "type": ChatObject.Friend,
                                            "id": 234,
                                            "avatar": "",
-                                           "onlineState": User.Busy,
+                                           "onlineState": ChatObject.Busy,
                                            "name": "墨痕轻琐",
                                            "signature": "阶前雨下客，窗后书中人。阶前雨下客，窗后书中人"
                                        }, {
-                                           "type": User.Friend,
+                                           "type": ChatObject.Friend,
                                            "id": 34241,
                                            "avatar": "",
-                                           "onlineState": User.NoneState,
+                                           "onlineState": ChatObject.NoneState,
                                            "name": "墨痕轻琐",
                                            "signature": "阶前雨下客，窗后书中人。阶前雨下客，窗后书中人。阶前雨下客，窗后书中人"
                                        }, {
-                                           "type": User.Stranger,
+                                           "type": ChatObject.Stranger,
                                            "id": 52340,
                                            "avatar": "",
-                                           "onlineState": User.Online,
+                                           "onlineState": ChatObject.Online,
                                            "name": "一个小组",
                                            "signature": "组的介绍签名",
                                            "friendCount": -1,

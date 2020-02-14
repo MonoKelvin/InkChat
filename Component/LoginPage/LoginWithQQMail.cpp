@@ -7,19 +7,19 @@
 
 #include <QCoreApplication>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonParseError>
 #include <QQmlContext>
 
 QPointer<QQmlApplicationEngine> LoginWithQQMail::QmlEngine = nullptr;
-QSharedPointer<User> ILoginOperation::mUser = nullptr;
+
+LoginWithQQMail::LoginWithQQMail(QObject* parent)
+    : ILoginOperation(parent)
+{
+}
 
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
-    if (mUser.isNull()) {
-        mUser = QSharedPointer<User>(new User);
-    }
-
     HttpRequest* request = new HttpRequest;
     const auto postData = "account=" + mapping["account"].toString() + "&password=" + mapping["password"].toString();
     request->sendRequest(LoginByPasswordUrl, HttpRequest::POST, postData);
@@ -34,12 +34,15 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
                 json.insert(QStringLiteral("account"), mapping["account"].toString());
                 json.insert(QStringLiteral("password"), mapping["password"].toString());
 
-                mUser->fromJson(json);
-                mUser->cacheData();
-
-                AppSettings::Instance()->setValue("user/currentUser", mUser->mID);
-
-                emit verified();
+                try {
+                    const auto user = User::Instance();
+                    user->fromJson(json);
+                    AppSettings::Instance()->setValue("user/currentUser", user->mID);
+                    AppPaths::SetCurrentUserId(user->mID);
+                    emit verified();
+                } catch (const QString& msg) {
+                    emit failed(msg);
+                }
             } else {
                 emit failed(err.errorString());
             }
@@ -87,8 +90,16 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
         },
         Qt::QueuedConnection);
 
-    QmlEngine->rootContext()->setContextProperty(QStringLiteral("UserModel"), mUser.data());
+    qmlRegisterSingletonType<User>("UserModel", 1, 0, "UserModel", User::QmlSingletonTypeProvider);
+
     QmlEngine->load(url);
+}
+
+LoginWithQQMail::~LoginWithQQMail()
+{
+    if (!QmlEngine.isNull()) {
+        QmlEngine.clear();
+    }
 }
 
 void LoginWithQQMail::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QUrl& url)
@@ -108,39 +119,53 @@ void LoginWithQQMail::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QUrl
 
 bool LoginWithQQMail::autoLoginRequest()
 {
-    if (mUser.isNull()) {
-        mUser = QSharedPointer<User>(new User);
-    }
-
     const auto skip = AppSettings::Instance()->value("login/autoLogin", false).toBool();
     if (!skip) {
         return false;
     }
 
-    if (!mUser->loadData()) {
+    const auto user = User::Instance();
+
+    if (!user->loadCache()) {
         emit failed(tr("自动登录验证失败，请尝试手动登录"));
         return false;
     }
 
     // 自动登录
     QVariantMap data;
-    data.insert("account", mUser->mAccount);
-    data.insert("password", mUser->mPassword);
+    data.insert("account", user->mAccount);
+    data.insert("password", user->mPassword);
     emit autoLogin(data);
 
     // Http请求
     HttpRequest* request = new HttpRequest;
 
     // 封装请求数据
-    const auto postData = "id=" + QString::number(mUser->mID) + "&account=" + mUser->mAccount + "&password=" + mUser->mPassword;
+    const auto postData = "id=" + QString::number(user->mID) + "&account=" + user->mAccount + "&password=" + user->mPassword;
     request->sendRequest(LoginByIdUrl, HttpRequest::POST, postData);
 
     // 验证是否自动登录成功
-    connect(request, &HttpRequest::request, [this](bool success, const QByteArray& jsonData) {
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
+    connect(request, &HttpRequest::request, [user, this](bool success, const QByteArray& jsonData) {
+        QJsonParseError err;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);
         if (success) {
-            if (jsonDoc.object().contains(QStringLiteral("success"))) {
-                emit verified();
+            if (err.error == QJsonParseError::NoError) {
+                auto json = jsonDoc.object();
+
+                json.insert(QStringLiteral("account"), user->mAccount);
+                json.insert(QStringLiteral("password"), user->mPassword);
+
+                try {
+                    user->fromJson(json);
+                    AppSettings::Instance()->setValue("user/currentUser", user->mID);
+                    AppPaths::SetCurrentUserId(user->mID);
+                    emit verified();
+                } catch (const QString& msg) {
+                    emit failed(msg);
+                }
+
+            } else {
+                emit failed(err.errorString());
             }
         } else {
             EMIT_FAILED_MESSAGE(jsonDoc, failed);

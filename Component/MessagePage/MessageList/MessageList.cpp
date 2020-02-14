@@ -2,13 +2,9 @@
 
 #include <InkChatApi.h>
 #include <MessageItem.h>
-#include <MyFriend.h>
 #include <Utility.h>
 
 #include <QDir>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QMutex>
 
 MessageList::MessageList(QObject* parent)
@@ -22,10 +18,7 @@ MessageList::~MessageList()
     qDeleteAll(mMessages.begin(), mMessages.end());
     mMessages.clear();
 
-    if (mMutex) {
-        delete mMutex;
-        mMutex = nullptr;
-    }
+    SAFE_DELETE(mMutex);
 }
 
 bool MessageList::ariseMessage(MessageItem* message, bool ignoreTop)
@@ -168,63 +161,21 @@ void MessageList::load(const QString& crFolder /*, MessageList::EMessageFilter f
 {
     isDirExists(crFolder, true);
 
-    QJsonParseError jsonError;
-    QJsonDocument jsonDoc;
-    QJsonObject json;
-
-    //    QFile crFile;
     const QDir dir(crFolder);
     auto list = dir.entryInfoList(QStringList() << "*.cr", QDir::Files | QDir::Hidden);
-    for (auto i : list) {
-        QFile crFile(i.filePath());
+    for (auto fileInfo : list) {
+        MessageItem* message = new MessageItem();
+
         try {
-            if (!crFile.open(QFile::ReadOnly | QFile::Text)) {
-                crFile.close();
-                throw QStringLiteral("FILE_OPEN_FAILED: ") + i.filePath();
-            }
-
-            // TODO: 解密
-
-            jsonDoc = QJsonDocument::fromJson(crFile.readAll(), &jsonError);
-            crFile.close();
-
-            if (jsonError.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
-                throw QStringLiteral("DATA_FORMAT_ERROR: ") + jsonError.errorString();
-            }
-
-            json = jsonDoc.object();
-
-            if (!json.value(QStringLiteral("chat")).toBool(false)) {
+            if (!message->load(fileInfo)) {
+                SAFE_DELETE(message);
                 continue;
             }
-
-            // ID数据是否和文件名匹配，匹配说明数据可能为未篡改
-            const auto id = unsigned(json.value(QStringLiteral("id")).toDouble(0));
-            if (i.baseName() != encryptTextByMD5(QString::number(id), true)) {
-                throw QStringLiteral("DATA_MISMATCH: VALUE=id");
-            }
-
-            // 读取发送者
-            IChatObject* chatObj = nullptr;
-            const auto roleType = json.value(QStringLiteral("roleType")).toInt(-1);
-            switch (roleType) {
-            case IChatObject::Friend:
-                chatObj = new MyFriend;
-                chatObj->setID(id);
-                // TODO: 获取头像和名字
-                break;
-            default:
-                throw QStringLiteral("CHAT_OBJECT_NOT_FOUND: VALUE=%1").arg(roleType);
-            }
-
-            // 生成聊天消息数据
-            MessageItem* message = new MessageItem(chatObj, new QJsonObject(json));
-            message->update();
 
             appendMessage(message);
             emit loaded();
         } catch (const QString& err) {
-            // todo: log
+            SAFE_DELETE(message);
             qDebug() << err;
         }
     }

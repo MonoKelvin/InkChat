@@ -8,7 +8,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-int main(int argc, char* argv[])
+
+int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -21,7 +22,15 @@ int main(int argc, char* argv[])
     app.setFont(font);
 #endif
 
+    {
+        auto user = AppSettings::Instance()->value("user/currentUser", 0).toUInt();
+        if (user != 0) {
+            AppPaths::SetCurrentUserId(user);
+        }
+    }
+
     // 注册C++类型到QML
+    // qmlRegisterSingletonType<User>("Singleton.User", 1, 0, "User");
     qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is a interface");
 
     LOGINOPERATION_INITIALIZA

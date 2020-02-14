@@ -1,5 +1,7 @@
 ﻿#include "AppSettings.h"
 
+unsigned int AppPaths::CurrentUser = 0;
+
 AppSettings* AppSettings::mInstance = nullptr;
 AppSettings::_GarbageCollection AppSettings::_GC;
 

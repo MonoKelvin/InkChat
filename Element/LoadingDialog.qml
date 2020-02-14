@@ -13,7 +13,7 @@ Rectangle {
     z: Infinity
 
     // 取消信号，只有在非模态对话框状态点击屏幕后才会发出。
-    signal cancel();
+    signal cancel
 
     Behavior on opacity {
         NumberAnimation {
@@ -23,38 +23,37 @@ Rectangle {
 
     // 显示对话框，并设置文本内容
     function showDialog(parent, text) {
-        contentText.text = text;
-        background.anchors.fill = parent;
-        background.visible = true;
-        background.opacity = 1;
+        contentText.text = text
+        background.anchors.fill = parent
+        background.visible = true
+        background.opacity = 1
     }
 
     // 立即关闭
     function closeDialog() {
-        background.opacity = 0;
-        background.visible = false;
+        background.opacity = 0
+        background.visible = false
     }
 
     // 延迟关闭，可以设置一个文本。之后调用then函数
-    function delayCloseDialog(text, then, delay = 1000) {
-        contentText.text = text;
+    function delayCloseDialog(text, then, delay) {
+        contentText.text = text
 
-        closeTimer.triggered.connect(function (){
-            background.visible = false;
-            if(typeof then !== "undefined") {
-                then();
+        closeTimer.triggered.connect(function () {
+            background.visible = false
+            if (then !== undefined) {
+                then()
             }
-        });
+        })
 
-        closeTimer.interval = delay;
-        closeTimer.start();
+        closeTimer.interval = (typeof delay !== "number") ? 1000 : delay
+        closeTimer.start()
     }
 
-    onVisibleChanged: visible?canvasTimer.start():canvasTimer.stop();
+    onVisibleChanged: visible ? canvasTimer.start() : canvasTimer.stop()
 
     Timer {
         id: closeTimer
-        interval: 1000
     }
 
     Rectangle {
@@ -73,33 +72,35 @@ Rectangle {
 
         Canvas {
             id: canvas
-            width: 2*(loading.cRadius + loading.dotSize)
+            width: 2 * (loading.cRadius + loading.dotSize)
             height: width
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: appTheme.stdSpacing
 
             onPaint: {
-                var ctx = canvas.getContext("2d");
-                const r = loading.dotSize/2;
+                var ctx = canvas.getContext("2d")
+                const r = loading.dotSize / 2
 
                 // 清理画布
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
 
                 // 绘制圆圈
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = Utility.alpha(appTheme.mainTextColor, 0.1);
-                ctx.beginPath();
-                ctx.arc(loading.cRadius + r, loading.cRadius + r, loading.cRadius, 0, 360, true);
-                ctx.stroke();
+                ctx.lineWidth = 1.5
+                ctx.strokeStyle = Utility.alpha(appTheme.mainTextColor, 0.1)
+                ctx.beginPath()
+                ctx.arc(loading.cRadius + r, loading.cRadius + r,
+                        loading.cRadius, 0, 360, true)
+                ctx.stroke()
 
                 // 绘制圆点
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = appTheme.backgroundColor;
-                ctx.fillStyle = background.dotColor;
-                ctx.beginPath();
-                ctx.ellipse(loading.dotX - r, loading.dotY - r, loading.dotSize, loading.dotSize);
-                ctx.fill();
+                ctx.lineWidth = 1.5
+                ctx.strokeStyle = appTheme.backgroundColor
+                ctx.fillStyle = background.dotColor
+                ctx.beginPath()
+                ctx.ellipse(loading.dotX - r, loading.dotY - r,
+                            loading.dotSize, loading.dotSize)
+                ctx.fill()
             }
 
             Timer {
@@ -107,22 +108,24 @@ Rectangle {
                 interval: 10
                 repeat: true
                 onTriggered: {
-                    const r = loading.dotSize/2;
-                    loading.dotX = r + loading.cRadius * (1 + Math.cos(loading.curAngle));
-                    loading.dotY = r + loading.cRadius * (1 + Math.sin(loading.curAngle));
+                    const r = loading.dotSize / 2
+                    loading.dotX = r + loading.cRadius * (1 + Math.cos(
+                                                              loading.curAngle))
+                    loading.dotY = r + loading.cRadius * (1 + Math.sin(
+                                                              loading.curAngle))
 
                     // 控制转速（到底部加速，到顶部减速）
-                    loading.curAngle += 2 / (70 - loading.dotY);
-                    if(loading.curAngle >= 2*Math.PI) {
-                        loading.curAngle = 0.0;
+                    loading.curAngle += 2 / (70 - loading.dotY)
+                    if (loading.curAngle >= 2 * Math.PI) {
+                        loading.curAngle = 0.0
                     }
 
-                    canvas.requestPaint();
+                    canvas.requestPaint()
                 }
             }
 
             Component.onCompleted: {
-                canvasTimer.start();
+                canvasTimer.start()
             }
         }
 
@@ -140,11 +143,11 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        propagateComposedEvents: !modality
+        preventStealing: true
         onClicked: {
-            if(!modality) {
-                background.closeDialog();
-                background.cancel();
+            if (!modality) {
+                background.closeDialog()
+                background.cancel()
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.7
 import QtQuick.Window 2.3
 import QtGraphicalEffects 1.0
+import UserModel 1.0
 import "qrc:/Element/"
 import "qrc:/Navigation/"
 import "qrc:/js/js/Utility.js" as Utility
@@ -47,10 +48,6 @@ Window {
         height: parent.height
         userAvatar: UserModel.avatar
         nickName: UserModel.nickName
-
-        Component.onCompleted: {
-            UserModel.loadData()
-        }
 
         onNavigate: {
             switch (index) {
