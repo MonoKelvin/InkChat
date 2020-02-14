@@ -24,18 +24,35 @@ function verifyLoginById($id, $account, $password)
         die;
     }
     $res = $db->getRow('SELECT * FROM `User` WHERE `ID`=' . $id);
-    $db->close();
 
     if ($res) {
         if ($res['Account'] !== $account || $res['Password'] !== $password) {
+            $db->close();
             errorReply(702);
             die;
         }
 
-        reply(['success' => 1]);
+        $res['Friends'] = $db->getAll(
+            'SELECT `id`,`md5`,`hostAddress`,`remark`,`top`,`nickName`,
+            `signature`,`gender`,`subgroup`
+            FROM GetUserFriends
+            WHERE `uid`=' . $id
+        );
+
+        reply([
+            'id' => $res['ID'],
+            'md5' => $res['MD5'],
+            'nickName' => $res['NickName'],
+            'signature' => $res['Signature'],
+            'gender' => $res['Gender'],
+            'hostAddress' => $res['HostAddress'],
+            'friends' => $res['Friends'],
+        ]);
     } else {
         errorReply(701);
     }
+
+    $db->close();
 }
 
 /**
@@ -48,7 +65,6 @@ function verifyLoginById($id, $account, $password)
  *      'nickName',
  *      'signature',
  *      'gender',
- *      'avatar'
  * ]
  */
 function verifyLoginByPassword($account, $password)
@@ -66,23 +82,32 @@ function verifyLoginByPassword($account, $password)
         die;
     }
     $res = $db->getRow("SELECT * FROM `User` WHERE `Account`='$account' AND `Password`='$password'");
-    $db->close();
 
     if (@$res['Account'] !== $account || @$res['Password'] !== $password) {
+        $db->close();
         errorReply(702);
         die;
     }
 
+    $res['Friends'] = $db->getAll(
+        'SELECT `id`,`hostAddress`,`remark`,`top`,`nickName`,`md5`,`signature`,`gender`,`subgroup`
+        FROM GetUserFriends
+        WHERE `uid`=' . $res['ID']
+    );
+
+    $db->close();
+
     // 模拟延迟1s
     // sleep(1);
 
-    // 获取信息
     reply([
         'id' => $res['ID'],
+        'md5' => $res['MD5'],
         'nickName' => $res['NickName'],
         'signature' => $res['Signature'],
         'gender' => $res['Gender'],
-        'avatar' => $res['Avatar']
+        'hostAddress' => $res['HostAddress'],
+        'friends' => $res['Friends'],
     ]);
 }
 
@@ -91,22 +116,6 @@ function verifyLoginByPassword($account, $password)
  * 查询用户的所有好友信息
  * @param int $id 用户id
  * @return array 直接返回每个好友对象
- *
- * ```json
- * [
- *      {
- *          "id": 2,
- *          "hostAddress": "192.64.12.7",
- *          "isTop": true,
- *          "gender": "1",
- *          "remark": "我的好友",
- *          "nickName": "MonoKelvin",
- *          "signature": "没有签名...",
- *          "thumb": "../cache/avatar/94f3f838e8c51ac0eac6c74588403c25.png"
- *      },
- *      { }
- * ]
- * ```
  * @see getUsersFriendsForGroup
  */
 function getUserFriends($id)
@@ -119,11 +128,9 @@ function getUserFriends($id)
         die;
     }
     $res = $db->getAll(
-        'SELECT `fid` as `id`,`hostAddress` as `hostAddress`,
-        `remark` as `remark`,`top` as `top`,`nickName` as `nickName`,
-        `signature` as `signature`,`gender` as `gender`,`subgroup` as `subgroup`
+        'SELECT `id`,`md5`,`hostAddress`,`remark`,`top`,`nickName`,`signature`,`gender`,`subgroup`
         FROM GetUserFriends
-        WHERE `UID`=' . $id
+        WHERE `uid`=' . $id
     );
     $db->close();
 
@@ -135,28 +142,6 @@ function getUserFriends($id)
  * 查询用户的所有好友信息，得到以组为形式的json对象数组
  * @param int $id 用户id
  * @return array 数组形式是按好友所在组分的
- *
- * ```json
- * [
- *   {
- *      "subgroup": "groupName",
- *      "members": [
- *           {
- *               "id": 2,
- *               "hostAddress": "192.64.12.7",
- *               "isTop": true,
- *               "gender": "1",
- *               "remark": "我的好友",
- *               "nickName": "MonoKelvin",
- *               "signature": "没有签名...",
- *               "thumb": "../cache/avatar/94f3f838e8c51ac0eac6c74588403c25.png"
- *           },
- *           { }
- *      ]
- *   },
- *   { }
- * ]
- * ```
  * @see getUsersFriends
  */
 function getUserFriendsForGroup($id)
@@ -169,16 +154,16 @@ function getUserFriendsForGroup($id)
         die;
     }
     $res = $db->getAll(
-        'SELECT `FID`,`HostAddress`,`Remark`,`Top`,`NickName`,`Signature`,`Gender`,`Subgroup`
+        'SELECT `id`,`md5`,`hostAddress`,`remark`,`top`,`nickName`,`signature`,`gender`,`subgroup`
         FROM GetUserFriends
-        WHERE `UID`=' . $id
+        WHERE `uid`=' . $id
     );
     $db->close();
 
     $group = [];
     foreach ($res as $_ => $value) {
-        $subgroup = $value['Subgroup'];
-        unset($value['Subgroup']);
+        $subgroup = $value['subgroup'];
+        unset($value['subgroup']);
 
         // 将用户分配到分组中
         for ($i = 0; $i < count($group); $i++) {

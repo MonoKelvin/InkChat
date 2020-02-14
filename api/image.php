@@ -1,8 +1,9 @@
 <?php
+require_once(__DIR__ . '\utility.php');
 
 $user = @$_GET['user'];
-$type = @$_GET['type'];
 $id = @$_GET['id'];
+$size = @$_GET['size'];
 
 // 如果是用户
 if ($user == 'user') {
@@ -11,15 +12,14 @@ if ($user == 'user') {
         header('Content-Type:image/png');
         $imgsrc = 'http://inkchat.com/images/avatar/' . $id . '.png';
 
-        if ($type == 'avatar') {
+        if ($size >= 512) {
             if (!@readfile($imgsrc)) {
-                header('HTTP/1.1 404 Not Found');
-                header('Status: 404 Not Found');
+                errorReply(404);
                 exit;
             }
-        } else if ($type == 'thumb') {
+        } else {
             // 如果要获取的是缩略图，则处理图片为 45*45
-            avatarResize($imgsrc);
+            avatarResize($imgsrc, $size);
         }
     }
 }
@@ -45,10 +45,10 @@ function avatarResize($file_name, $newsize = 45)
     // 第二个元素 (索引值 1) 是图片的宽度。
     // 第三个元素 (索引值 2) 是图片的文件格式，其值 1 为 GIF 格式、 2 为 JPEG/JPG 格式、3 为 PNG 格式。
     // 第四个元素 (索引值 3) 为图片的高与宽字符串，height=xxx width=yyy。
-    $size = @getimagesize($file_name) or die('Read image file is failed');
+    $size = @getimagesize($file_name) or (errorReply(404) and die);
 
     // 声明一个真彩图片资源，此时只是一个有宽高的黑白图片。
-    $newimg = @imagecreatetruecolor($newsize, $newsize) or die('Cannot initialize a GD image stream');
+    $newimg = @imagecreatetruecolor($newsize, $newsize) or (errorReply(651) and die);
 
     // 根据图片的格式使用不同的方法创建为新的图片
     if ($size[2] == 1) $src = imagecreatefromgif($file_name);
