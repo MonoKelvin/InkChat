@@ -12,8 +12,7 @@ Rectangle {
     signal itemClicked(var msgId)
 
     Component.onCompleted: {
-        listModel.load(
-                    "D:/GraduationProject/build-InkChatQml-Desktop_Qt_5_14_0_MinGW_64_bit-Debug/data/1/cache/message")
+        listModel.load("./data/1/message")
     }
 
     Text {
@@ -56,7 +55,6 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width: appTheme.stdWidgetHeight
             height: appTheme.stdWidgetHeight
-            checked: true //test
         }
     }
 
@@ -81,7 +79,6 @@ Rectangle {
 
             function onReadFlagChanged() {
                 if (msgItem.readFlag) {
-                    msgBadge.width = 0
                     msgBadge.visible = false
                 } else {
                     if (msgItem.unreadMsgCount <= 0) {
@@ -89,7 +86,6 @@ Rectangle {
                     }
 
                     msgBadge.visible = true
-                    msgBadge.width = msgBadge.contentWidth + 10
                 }
             }
 
@@ -123,6 +119,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: appTheme.stdSpacing
                 onlineState: msgItem.chatObject.onlineState
+                imageSource: msgItem.chatObject.avatar
 
                 onOnlineStateChanged: {
                     switch (onlineState) {
@@ -162,8 +159,8 @@ Rectangle {
                     elide: Text.ElideRight
                     text: {
                         if (msgItem.chatObject.roleType === ChatObject.Friend
-                                && msgItem.friend.remark !== '')
-                            return msgItem.friend.remark
+                                && msgItem.chatObject.remark !== '')
+                            return msgItem.chatObject.remark
                         return msgItem.chatObject.nickName
                     }
                 }
@@ -209,8 +206,8 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     msgListView.currentIndex = index
-                    messageList.itemClicked(msgItem.chatObject.id)
-                    msgItem.unreadMsgCount = 0
+                    // messageList.itemClicked(msgItem.chatObject.id)
+                    msgItem.readFlag = true
                 }
             }
         }

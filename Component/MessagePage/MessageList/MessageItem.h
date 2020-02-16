@@ -40,7 +40,11 @@ public:
     inline QString getMessage(void) const { return mMessage; }
 
     inline bool getReadFlag(void) const { return mReadFlag; }
-    inline void setReadFlag(bool readFlag) { mReadFlag = readFlag; }
+    inline void setReadFlag(bool readFlag)
+    {
+        mReadFlag = readFlag;
+        emit readFlagChanged();
+    }
 
     inline int getUnreadMsgCount(void) const { return mUnreadMsgCount; }
     void setUnreadMsgCount(int count);

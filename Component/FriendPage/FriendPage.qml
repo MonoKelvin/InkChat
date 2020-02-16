@@ -13,7 +13,7 @@ Item {
                                    "members": [{
                                            "type": ChatObject.Friend,
                                            "id": 1,
-                                           "avatar": "https://static.collectui.com/shots/3691930/sign-in-and-sign-up-views-dark-theme-large",
+                                           "avatar": "",
                                            "onlineState": ChatObject.Online,
                                            "name": "墨痕轻琐",
                                            "signature": "阶前雨下客，窗后书中人"

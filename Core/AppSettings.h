@@ -43,49 +43,49 @@ public:
     // 用户头像
     inline static const QString UserAvatarUrl(IChatObject::EAvatarSize size)
     {
-        return QStringLiteral("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(CurrentUser);
+        return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(CurrentUser);
     }
 
     // 群聊头像
     inline static const QString GroupAvatarUrl(IChatObject::EAvatarSize size)
     {
-        return QStringLiteral("http://inkchat.com/api/image.php?user=group&size=%1&id=%2").arg(size).arg(CurrentUser);
+        return QString("http://inkchat.com/api/image.php?user=group&size=%1&id=%2").arg(size).arg(CurrentUser);
     }
 
     // 用户聊天记录文件夹
     inline static const QString MessageCacheDir()
     {
-        return UserDir() + QStringLiteral("/cache/message/");
+        return UserDir() + QStringLiteral("/message/");
     }
 
     // 用户缓存头像文件夹
-    inline static const QString AvatarCacheDir(const QString& md5)
+    inline static const QString AvatarCacheFile(int roleType, unsigned int id)
     {
-        return UserDir() + QStringLiteral("/cache/avatar/") + md5;
+        return UserDir() + QStringLiteral("/avatar/%1-%2").arg(roleType).arg(id);
     }
 
     // 聊天缓存图片文件夹
     inline static const QString ImageCacheDir()
     {
-        return UserDir() + QStringLiteral("/cache/image/");
+        return UserDir() + QStringLiteral("/image/");
     }
 
     // 聊天缓存文件文件夹
     inline static const QString FileCacheDir()
     {
-        return UserDir() + QStringLiteral("/cache/file/");
+        return UserDir() + QStringLiteral("/file/");
     }
 
     // 聊天缓存视频文件夹
     inline static const QString VideoCacheDir()
     {
-        return UserDir() + QStringLiteral("/cache/video/");
+        return UserDir() + QStringLiteral("/video/");
     }
 
     // 聊天缓存音频文件夹
     inline static const QString AudioCacheDir()
     {
-        return UserDir() + QStringLiteral("/cache/audio/");
+        return UserDir() + QStringLiteral("/audio/");
     }
 
     inline static void SetCurrentUserId(unsigned int id)

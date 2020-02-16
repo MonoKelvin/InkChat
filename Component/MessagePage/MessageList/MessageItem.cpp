@@ -70,9 +70,9 @@ bool MessageItem::load(const QFileInfo& fileInfo)
 
     // 读取发送者
     const auto roleType = mJsonObject.value(QStringLiteral("roleType")).toInt(-1);
-    switch (roleType) {
+    switch (roleType & IChatObject::AllUser) {
     case IChatObject::Friend:
-        mChatObject = User::Instance()->getFriendById(mJsonObject.value("id").toString().toUInt());
+        mChatObject = User::Instance()->getFriendById(unsigned(mJsonObject.value("id").toInt()));
         break;
     default:
         throw QStringLiteral("CHAT_OBJECT_INVALID: VALUE=%1").arg(roleType);

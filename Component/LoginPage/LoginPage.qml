@@ -64,12 +64,12 @@ ApplicationWindow {
             isRequesting = false
         }
         onAutoLogin: {
-            ibAccount.text = data["account"]
-            ibPassword.text = data["password"]
+            loadingDialog.showDialog(window.contentItem, qsTr("自动登录中..."))
+            ibAccount.text = account
+            ibPassword.text = password
         }
         Component.onCompleted: {
-            if (autoLoginRequest())
-                loadingDialog.showDialog(window.contentItem, qsTr("自动登录中..."))
+            loginRequest()
         }
     }
 
@@ -103,8 +103,7 @@ ApplicationWindow {
         // todo: 替换成logo
         Image {
             id: appLogo
-            //            source: "http://inkchat.com/api/image.php?user=user&type=avatar&id=1"
-            source: "https://hbimg.huabanimg.com/e6cf965a1906a001fdfc74d5a575408b396492d6c20a8-Ad4g9x_fw658"
+            source: "http://inkchat.com/api/image.php?user=user&size=80&id=1"
             width: parent.width
             fillMode: Image.PreserveAspectFit
             height: 140

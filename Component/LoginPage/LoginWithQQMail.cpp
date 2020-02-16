@@ -2,14 +2,11 @@
 
 #include <AppSettings.h>
 #include <Http/HttpRequest.h>
-#include <InkChatApi.h>
-#include <User.h>
 
 #include <QCoreApplication>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QQmlContext>
+//#include <QQmlContext>
 
 QPointer<QQmlApplicationEngine> LoginWithQQMail::QmlEngine = nullptr;
 
@@ -18,26 +15,54 @@ LoginWithQQMail::LoginWithQQMail(QObject* parent)
 {
 }
 
+LoginWithQQMail::~LoginWithQQMail()
+{
+    if (!QmlEngine.isNull()) {
+        QmlEngine.clear();
+    }
+}
+
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
-    HttpRequest* request = new HttpRequest;
-    const auto postData = "account=" + mapping["account"].toString() + "&password=" + mapping["password"].toString();
-    request->sendRequest(LoginByPasswordUrl, HttpRequest::POST, postData);
+    static bool skip = AppSettings::Instance()->value(QLatin1String("login/autoLogin"), false).toBool();
+    const auto user = User::Instance();
+    auto account = mapping[QStringLiteral("account")].toString();
+    auto password = mapping[QStringLiteral("password")].toString();
 
-    connect(request, &HttpRequest::request, [this, mapping](bool success, const QByteArray& jsonData) {
+    HttpRequest* request = new HttpRequest;
+
+    // 判断是否可以跳过登录
+    if (skip && user->hasCache()) {
+        // 当用户取消自动登录时，应该强制为不可跳过登录
+        skip = false;
+
+        account = user->mAccount;
+        password = user->mPassword;
+        emit autoLogin(account, password);
+
+        // 封装请求数据
+        const auto postData
+            = "id=" + QString::number(user->mID) + "&account=" + account + "&password=" + password;
+        request->sendRequest(LoginByIdUrl, HttpRequest::POST, postData);
+    } else {
+        const auto postData = "account=" + mapping["account"].toString() + "&password=" + mapping["password"].toString();
+        request->sendRequest(LoginByPasswordUrl, HttpRequest::POST, postData);
+    }
+
+    connect(request, &HttpRequest::request, [this, account, password](bool success, const QByteArray& jsonData) {
         QJsonParseError err;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);
         if (success) {
             if (err.error == QJsonParseError::NoError) {
                 auto json = jsonDoc.object();
 
-                json.insert(QStringLiteral("account"), mapping["account"].toString());
-                json.insert(QStringLiteral("password"), mapping["password"].toString());
+                json.insert(QLatin1String("account"), account);
+                json.insert(QLatin1String("password"), password);
 
                 try {
                     const auto user = User::Instance();
                     user->fromJson(json);
-                    AppSettings::Instance()->setValue("user/currentUser", user->mID);
+                    AppSettings::Instance()->setValue(QStringLiteral("user/currentUser"), user->mID);
                     AppPaths::SetCurrentUserId(user->mID);
                     emit verified();
                 } catch (const QString& msg) {
@@ -95,13 +120,6 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
     QmlEngine->load(url);
 }
 
-LoginWithQQMail::~LoginWithQQMail()
-{
-    if (!QmlEngine.isNull()) {
-        QmlEngine.clear();
-    }
-}
-
 void LoginWithQQMail::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QUrl& url)
 {
     QmlEngine = qmlEngine;
@@ -115,62 +133,4 @@ void LoginWithQQMail::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QUrl
     //     Qt::QueuedConnection);
 
     QmlEngine->load(url);
-}
-
-bool LoginWithQQMail::autoLoginRequest()
-{
-    const auto skip = AppSettings::Instance()->value("login/autoLogin", false).toBool();
-    if (!skip) {
-        return false;
-    }
-
-    const auto user = User::Instance();
-
-    if (!user->loadCache()) {
-        emit failed(tr("自动登录验证失败，请尝试手动登录"));
-        return false;
-    }
-
-    // 自动登录
-    QVariantMap data;
-    data.insert("account", user->mAccount);
-    data.insert("password", user->mPassword);
-    emit autoLogin(data);
-
-    // Http请求
-    HttpRequest* request = new HttpRequest;
-
-    // 封装请求数据
-    const auto postData = "id=" + QString::number(user->mID) + "&account=" + user->mAccount + "&password=" + user->mPassword;
-    request->sendRequest(LoginByIdUrl, HttpRequest::POST, postData);
-
-    // 验证是否自动登录成功
-    connect(request, &HttpRequest::request, [user, this](bool success, const QByteArray& jsonData) {
-        QJsonParseError err;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);
-        if (success) {
-            if (err.error == QJsonParseError::NoError) {
-                auto json = jsonDoc.object();
-
-                json.insert(QStringLiteral("account"), user->mAccount);
-                json.insert(QStringLiteral("password"), user->mPassword);
-
-                try {
-                    user->fromJson(json);
-                    AppSettings::Instance()->setValue("user/currentUser", user->mID);
-                    AppPaths::SetCurrentUserId(user->mID);
-                    emit verified();
-                } catch (const QString& msg) {
-                    emit failed(msg);
-                }
-
-            } else {
-                emit failed(err.errorString());
-            }
-        } else {
-            EMIT_FAILED_MESSAGE(jsonDoc, failed);
-        }
-    });
-
-    return true;
 }

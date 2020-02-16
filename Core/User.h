@@ -2,9 +2,9 @@
 #define USER_H
 
 #include <IChatObject.h>
-#include <Utility.h>
 
 #include <QMutex>
+#include <QPointer>
 #include <QQmlListProperty>
 
 class QJSEngine;
@@ -25,7 +25,8 @@ public:
 
     void fromJson(const QJsonObject& json, bool cache = true) override;
     QJsonObject toJson() override;
-    bool loadCache() override;
+
+    bool hasCache();
 
     inline const QString getAccount(void) const { return mAccount; }
     inline void setAccount(const QString& value) { mAccount = value; }
@@ -41,9 +42,9 @@ public:
     inline static User* Instance()
     {
         // 防止多线程多次构造对象
-        if (nullptr == mInstance) {
+        if (mInstance.isNull()) {
             mMutex.lock();
-            if (nullptr == mInstance) {
+            if (mInstance.isNull()) {
                 mInstance = new User;
             }
             mMutex.unlock();
@@ -70,11 +71,10 @@ private:
         ~_GarbageCollection()
         {
             // 防止渲染线程和主线程多次析构对象
-            if (mInstance) {
+            if (!mInstance.isNull()) {
                 mMutex.lock();
-                if (mInstance) {
-                    delete mInstance;
-                    mInstance = nullptr;
+                if (!mInstance.isNull()) {
+                    mInstance.clear();
                 }
                 mMutex.unlock();
             }
@@ -93,7 +93,7 @@ private:
     QList<MyFriend*> mFriends;
 
     static QMutex mMutex;
-    static User* mInstance;
+    static QPointer<User> mInstance;
 };
 
 #endif // USER_H

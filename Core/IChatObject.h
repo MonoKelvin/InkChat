@@ -11,7 +11,7 @@ class IChatObject : public QObject {
     Q_PROPERTY(char gender READ getGender WRITE setGender NOTIFY genderChanged)
     Q_PROPERTY(QString nickName READ getNickName WRITE setNickName NOTIFY nickNameChanged)
     Q_PROPERTY(QString signature READ getSignature WRITE setSignature NOTIFY signatureChanged)
-    Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar NOTIFY avatarChanged)
+    Q_PROPERTY(QString avatar READ getAvatar CONSTANT)
     Q_PROPERTY(EOnlineState onlineState READ getOnlineState WRITE setOnlineState NOTIFY onlineStateChanged)
     Q_PROPERTY(QString hostAddress READ getHostAddress CONSTANT)
     Q_PROPERTY(ERoleType roleType READ getRoleType CONSTANT)
@@ -81,7 +81,6 @@ public:
     }
 
     const QString getAvatar(void) const;
-    void setAvatar(const QString& value);
 
     inline char getGender(void) const { return mGender; }
     inline void setGender(char gender)
@@ -118,7 +117,8 @@ public:
 
 public slots:
     /** 从数据库中获取对象的头像并缓存
-     * @note 缓存或失败都会发送信号 @see avatarCached
+     * @note 缓存或失败都会发送信号 @see avatarCached。
+     * @note 默认保存在/data/${user_id}/cache/avatar/下
      */
     virtual void cacheAvatar(EAvatarSize size = AvatarSizeThumb);
 
@@ -139,12 +139,12 @@ Q_SIGNALS:
     void genderChanged();
     void onlineStateChanged();
 
-protected:
-    /**
-     * @brief 加载缓存数据
-     * @return 加成功返回true，否则返回false
-     */
-    virtual bool loadCache(void) { return true; }
+    //protected:
+    //    /**
+    //     * @brief 加载缓存数据
+    //     * @return 加成功返回true，否则返回false
+    //     */
+    //    virtual bool loadCache(void) { return true; }
 
 protected:
     // 用户ID

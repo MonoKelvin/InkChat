@@ -2,13 +2,16 @@
 
 #include <AppSettings.h>
 #include <Http/HttpRequest.h>
-#include <QJsonObject>
+#include <QFileInfo>
+#include <Utility.h>
 
+#include <QJsonObject>
 #include <QPixmap>
 
 IChatObject::IChatObject(QObject* parent)
     : QObject(parent)
     , mGender('\0')
+    , mRoleType(AllUser)
     , mOnlineState(NoneState)
 {
 }
@@ -19,15 +22,16 @@ IChatObject::~IChatObject()
 
 const QString IChatObject::getAvatar() const
 {
-    return AppPaths::AvatarCacheDir(mMD5);
-}
-
-void IChatObject::setAvatar(const QString& value)
-{
+    return QStringLiteral("file:///") + AppPaths::AvatarCacheFile(mRoleType, mID);
 }
 
 void IChatObject::cacheAvatar(EAvatarSize size)
 {
+    QFileInfo file(AppPaths::AvatarCacheFile(mRoleType, mID));
+    if (file.exists()) {
+        return;
+    }
+
     HttpRequest* imgRequest = new HttpRequest;
     imgRequest->sendRequest(AppPaths::UserAvatarUrl(size));
 
@@ -35,7 +39,7 @@ void IChatObject::cacheAvatar(EAvatarSize size)
         if (success) {
             QPixmap pixmap;
             if (pixmap.loadFromData(data)) {
-                pixmap.save(AppPaths::AvatarCacheDir(mMD5), "PNG");
+                pixmap.save(AppPaths::AvatarCacheFile(mRoleType, mID), "PNG");
                 emit avatarCached(true, QStringLiteral(""));
             } else {
                 emit avatarCached(false, QStringLiteral("FEIL_PRASE_FAILED: VALUE=avatar"));
@@ -50,24 +54,24 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
 {
     Q_UNUSED(cache)
 
-    mID = json.value(QStringLiteral("id")).toString().toUInt();
-    mMD5 = json.value(QStringLiteral("md5")).toString();
-    mIsTop = json.value("top").toBool();
-    mGender = json.value(QStringLiteral("gender")).toString("-").front().toLatin1();
-    mNickName = json.value(QStringLiteral("nickName")).toString();
-    mSignature = json.value(QStringLiteral("signature")).toString();
-    mHostAddress = json.value(QStringLiteral("hostAddress")).toString();
+    mID = json.value(QLatin1String("id")).toString().toUInt();
+    mMD5 = json.value(QLatin1String("md5")).toString();
+    mIsTop = json.value(QLatin1String("top")).toBool();
+    mGender = json.value(QLatin1String("gender")).toString(QStringLiteral("-")).front().toLatin1();
+    mNickName = json.value(QLatin1String("nickName")).toString();
+    mSignature = json.value(QLatin1String("signature")).toString();
+    mHostAddress = json.value(QLatin1String("hostAddress")).toString();
 }
 
 QJsonObject IChatObject::toJson(void)
 {
     QJsonObject json;
-    json.insert("top", mIsTop);
-    json.insert(QStringLiteral("id"), QString::number(mID));
-    json.insert(QStringLiteral("md5"), mMD5);
-    json.insert(QStringLiteral("gender"), QString(mGender));
-    json.insert(QStringLiteral("nickName"), mNickName);
-    json.insert(QStringLiteral("signature"), mSignature);
-    json.insert(QStringLiteral("hostAddress"), mHostAddress);
+    json.insert(QLatin1String("top"), mIsTop);
+    json.insert(QLatin1String("id"), QString::number(mID));
+    json.insert(QLatin1String("md5"), mMD5);
+    json.insert(QLatin1String("gender"), QString(mGender));
+    json.insert(QLatin1String("nickName"), mNickName);
+    json.insert(QLatin1String("signature"), mSignature);
+    json.insert(QLatin1String("hostAddress"), mHostAddress);
     return json;
 }

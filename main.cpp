@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 #endif
 
     {
-        auto user = AppSettings::Instance()->value("user/currentUser", 0).toUInt();
+        const auto user = AppSettings::Instance()->value("user/currentUser", 0).toUInt();
         if (user != 0) {
             AppPaths::SetCurrentUserId(user);
         }

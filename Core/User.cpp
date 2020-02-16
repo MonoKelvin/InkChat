@@ -2,6 +2,7 @@
 
 #include <AppSettings.h>
 #include <MyFriend.h>
+#include <Utility.h>
 
 #include <QFile>
 #include <QJsonArray>
@@ -9,7 +10,7 @@
 #include <QJsonObject>
 
 QMutex User::mMutex(QMutex::Recursive);
-User* User::mInstance = nullptr;
+QPointer<User> User::mInstance = nullptr;
 User::_GarbageCollection User::_GC;
 
 User::User(QObject* parent)
@@ -20,7 +21,6 @@ User::User(QObject* parent)
 
 User::~User()
 {
-    qDeleteAll(mFriends);
     mFriends.clear();
 }
 
@@ -28,12 +28,12 @@ void User::fromJson(const QJsonObject& json, bool cache)
 {
     IChatObject::fromJson(json);
 
-    mAccount = json.value(QStringLiteral("account")).toString();
-    mPassword = json.value(QStringLiteral("password")).toString();
+    mAccount = json.value(QLatin1String("account")).toString();
+    mPassword = json.value(QLatin1String("password")).toString();
 
-    QJsonArray friends = json.value(QStringLiteral("friends")).toArray();
+    QJsonArray friends = json.value(QLatin1String("friends")).toArray();
     for (const auto i : friends) {
-        MyFriend* f = new MyFriend();
+        MyFriend* f = new MyFriend(this);
         f->fromJson(i.toObject());
         addFriend(f);
     }
@@ -60,14 +60,14 @@ QJsonObject User::toJson()
 {
     auto json = IChatObject::toJson();
 
-    json.insert(QStringLiteral("account"), QJsonValue(mAccount));
-    json.insert(QStringLiteral("password"), QJsonValue(mPassword));
+    json.insert(QLatin1String("account"), QJsonValue(mAccount));
+    json.insert(QLatin1String("password"), QJsonValue(mPassword));
 
     QJsonArray friends;
     for (const auto i : mFriends) {
         friends.append(i->toJson());
     }
-    json.insert(QStringLiteral("friends"), friends);
+    json.insert(QLatin1String("friends"), friends);
 
     return json;
 }
@@ -93,7 +93,7 @@ void User::addFriend(MyFriend* myFriend)
     mFriends.append(myFriend);
 }
 
-bool User::loadCache()
+bool User::hasCache()
 {
     // 当前登录的用户
     mID = AppPaths::GetCurrentUserId();
@@ -103,27 +103,18 @@ bool User::loadCache()
 
     const auto fileName = AppPaths::UserDataFile();
 
-    // 如果有缓存就加载缓存数据，否则从数据库中获取
     if (isFileExists(fileName)) {
         QFile file(fileName);
-        try {
-            if (!file.open(QFile::ReadOnly | QFile::Text)) {
-                throw "FILE_READ_FAILED: " + fileName;
-            }
-
-            // TODO: 解密、校验数据是否被篡改
+        if (file.open(QFile::ReadOnly | QFile::Text)) {
+            // TODO: 解密
 
             auto jsonDoc = QJsonDocument::fromJson(file.readAll());
-            if (jsonDoc.isNull() || !jsonDoc.isObject()) {
-                throw "FILE_PARSE_FAILED: " + fileName;
-            } else {
-                fromJson(jsonDoc.object());
+            if (!jsonDoc.isNull() && jsonDoc.isObject()) {
+                const auto json = jsonDoc.object();
+                mAccount = json.value(QLatin1String("account")).toString();
+                mPassword = json.value(QLatin1String("password")).toString();
                 return true;
             }
-        } catch (const QString& msg) {
-            file.close();
-            // TODO: 日志
-            qDebug() << msg;
         }
     }
 
