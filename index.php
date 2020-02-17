@@ -49,7 +49,7 @@
             <form action="./api/image.php" method="get">
                 <div>
                     <input name="user" type="text" value="user">
-                    <input name="type" type="text" value="avatar">
+                    <input name="size" type="number" value="45">
                     <input name="id" type="number" value="1">
                     <button type="submit">测试</button>
                 </div>

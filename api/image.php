@@ -10,7 +10,7 @@ if ($user == 'user') {
     // 如果id存在
     if ($id) {
         header('Content-Type:image/png');
-        $imgsrc = 'http://inkchat.com/images/avatar/' . $id . '.png';
+        $imgsrc = '../images/avatar/' . $id;
 
         if ($size >= 512) {
             if (!@readfile($imgsrc)) {
@@ -45,10 +45,10 @@ function avatarResize($file_name, $newsize = 45)
     // 第二个元素 (索引值 1) 是图片的宽度。
     // 第三个元素 (索引值 2) 是图片的文件格式，其值 1 为 GIF 格式、 2 为 JPEG/JPG 格式、3 为 PNG 格式。
     // 第四个元素 (索引值 3) 为图片的高与宽字符串，height=xxx width=yyy。
-    $size = @getimagesize($file_name) or (errorReply(404) and die);
+    $size = @getimagesize($file_name) or (errorReply(404) or die);
 
     // 声明一个真彩图片资源，此时只是一个有宽高的黑白图片。
-    $newimg = @imagecreatetruecolor($newsize, $newsize) or (errorReply(651) and die);
+    $newimg = @imagecreatetruecolor($newsize, $newsize) or (errorReply(651) or die);
 
     // 根据图片的格式使用不同的方法创建为新的图片
     if ($size[2] == 1) $src = imagecreatefromgif($file_name);
@@ -70,9 +70,9 @@ function avatarResize($file_name, $newsize = 45)
     // header('Content-Type: image/png');
 
     // 将图片塞进去，根据图片不同的格式选用不同的方法，同时降低适当质量。
-    if ($size[2] == 1) $result = @imagegif($newimg, null, 6);
-    if ($size[2] == 2) $result = @imagejpeg($newimg, null, 6);
-    if ($size[2] == 3) $result = @imagepng($newimg, null, 6);
+    if ($size[2] == 1) $result = @imagegif($newimg, null, 8);
+    if ($size[2] == 2) $result = @imagejpeg($newimg, null, 8);
+    if ($size[2] == 3) $result = @imagepng($newimg, null, 8);
 
     // 销毁资源
     @imagedestroy($newimg);
