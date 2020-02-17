@@ -9,10 +9,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-QMutex User::mMutex(QMutex::Recursive);
-QPointer<User> User::mInstance = nullptr;
-User::_GarbageCollection User::_GC;
-
 User::User(QObject* parent)
     : IChatObject(parent)
 {
@@ -26,7 +22,7 @@ User::~User()
 
 void User::fromJson(const QJsonObject& json, bool cache)
 {
-    IChatObject::fromJson(json);
+    IChatObject::fromJson(json, cache);
 
     mAccount = json.value(QLatin1String("account")).toString();
     mPassword = json.value(QLatin1String("password")).toString();
@@ -52,6 +48,10 @@ void User::fromJson(const QJsonObject& json, bool cache)
         QJsonDocument jsonDoc(json);
         if (file.write(jsonDoc.toJson(QJsonDocument::Indented /*Compact*/)) == -1) {
             throw tr("用户数据文件写入失败！");
+        }
+
+        if (cache) {
+            cacheAvatar(AvatarSizeMax);
         }
     }
 }

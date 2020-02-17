@@ -3,7 +3,6 @@
 #include <AppSettings.h>
 #include <Http/HttpRequest.h>
 #include <QFileInfo>
-#include <Utility.h>
 
 #include <QJsonObject>
 #include <QPixmap>
@@ -22,18 +21,22 @@ IChatObject::~IChatObject()
 
 const QString IChatObject::getAvatar() const
 {
-    return QStringLiteral("file:///") + AppPaths::AvatarCacheFile(mRoleType, mID);
+    const auto fileName = AppPaths::AvatarCacheFile(mRoleType, mID);
+    if (QFileInfo::exists(fileName)) {
+        return QStringLiteral("file:///") + fileName;
+    }
+
+    return QStringLiteral("");
 }
 
 void IChatObject::cacheAvatar(EAvatarSize size)
 {
-    QFileInfo file(AppPaths::AvatarCacheFile(mRoleType, mID));
-    if (file.exists()) {
+    if (QFileInfo::exists(AppPaths::AvatarCacheFile(mRoleType, mID))) {
         return;
     }
 
     HttpRequest* imgRequest = new HttpRequest;
-    imgRequest->sendRequest(AppPaths::UserAvatarUrl(size));
+    imgRequest->sendRequest(AppPaths::UserAvatarUrl(mID, size));
 
     QObject::connect(imgRequest, &HttpRequest::request, [this](bool success, const QByteArray& data) {
         if (success) {

@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick network
+QT += qml quick network sql
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

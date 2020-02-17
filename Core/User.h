@@ -2,15 +2,14 @@
 #define USER_H
 
 #include <IChatObject.h>
+#include <Singleton.h>
 
-#include <QMutex>
-#include <QPointer>
 #include <QQmlListProperty>
 
 class QJSEngine;
 class MyFriend;
 
-class User : public IChatObject {
+class User : public IChatObject, public Singleton<User> {
     Q_OBJECT
 
     friend class LoginWithQQMail;
@@ -39,19 +38,6 @@ public:
 
     void addFriend(MyFriend* myFriend);
 
-    inline static User* Instance()
-    {
-        // 防止多线程多次构造对象
-        if (mInstance.isNull()) {
-            mMutex.lock();
-            if (mInstance.isNull()) {
-                mInstance = new User;
-            }
-            mMutex.unlock();
-        }
-        return mInstance;
-    }
-
     static QObject* QmlSingletonTypeProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
     {
         Q_UNUSED(engine)
@@ -61,28 +47,8 @@ public:
     }
 
 private:
-    Q_DISABLE_COPY(User)
-    Q_DISABLE_MOVE(User)
+    Q_DISABLE_COPY_MOVE(User)
 
-    // 垃圾回收类
-    class _GarbageCollection {
-    public:
-        _GarbageCollection() = default;
-        ~_GarbageCollection()
-        {
-            // 防止渲染线程和主线程多次析构对象
-            if (!mInstance.isNull()) {
-                mMutex.lock();
-                if (!mInstance.isNull()) {
-                    mInstance.clear();
-                }
-                mMutex.unlock();
-            }
-        }
-    };
-    static _GarbageCollection _GC;
-
-private:
     // 账号
     QString mAccount;
 
@@ -91,9 +57,6 @@ private:
 
     // 我的好友
     QList<MyFriend*> mFriends;
-
-    static QMutex mMutex;
-    static QPointer<User> mInstance;
 };
 
 #endif // USER_H

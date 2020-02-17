@@ -1,5 +1,6 @@
 ﻿#include "MyFriend.h"
 
+#include <AppSettings.h>
 #include <Http/HttpRequest.h>
 
 #include <QJsonObject>
@@ -12,14 +13,14 @@ MyFriend::MyFriend(QObject* parent)
 
 void MyFriend::fromJson(const QJsonObject& json, bool cache)
 {
+    IChatObject::fromJson(json, cache);
+
     mRemark = json.value(QLatin1String("remark")).toString();
     mSubgroup = json.value(QLatin1String("subgroup")).toString();
 
     if (cache) {
         cacheAvatar();
     }
-
-    return IChatObject::fromJson(json, cache);
 }
 
 QJsonObject MyFriend::toJson(void)

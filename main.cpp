@@ -16,14 +16,14 @@ int main(int argc, char *argv[])
     // 主程序
     QGuiApplication app(argc, argv);
 
-    QFont font = AppSettings::Instance()->value("app/font", "微软雅黑").toString();
+    QFont font = AppSettings::Value("app/font", "微软雅黑").toString();
 
 #if defined(Q_OS_WIN)
     app.setFont(font);
 #endif
 
     {
-        const auto user = AppSettings::Instance()->value("user/currentUser", 0).toUInt();
+        const auto user = AppSettings::Value("user/currentUser", 0).toUInt();
         if (user != 0) {
             AppPaths::SetCurrentUserId(user);
         }

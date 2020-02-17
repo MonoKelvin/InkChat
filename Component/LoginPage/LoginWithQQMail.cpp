@@ -24,7 +24,7 @@ LoginWithQQMail::~LoginWithQQMail()
 
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
-    static bool skip = AppSettings::Instance()->value(QLatin1String("login/autoLogin"), false).toBool();
+    static bool skip = AppSettings::Value("login/autoLogin", false).toBool();
     const auto user = User::Instance();
     auto account = mapping[QStringLiteral("account")].toString();
     auto password = mapping[QStringLiteral("password")].toString();
@@ -41,8 +41,7 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
         emit autoLogin(account, password);
 
         // 封装请求数据
-        const auto postData
-            = "id=" + QString::number(user->mID) + "&account=" + account + "&password=" + password;
+        const auto postData = QStringLiteral("id=%1&account=%2&password=%3").arg(user->mID).arg(account).arg(password);
         request->sendRequest(LoginByIdUrl, HttpRequest::POST, postData);
     } else {
         const auto postData = "account=" + mapping["account"].toString() + "&password=" + mapping["password"].toString();
@@ -62,7 +61,7 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
                 try {
                     const auto user = User::Instance();
                     user->fromJson(json);
-                    AppSettings::Instance()->setValue(QStringLiteral("user/currentUser"), user->mID);
+                    AppSettings::SetValue("user/currentUser", user->mID);
                     AppPaths::SetCurrentUserId(user->mID);
                     emit verified();
                 } catch (const QString& msg) {
@@ -81,8 +80,7 @@ void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
 {
     HttpRequest* request = new HttpRequest;
 
-    const auto postData = "nickName=" + mapping["nickName"].toString() + "&account=" + mapping["account"].toString()
-        + "&password=" + mapping["password"].toString();
+    const auto postData = QStringLiteral("nickName=%1&account=%2&password=%3").arg(mapping["nickName"].toString()).arg(mapping["account"].toString()).arg(mapping["password"].toString());
 
     request->sendRequest(SignupUrl, HttpRequest::POST, postData);
 

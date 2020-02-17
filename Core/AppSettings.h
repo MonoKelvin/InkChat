@@ -3,6 +3,8 @@
 
 #include <IChatObject.h>
 #include <InkChatApi.h>
+#include <Singleton.h>
+
 #include <QSettings>
 
 class AppPaths {
@@ -40,16 +42,15 @@ public:
         return UserDataDir() + result + QStringLiteral(".udata");
     }
 
-    // 用户头像
-    inline static const QString UserAvatarUrl(IChatObject::EAvatarSize size)
+    /**
+     * @brief 用户头像地址
+     * @param id 用户ID
+     * @param size 要获取的大小
+     * @return 返回头像http地址
+     */
+    inline static const QString UserAvatarUrl(unsigned int id, IChatObject::EAvatarSize size = IChatObject::AvatarSizeThumb)
     {
-        return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(CurrentUser);
-    }
-
-    // 群聊头像
-    inline static const QString GroupAvatarUrl(IChatObject::EAvatarSize size)
-    {
-        return QString("http://inkchat.com/api/image.php?user=group&size=%1&id=%2").arg(size).arg(CurrentUser);
+        return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(id);
     }
 
     // 用户聊天记录文件夹
@@ -61,7 +62,7 @@ public:
     // 用户缓存头像文件夹
     inline static const QString AvatarCacheFile(int roleType, unsigned int id)
     {
-        return UserDir() + QStringLiteral("/avatar/%1-%2").arg(roleType).arg(id);
+        return UserDir() + QStringLiteral("/avatar/%1-%2.thumb").arg(roleType).arg(id);
     }
 
     // 聊天缓存图片文件夹
@@ -108,44 +109,29 @@ private:
     static unsigned int CurrentUser;
 };
 
-class AppSettings : public QSettings {
+class AppSettings : public QSettings, public Singleton<AppSettings> {
     Q_OBJECT
 
     Q_DISABLE_COPY_MOVE(AppSettings)
 
-    AppSettings(const QString& fileName, QObject* parent = nullptr);
-
 public:
-    static AppSettings* Instance(void)
-    {
-        if (nullptr == mInstance) {
-            mInstance = new AppSettings(AppPaths::AppConfigFile());
-        }
-
-        return mInstance;
-    }
+    explicit AppSettings(QObject* parent = nullptr);
+    ~AppSettings() = default;
 
     static void LoadAppTheme(const QString& themeFile);
 
+    static inline QVariant Value(const char* key, const QVariant& defaultValue = QVariant())
+    {
+        return Instance()->value(QLatin1String(key), defaultValue);
+    }
+
+    static inline void SetValue(const char* key, const QVariant& defaultValue = QVariant())
+    {
+        Instance()->setValue(QLatin1String(key), defaultValue);
+    }
+
 Q_SIGNALS:
     void onAppThemeChanged();
-
-private:
-    static AppSettings* mInstance;
-
-    // 垃圾回收类
-    class _GarbageCollection {
-    public:
-        _GarbageCollection() = default;
-        ~_GarbageCollection()
-        {
-            if (mInstance != nullptr) {
-                delete mInstance;
-                mInstance = nullptr;
-            }
-        }
-    };
-    static _GarbageCollection _GC;
 };
 
 #endif // APPSETTINGS_H

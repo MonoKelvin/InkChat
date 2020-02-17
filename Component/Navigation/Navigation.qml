@@ -9,7 +9,7 @@ Rectangle {
 
     width: 70
     color: appTheme.backgroundColor
-    onCurrentIndexChanged: navigate(currentIndex);
+    onCurrentIndexChanged: navigate(currentIndex)
 
     signal navigate(var index)
 
@@ -19,10 +19,12 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
 
-        ExclusiveGroup {id : exclusiveGroup}
+        ExclusiveGroup {
+            id: exclusiveGroup
+        }
 
         Component.onCompleted: {
-            btnMessage.checked = true;
+            btnMessage.checked = true
         }
 
         IconButton {
@@ -31,7 +33,8 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: if(checked) currentIndex = 0;
+            onCheckedChanged: if (checked)
+                                  currentIndex = 0
         }
         IconButton {
             id: btnFriend
@@ -39,7 +42,8 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: if(checked) currentIndex = 1;
+            onCheckedChanged: if (checked)
+                                  currentIndex = 1
         }
         IconButton {
             id: btnMine
@@ -47,7 +51,8 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: if(checked) currentIndex = 2;
+            onCheckedChanged: if (checked)
+                                  currentIndex = 2
         }
         IconButton {
             id: btnSettings
@@ -55,9 +60,9 @@ Rectangle {
             height: 40
             checkable: true
             exclusiveGroup: exclusiveGroup
-            onCheckedChanged: if(checked) currentIndex = 3;
+            onCheckedChanged: if (checked)
+                                  currentIndex = 3
         }
-
     }
 
     Avatar {

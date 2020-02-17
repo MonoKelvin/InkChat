@@ -9,3 +9,6 @@ HEADERS += \
 
 RESOURCES += \
     $$PWD/MessagePage.qrc
+
+SOURCES += \
+    $$PWD/MessagePage.cpp

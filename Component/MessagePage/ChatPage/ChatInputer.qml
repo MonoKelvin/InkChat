@@ -11,29 +11,29 @@ Item {
     Component.onCompleted: foldUpHeight = height
 
     onFoldUpChanged: {
-        if(foldUp) {
-            height = textBox.y + textBox.anchors.topMargin;
-            sendIcon.opacity = 0;
-            textBox.opacity = 0;
+        if (foldUp) {
+            height = textBox.y + textBox.anchors.topMargin
+            sendIcon.opacity = 0
+            textBox.opacity = 0
         } else {
-            height = foldUpHeight;
-            sendIcon.opacity = 1;
-            textBox.opacity = 1;
+            height = foldUpHeight
+            sendIcon.opacity = 1
+            textBox.opacity = 1
         }
 
-        anchors.bottom = parent.bottom;
+        anchors.bottom = parent.bottom
     }
 
     Behavior on height {
-         NumberAnimation {
-             easing.type: Easing.OutQuint
-             duration: 450
-         }
+        NumberAnimation {
+            easing.type: Easing.OutQuint
+            duration: 450
+        }
     }
 
     IconButton {
         id: sendIcon
-        anchors{
+        anchors {
             bottom: inputPanel.top
             bottomMargin: appTheme.narrowSpacing
             right: inputPanel.right

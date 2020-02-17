@@ -50,7 +50,7 @@ public:
         AvatarSize512x512 = 512,
 
         AvatarSizeThumb = AvatarSize45x45,
-        AvatarSizeMax = AvatarSize45x45
+        AvatarSizeMax = AvatarSize512x512
     };
     Q_ENUM(EAvatarSize)
 
@@ -80,7 +80,11 @@ public:
         emit signatureChanged();
     }
 
-    const QString getAvatar(void) const;
+    /**
+     * @brief 获得本地头像文件路径
+     * @return 如果文件存在返回true，否则返回空字符串
+     */
+    virtual const QString getAvatar(void) const;
 
     inline char getGender(void) const { return mGender; }
     inline void setGender(char gender)
@@ -115,8 +119,10 @@ public:
      */
     virtual QJsonObject toJson(/*bool fetchIfNull = true*/) = 0;
 
-public slots:
-    /** 从数据库中获取对象的头像并缓存
+protected Q_SLOTS:
+    /**
+     * @brief 从数据库中获取对象的头像并缓存
+     * @param size 保存的尺寸 @see EAvatarSize
      * @note 缓存或失败都会发送信号 @see avatarCached。
      * @note 默认保存在/data/${user_id}/cache/avatar/下
      */
