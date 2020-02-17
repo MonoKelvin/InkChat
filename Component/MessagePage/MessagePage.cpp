@@ -8,7 +8,6 @@
 
 MessageDatabase::MessageDatabase()
 {
-    Instance();
 }
 
 MessageDatabase::~MessageDatabase()

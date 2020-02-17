@@ -9,6 +9,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+SINGLETON_STATIC_INITIALIZA(User);
+
 User::User(QObject* parent)
     : IChatObject(parent)
 {

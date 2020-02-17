@@ -25,7 +25,7 @@ LoginWithQQMail::~LoginWithQQMail()
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
     static bool skip = AppSettings::Value("login/autoLogin", false).toBool();
-    const auto user = User::Instance();
+    const auto& user = User::Instance();
     auto account = mapping[QStringLiteral("account")].toString();
     auto password = mapping[QStringLiteral("password")].toString();
 
@@ -59,7 +59,7 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
                 json.insert(QLatin1String("password"), password);
 
                 try {
-                    const auto user = User::Instance();
+                    const auto& user = User::Instance();
                     user->fromJson(json);
                     AppSettings::SetValue("user/currentUser", user->mID);
                     AppPaths::SetCurrentUserId(user->mID);

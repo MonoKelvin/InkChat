@@ -116,7 +116,7 @@ class AppSettings : public QSettings, public Singleton<AppSettings> {
 
 public:
     explicit AppSettings(QObject* parent = nullptr);
-    ~AppSettings() = default;
+    ~AppSettings();
 
     static void LoadAppTheme(const QString& themeFile);
 
