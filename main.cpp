@@ -1,41 +1,25 @@
 ﻿#include <AppSettings.h>
-#include <FriendPage.h>
 #include <LoginWithQQMail.h>
-#include <MessagePage.h>
 
 #include <QFont>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
-
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    // 主程序
     QGuiApplication app(argc, argv);
 
-    QFont font = AppSettings::Value("app/font", "微软雅黑").toString();
-
 #if defined(Q_OS_WIN)
+    QFont font = AppSettings::Value(QStringLiteral("app/font"), "微软雅黑").toString();
     app.setFont(font);
 #endif
 
-    {
-        const auto user = AppSettings::Value("user/currentUser", 0).toUInt();
-        if (user != 0) {
-            AppPaths::SetCurrentUserId(user);
-        }
-    }
-
     // 注册C++类型到QML
-    // qmlRegisterSingletonType<User>("Singleton.User", 1, 0, "User");
-    qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is a interface");
+    qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is an interface");
 
     LOGINOPERATION_INITIALIZA
-    MESSAGEPAGE_INITIALIZA
-    FRIENDPAGE_INITIALIZA
 
     QQmlApplicationEngine engine;
     LoginWithQQMail::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));

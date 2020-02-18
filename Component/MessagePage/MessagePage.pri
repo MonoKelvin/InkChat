@@ -5,10 +5,11 @@ INCLUDEPATH *= \
     $$PWD/
 
 HEADERS += \
+    $$PWD/MessageDatabase.h \
     $$PWD/MessagePage.h
 
 RESOURCES += \
     $$PWD/MessagePage.qrc
 
 SOURCES += \
-    $$PWD/MessagePage.cpp
+    $$PWD/MessageDatabase.cpp

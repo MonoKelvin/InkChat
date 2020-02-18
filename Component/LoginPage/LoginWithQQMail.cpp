@@ -1,7 +1,9 @@
 ﻿#include "LoginWithQQMail.h"
 
 #include <AppSettings.h>
+#include <FriendPage.h>
 #include <Http/HttpRequest.h>
+#include <MessagePage.h>
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -24,7 +26,7 @@ LoginWithQQMail::~LoginWithQQMail()
 
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
-    static bool skip = AppSettings::Value("login/autoLogin", false).toBool();
+    static bool skip = AppSettings::Value(QStringLiteral("login/autoLogin"), false).toBool();
     const auto& user = User::Instance();
     auto account = mapping[QStringLiteral("account")].toString();
     auto password = mapping[QStringLiteral("password")].toString();
@@ -61,8 +63,7 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
                 try {
                     const auto& user = User::Instance();
                     user->fromJson(json);
-                    AppSettings::SetValue("user/currentUser", user->mID);
-                    AppPaths::SetCurrentUserId(user->mID);
+                    AppSettings::Instance()->setCurrentUserId(user->mID);
                     emit verified();
                 } catch (const QString& msg) {
                     emit failed(msg);
@@ -104,6 +105,11 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
     Q_UNUSED(engine)
     Q_ASSERT(QmlEngine != nullptr);
 
+    qmlRegisterSingletonType<User>("UserModel", 1, 0, "UserModel", User::QmlSingletonTypeProvider);
+
+    MESSAGEPAGE_INITIALIZA
+    FRIENDPAGE_INITIALIZA
+
     connect(
         QmlEngine, &QQmlApplicationEngine::objectCreated, qApp,
         [url](QObject* obj, const QUrl& objUrl) {
@@ -113,8 +119,6 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
         },
         Qt::QueuedConnection);
 
-    qmlRegisterSingletonType<User>("UserModel", 1, 0, "UserModel", User::QmlSingletonTypeProvider);
-
     QmlEngine->load(url);
 }
 
@@ -122,13 +126,13 @@ void LoginWithQQMail::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QUrl
 {
     QmlEngine = qmlEngine;
 
-    // connect(
-    //     QmlEngine, &QQmlApplicationEngine::objectCreated, qApp,
-    //     [url](QObject* obj, const QUrl& objUrl) {
-    //         if (!obj && url == objUrl)
-    //             QCoreApplication::exit(-1);
-    //     },
-    //     Qt::QueuedConnection);
+    connect(
+        QmlEngine, &QQmlApplicationEngine::objectCreated, qApp,
+        [url](QObject* obj, const QUrl& objUrl) {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1);
+        },
+        Qt::QueuedConnection);
 
     QmlEngine->load(url);
 }

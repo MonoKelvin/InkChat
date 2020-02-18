@@ -1,16 +1,24 @@
 ﻿#include "MessageList.h"
 
+#include <AppSettings.h>
 #include <InkChatApi.h>
+#include <MessageDatabase.h>
 #include <MessageItem.h>
 #include <Utility.h>
 
 #include <QDir>
 #include <QMutex>
+#include <QSqlError>
 
 MessageList::MessageList(QObject* parent)
     : QAbstractListModel(parent)
 {
     mMutex = new QMutex(QMutex::Recursive);
+
+    const auto error = MessageDatabase::Instance()->initDatabase();
+    if (error.type() != QSqlError::NoError) {
+        emit failed(tr("消息数据库打开失败，原因：") + error.text());
+    }
 }
 
 MessageList::~MessageList()
@@ -19,36 +27,6 @@ MessageList::~MessageList()
     mMessages.clear();
 
     SAFE_DELETE(mMutex);
-}
-
-bool MessageList::ariseMessage(MessageItem* message, bool ignoreTop)
-{
-    Q_ASSERT(message != nullptr);
-
-    const int sourceIndex = getRow(message);
-    if (sourceIndex == -1) {
-        return false;
-    }
-
-    int targetIndex = 0;
-    if (!message->mChatObject->getIsTop() && !ignoreTop) {
-        for (; targetIndex < mMessages.size(); targetIndex++) {
-            if (!mMessages.at(targetIndex)->mChatObject->getIsTop()) {
-                break;
-            }
-        }
-        if (targetIndex == mMessages.size()) {
-            return false;
-        }
-    }
-
-    mMutex->lock();
-    beginMoveRows(QModelIndex(), sourceIndex, sourceIndex, QModelIndex(), targetIndex);
-    mMessages.move(sourceIndex, targetIndex);
-    endMoveRows();
-    mMutex->unlock();
-
-    return true;
 }
 
 void MessageList::clearMessage()
@@ -152,59 +130,68 @@ QHash<int, QByteArray> MessageList::roleNames() const
     return names;
 }
 
+bool MessageList::ariseMessage(MessageItem* message)
+{
+    /**
+     * 如果消息列表中有目标消息项
+     *  a.如果置顶：直接更新其相关数据
+     *  b.如果未置顶：找到置顶的所有消息，把message移动到它下面，并更新其相关数据
+     */
+    const int sourceIndex = getRow(message);
+    if (sourceIndex == -1) {
+        return false;
+    }
+
+    int targetIndex = 0;
+    if (!message->mChatObject->getIsTop()) {
+        for (auto iter = mMessages.cbegin(); iter != mMessages.cend(); ++iter) {
+            if (!(*iter)->mChatObject->getIsTop()) {
+                break;
+            }
+            targetIndex++;
+        }
+        // for (; targetIndex < mMessages.size(); targetIndex++) {
+        //     if (!mMessages.at(targetIndex)->mChatObject->getIsTop()) {
+        //         break;
+        //     }
+        // }
+        if (targetIndex == mMessages.size()) {
+            return false;
+        }
+    }
+
+    mMutex->lock();
+    beginMoveRows(QModelIndex(), sourceIndex, sourceIndex, QModelIndex(), targetIndex);
+    mMessages.move(sourceIndex, targetIndex);
+    endMoveRows();
+    mMutex->unlock();
+
+    return true;
+}
+
+void MessageList::adjustMessageOrder()
+{
+    for (int i = 0; i < mMessages.size(); i++) {
+        if (mMessages.at(i)->mChatObject->getIsTop()) {
+            mMutex->lock();
+            beginMoveRows(QModelIndex(), i, i, QModelIndex(), 0);
+            mMessages.move(i, 0);
+            endMoveRows();
+            mMutex->unlock();
+        }
+    }
+}
+
 bool MessageList::refresh()
 {
     return true;
 }
 
-void MessageList::load(const QString& crFolder /*, MessageList::EMessageFilter filter*/)
+void MessageList::load(void)
 {
-    isDirExists(crFolder, true);
+    isFileExists(AppSettings::MessageCacheFile(), true);
 
-    const QDir dir(crFolder);
-    auto list = dir.entryInfoList(QStringList() << "*.cr", QDir::Files | QDir::Hidden);
-    for (auto fileInfo : list) {
-        MessageItem* message = new MessageItem();
-
-        try {
-            if (!message->load(fileInfo)) {
-                SAFE_DELETE(message);
-                continue;
-            }
-
-            appendMessage(message);
-            emit loaded();
-        } catch (const QString& err) {
-            SAFE_DELETE(message);
-            qDebug() << err;
-        }
+    if (!MessageDatabase::Instance()->loadMessageItems(this)) {
+        emit failed(tr("消息加载失败，请重新刷新"));
     }
-}
-
-void MessageList::save(const QString& crFolder, bool onlyDirty)
-{
-}
-
-void MessageList::receiveMessage(IChatObject* chatObj, const QString& message, const QString& time)
-{
-    /**
-     * 1.如果消息列表中有目标消息项
-     *  a.如果置顶：直接更新其相关数据
-     *  b.如果未置顶：找到置顶的所有消息，把message移动到它下面，并更新其相关数据
-     * 2.如果消息列表中没有目标消息项
-     *  a.如果置顶：直接插入到最上方，设置其相关数据
-     *  b.如果未置顶：找到置顶的所有消息，new一个消息到它下面，并设置其相关数据
-     */
-    int i = 0;
-    for (; i < mMessages.size(); i++) {
-        if (mMessages[i]->mChatObject == chatObj) {
-            break;
-        }
-    }
-    auto msgItem = (i == mMessages.size()) ? mMessages[i] : nullptr;
-
-    if (!msgItem)
-        msgItem = new MessageItem(chatObj);
-
-    ariseMessage(msgItem);
 }

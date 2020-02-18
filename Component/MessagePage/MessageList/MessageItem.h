@@ -3,17 +3,15 @@
 
 #include <IChatObject.h>
 #include <QJsonObject>
-
-#define MESSAGEITEM_INITIALIZA                                            \
-    {                                                                     \
-        qmlRegisterType<MessageItem>("MessageItem", 1, 0, "MessageItem"); \
-    }
+#include <QPointer>
 
 class QFileInfo;
 
 class MessageItem : public QObject {
     Q_OBJECT
+
     friend class MessageList;
+    friend class MessageDatabase;
 
     Q_PROPERTY(bool dirty READ getDirty WRITE setDirty NOTIFY dirtyChanged)
     Q_PROPERTY(bool readFlag READ getReadFlag WRITE setReadFlag NOTIFY readFlagChanged)
@@ -33,17 +31,21 @@ public:
         emit dirtyChanged();
     }
 
-    IChatObject* getChatObject() const { return mChatObject; }
+    IChatObject* getChatObject() const { return mChatObject.get(); }
 
-    inline QString getTime(void) const { return mTime; }
+    inline const QString getTime(void) const { return mTime; }
 
-    inline QString getMessage(void) const { return mMessage; }
+    inline const QString getMessage(void) const { return mMessage; }
+    // void setMessage(const QString& message);
 
     inline bool getReadFlag(void) const { return mReadFlag; }
     inline void setReadFlag(bool readFlag)
     {
-        mReadFlag = readFlag;
-        emit readFlagChanged();
+        if (readFlag != mReadFlag) {
+            setDirty(true);
+            mReadFlag = readFlag;
+            emit readFlagChanged();
+        }
     }
 
     inline int getUnreadMsgCount(void) const { return mUnreadMsgCount; }
@@ -53,20 +55,6 @@ Q_SIGNALS:
     void dirtyChanged();
     void readFlagChanged();
     void unreadMsgCountChanged();
-
-public slots:
-    void update();
-
-private:
-    /**
-     * @brief 加载缓存消息
-     * @param fileInfo 文件信息
-     * @return bool 当不需要加载，即虽然内部有数据，但无需在界面中显示时返回false，否则返回true。
-     * @note 该函数内部解析出错将会抛出异常，所以外部应设置try-catch块
-     * @warning 另外，该函数只应该被调用一次用以初始化内部数据，当任何数据被修改需要更新到文件时
-     * 请使用 @see update 函数。
-     */
-    bool load(const QFileInfo& fileInfo);
 
 private:
     /** 脏位。只有内部数据修改后该值位true，否则位false，方便保存减少数据的保存 */
@@ -85,10 +73,7 @@ private:
     int mUnreadMsgCount;
 
     /** 聊天对象，可以是单用户，也可以是局域网 */
-    IChatObject* mChatObject;
-
-    /** 保存一个JsonObject对象，方便写入数据保存到文件 */
-    QJsonObject mJsonObject;
+    QSharedPointer<IChatObject> mChatObject;
 };
 
 #endif // MESSAGEITEM_H

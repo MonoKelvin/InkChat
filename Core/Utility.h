@@ -3,8 +3,7 @@
 
 #include <QCryptographicHash>
 #include <QPixmap>
-#include <functional>
-using std::function;
+
 /**
  * @brief 图片处理函数
  * @param pixmap 要处理的图片
@@ -62,6 +61,16 @@ inline const QString encryptTextByMD5(const QString& source, bool isHalf = false
     auto result = QString(hash.result().toHex());
     return isHalf ? result.mid(8, 16) : result;
 }
+
+/**
+ * @brief 获得时间处理后的消息时间
+ * @param time 传入的时间，必须比当前时间小
+ * @return 格式化后的时间字符串，规则：
+ * 当天 => hh:mm
+ * 1-7天前 => d天前
+ * 大于7天前 => yyyy-MM-dd
+ */
+const QString GetMessageTime(const QDateTime& time);
 
 /** 向上取整，返回的是int类型 */
 #define Ceil(x) int(float(x)+0.500000f)

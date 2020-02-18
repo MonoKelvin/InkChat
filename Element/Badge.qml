@@ -6,7 +6,7 @@ Rectangle {
     property alias textColor: contentText.color
 
     height: appTheme.stdBadgeHeight
-    width: Math.max(contentText.contentWidth + 14, height)
+    width: Math.max(contentText.contentWidth + appTheme.stdTextSize, height)
     radius: appTheme.stdBadgeHeight / 2
     color: appTheme.subColor3
 

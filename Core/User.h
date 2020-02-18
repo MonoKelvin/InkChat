@@ -2,24 +2,26 @@
 #define USER_H
 
 #include <IChatObject.h>
-#include <Singleton.h>
 
+#include <QPointer>
 #include <QQmlListProperty>
 
 class QJSEngine;
 class MyFriend;
 
-class User : public IChatObject, public Singleton<User> {
+class User : public IChatObject {
     Q_OBJECT
 
     friend class LoginWithQQMail;
 
-    Q_PROPERTY(QString Account READ getAccount WRITE setAccount CONSTANT)
+    Q_PROPERTY(QString Account READ getAccount WRITE setAccount)
     Q_PROPERTY(QString Password READ getPassword CONSTANT)
     Q_PROPERTY(QQmlListProperty<MyFriend> Friends READ getFriends)
 
-public:
+protected:
     explicit User(QObject* parent = nullptr);
+
+public:
     ~User() override;
 
     void fromJson(const QJsonObject& json, bool cache = true) override;
@@ -44,6 +46,12 @@ public:
         Q_UNUSED(scriptEngine)
 
         return User::Instance();
+    }
+
+    static QPointer<User> Instance()
+    {
+        static QPointer<User> instance(new User);
+        return instance;
     }
 
 private:

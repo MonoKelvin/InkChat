@@ -21,7 +21,7 @@ IChatObject::~IChatObject()
 
 const QString IChatObject::getAvatar() const
 {
-    const auto fileName = AppPaths::AvatarCacheFile(mRoleType, mID);
+    const auto fileName = AppSettings::AvatarCacheFile(mRoleType, mID);
     if (QFileInfo::exists(fileName)) {
         return QStringLiteral("file:///") + fileName;
     }
@@ -31,18 +31,18 @@ const QString IChatObject::getAvatar() const
 
 void IChatObject::cacheAvatar(EAvatarSize size)
 {
-    if (QFileInfo::exists(AppPaths::AvatarCacheFile(mRoleType, mID))) {
+    if (QFileInfo::exists(AppSettings::AvatarCacheFile(mRoleType, mID))) {
         return;
     }
 
     HttpRequest* imgRequest = new HttpRequest;
-    imgRequest->sendRequest(AppPaths::UserAvatarUrl(mID, size));
+    imgRequest->sendRequest(AppSettings::UserAvatarUrl(mID, size));
 
     QObject::connect(imgRequest, &HttpRequest::request, [this](bool success, const QByteArray& data) {
         if (success) {
             QPixmap pixmap;
             if (pixmap.loadFromData(data)) {
-                pixmap.save(AppPaths::AvatarCacheFile(mRoleType, mID), "PNG");
+                pixmap.save(AppSettings::AvatarCacheFile(mRoleType, mID), "PNG");
                 emit avatarCached(true, QStringLiteral(""));
             } else {
                 emit avatarCached(false, QStringLiteral("FEIL_PRASE_FAILED: VALUE=avatar"));
@@ -59,7 +59,7 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
 
     mID = json.value(QLatin1String("id")).toString().toUInt();
     mMD5 = json.value(QLatin1String("md5")).toString();
-    mIsTop = json.value(QLatin1String("top")).toBool();
+    mIsTop = json.value(QLatin1String("top")).toString().toInt();
     mGender = json.value(QLatin1String("gender")).toString(QStringLiteral("-")).front().toLatin1();
     mNickName = json.value(QLatin1String("nickName")).toString();
     mSignature = json.value(QLatin1String("signature")).toString();

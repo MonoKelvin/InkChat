@@ -3,11 +3,16 @@
 
 #include <IChatObject.h>
 #include <InkChatApi.h>
-#include <Singleton.h>
 
 #include <QSettings>
 
-class AppPaths {
+class AppSettings : public QSettings {
+    Q_OBJECT
+
+    Q_DISABLE_COPY_MOVE(AppSettings)
+
+    explicit AppSettings(QObject* parent = nullptr);
+
 public:
     // APP应用程序文件夹
     inline static const QString AppDir()
@@ -18,28 +23,38 @@ public:
     // APP数据文件夹
     inline static const QString AppDataDir()
     {
-        return AppDir() + QStringLiteral("/data/");
+        return AppDir() + QStringLiteral("/Data/");
     }
 
     // APP配置文件
     inline static const QString AppConfigFile()
     {
-        return AppDataDir() + QStringLiteral("config.ini");
+        return AppDataDir() + QStringLiteral("Config.ini");
     }
 
     // 用户数据文件夹
     inline static const QString UserDataDir()
     {
-        return UserDir() + QStringLiteral("/user/");
+        return UserDir() + QStringLiteral("/User/");
     }
 
     // 用户数据文件
     inline static const QString UserDataFile() noexcept
     {
         QCryptographicHash hash(QCryptographicHash::Md5);
-        hash.addData(QString::number(CurrentUser).toLatin1());
+        hash.addData(QString::number(Instance()->mCurrentUser).toLatin1());
         auto result = QString(hash.result().toHex());
         return UserDataDir() + result + QStringLiteral(".udata");
+    }
+
+    /**
+     * @brief 用户聊天记录文件
+     * @param fileName 文件名，不包含路径和后缀
+     * @return 返回文件全称名，包含路径和后缀
+     */
+    inline static const QString MessageCacheFile()
+    {
+        return UserDataDir() + QStringLiteral("Message.db");
     }
 
     /**
@@ -53,85 +68,76 @@ public:
         return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(id);
     }
 
-    // 用户聊天记录文件夹
-    inline static const QString MessageCacheDir()
-    {
-        return UserDir() + QStringLiteral("/message/");
-    }
-
     // 用户缓存头像文件夹
     inline static const QString AvatarCacheFile(int roleType, unsigned int id)
     {
-        return UserDir() + QStringLiteral("/avatar/%1-%2.thumb").arg(roleType).arg(id);
+        return UserDir() + QStringLiteral("/Avatar/%1-%2.thumb").arg(roleType).arg(id);
     }
 
     // 聊天缓存图片文件夹
     inline static const QString ImageCacheDir()
     {
-        return UserDir() + QStringLiteral("/image/");
+        return UserDir() + QStringLiteral("/Image/");
     }
 
     // 聊天缓存文件文件夹
     inline static const QString FileCacheDir()
     {
-        return UserDir() + QStringLiteral("/file/");
+        return UserDir() + QStringLiteral("/File/");
     }
 
     // 聊天缓存视频文件夹
     inline static const QString VideoCacheDir()
     {
-        return UserDir() + QStringLiteral("/video/");
+        return UserDir() + QStringLiteral("/Video/");
     }
 
     // 聊天缓存音频文件夹
     inline static const QString AudioCacheDir()
     {
-        return UserDir() + QStringLiteral("/audio/");
+        return UserDir() + QStringLiteral("/Audio/");
     }
 
-    inline static void SetCurrentUserId(unsigned int id)
+    inline void setCurrentUserId(unsigned int id)
     {
-        CurrentUser = id;
+        mCurrentUser = id;
+        Instance()->setValue("user/currentUser", id);
     }
 
-    inline static unsigned int GetCurrentUserId()
+    inline unsigned int getCurrentUserId()
     {
-        return CurrentUser;
+        return mCurrentUser;
     }
+
+    static void LoadAppTheme(const QString& themeFile);
+
+    inline static QVariant Value(const QString& key, const QVariant& defaultValue = QVariant())
+    {
+        return Instance()->value(key, defaultValue);
+    }
+
+    inline static void SetValue(const QString& key, const QVariant& defaultValue = QVariant())
+    {
+        Instance()->setValue(key, defaultValue);
+    }
+
+    inline static QSharedPointer<AppSettings> Instance()
+    {
+        static QSharedPointer<AppSettings> instance(new AppSettings);
+        return instance;
+    }
+
+Q_SIGNALS:
+    void onAppThemeChanged();
 
 private:
     // 用户文件夹
     inline static const QString UserDir()
     {
-        return AppPaths::AppDataDir() + QString::number(CurrentUser);
+        return AppDataDir() + QString::number(Instance()->mCurrentUser);
     }
 
-    static unsigned int CurrentUser;
-};
-
-class AppSettings : public QSettings, public Singleton<AppSettings> {
-    Q_OBJECT
-
-    Q_DISABLE_COPY_MOVE(AppSettings)
-
-public:
-    explicit AppSettings(QObject* parent = nullptr);
-    ~AppSettings();
-
-    static void LoadAppTheme(const QString& themeFile);
-
-    static inline QVariant Value(const char* key, const QVariant& defaultValue = QVariant())
-    {
-        return Instance()->value(QLatin1String(key), defaultValue);
-    }
-
-    static inline void SetValue(const char* key, const QVariant& defaultValue = QVariant())
-    {
-        Instance()->setValue(QLatin1String(key), defaultValue);
-    }
-
-Q_SIGNALS:
-    void onAppThemeChanged();
+    unsigned int mCurrentUser;
 };
 
 #endif // APPSETTINGS_H

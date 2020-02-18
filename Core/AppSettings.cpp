@@ -1,15 +1,12 @@
 ﻿#include "AppSettings.h"
 
-SINGLETON_STATIC_INITIALIZA(AppSettings);
-
-unsigned int AppPaths::CurrentUser = 0;
-
 AppSettings::AppSettings(QObject* parent)
-    : QSettings(AppPaths::AppConfigFile(), IniFormat, parent)
+    : QSettings(AppConfigFile(), IniFormat, parent)
 {
+    mCurrentUser = value(QStringLiteral("user/currentUser"), 0).toUInt();
 }
 
-AppSettings::~AppSettings()
+void AppSettings::LoadAppTheme(const QString& themeFile)
 {
-    qDebug() << "ok";
+    Q_UNUSED(themeFile)
 }

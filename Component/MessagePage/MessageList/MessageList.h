@@ -3,17 +3,15 @@
 
 #include <QAbstractListModel>
 
-#define MESSAGELIST_INITIALIZA                                                      \
-    {                                                                               \
-        qmlRegisterType<MessageList>("MessageListModel", 1, 0, "MessageListModel"); \
-    }
-
 class QMutex;
 class IChatObject;
 class MessageItem;
 
 class MessageList : public QAbstractListModel {
     Q_OBJECT
+
+    friend class MessageDatabase;
+
 public:
     explicit MessageList(QObject* parent = nullptr);
     ~MessageList() override;
@@ -29,6 +27,18 @@ public:
         NoFilter = FriendMessages | LANMessage | GroupMessages,
     };
     Q_ENUM(EMessageFilter)
+
+    /**
+     * @brief 消息排序类型
+     * @todo Next Version
+     */
+    enum EMessageSortType {
+        SortByTopOrder = 0x0001,
+        SortByName = 0x0002,
+        SortByTime = 0x0004,
+        SortByMessageCount = 0x0008,
+    };
+    Q_ENUM(EMessageSortType)
 
     //    QHash<int, QByteArray> roleNames() const override;
     //    bool removeRows(int row, int count, const QModelIndex& parent) override;
@@ -70,6 +80,11 @@ public:
      */
     bool insertMessage(int index, MessageItem* message);
 
+    /**
+     * @brief 在最后添加一条消息
+     * @param message 消息项
+     * @return 添加成功返回true，否则返回false
+     */
     inline bool appendMessage(MessageItem* message)
     {
         return insertMessage(mMessages.size(), message);
@@ -89,37 +104,33 @@ Q_SIGNALS:
     void failed(const QString&);
 
 public Q_SLOTS:
-    /**
-     * @brief 接收来自指定聊天对象的消息
-     * @param chatObj 消息来源的聊天对象
-     * @param message 接收的消息
-     * @param time 接收的时间
-     * @note 该槽函数内没有设置新的线程，所以尽量使用信号槽机制来完成异步接收。
-     */
-    void receiveMessage(IChatObject* chatObj, const QString& message, const QString& time);
-
-    /**
-     * @brief 提升消息到顶部
-     * @param message 要提升的消息项
-     * @param ignoreTop 是否忽略置顶的消息，如果忽略则提升为最上，否则提升到未置顶消息的最上方。
-     * @return 提升成功返回true，否则返回false
-     */
-    bool ariseMessage(MessageItem* message, bool ignoreTop = false);
-
     bool refresh();
 
     /**
      * @brief 加载缓存的聊天数据
-     * @param crFolder 缓存文件所在的文件夹，只能识别 *.cr 文件
      * @note 该槽函数内没有设置新的线程，所以尽量使用信号槽机制来完成异步加载。
      */
-    void load(const QString& crFolder /*, EMessageFilter filter = NoFilter*/);
-    void save(const QString& crFolder, bool onlyDirty = true /*, EMessageFilter filter = NoFilter*/);
+    void load(void /*, EMessageFilter filter = NoFilter*/);
 
 protected:
     QVariant data(const QModelIndex& index, int role) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;
     QHash<int, QByteArray> roleNames(void) const override;
+
+    /**
+     * @brief 调整消息的顺序
+     * @note 目前只支持按指定顺序调整
+     * @todo Add sort type in next version
+     */
+    void adjustMessageOrder(/* EMessageSortType type = SortByTopOrder */);
+
+    /**
+     * @brief 提升未置顶消息到未置顶消息的最上方。如果已经是置顶消息，则提升到所有消息的最上方。
+     * @param message 要提升的消息项
+     * @return 提升成功返回true，否则返回false
+     * @warning 使用该方法时必须保证所有置顶消息在最上方
+     */
+    bool ariseMessage(MessageItem* message);
 
 private:
     /** 消息记录文件夹 */

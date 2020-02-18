@@ -1,9 +1,9 @@
 ﻿import QtQuick 2.14
 import QtGraphicalEffects 1.0
 import MessageListModel 1.0
-import MessageItem 1.0
 import ChatObject 1.0
 import "qrc:/Element/"
+import "qrc:/js/js/Utility.js" as Utility
 
 Rectangle {
     id: messageList
@@ -12,7 +12,7 @@ Rectangle {
     signal itemClicked(var msgId)
 
     Component.onCompleted: {
-        listModel.load("./data/1/message")
+        listModel.load()
     }
 
     Text {
@@ -65,17 +65,36 @@ Rectangle {
         anchors.bottom: parent.bottom
         clip: true
         focus: true
+        currentIndex: -1
 
         model: MessageListModel {
             id: listModel
+            onFailed: function (msg) {
+                Utility.createToast(msg, window)
+            }
         }
 
         delegate: Rectangle {
+            property var msgItem: model.msgObject
+            property bool isCurrentItem: msgListView.currentIndex === index
+
+            id: msgItemRect
             height: 70
             width: msgListView.width
-            color: (msgListView.currentIndex === index) ? appTheme.widgetColor : "transparent"
-
-            property var msgItem: model.msgObject
+            color: {
+                if (msgItem.chatObject.isTop)
+                    return appTheme.widgetColor
+                else
+                    return appTheme.backgroundColor
+            }
+            z: isCurrentItem ? 10 : 1
+            layer.enabled: isCurrentItem
+            layer.effect: DropShadow {
+                radius: 30.0
+                samples: 17
+                color: isCurrentItem ? appTheme.shadowColor : "transparent"
+                verticalOffset: 6
+            }
 
             function onReadFlagChanged() {
                 if (msgItem.readFlag) {
@@ -152,7 +171,7 @@ Rectangle {
                 Text {
                     id: nameText
                     width: parent.width
-                    font.bold: true
+                    font.bold: Qt.platform.os == "windows" ? true : false
                     verticalAlignment: Text.AlignBottom
                     font.pixelSize: appTheme.stdTextSize
                     color: appTheme.mainTextColor
@@ -190,15 +209,19 @@ Rectangle {
                     font.pixelSize: appTheme.smallTextSize
                     color: appTheme.subTextColor
                     y: nameText.y
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.right: parent.right
                     text: msgItem.time
                 }
                 Badge {
                     id: msgBadge
                     visible: true
                     y: messageText.y
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.right: parent.right
                     text: msgItem.unreadMsgCount
+
+                    Component.onCompleted: {
+                        msgItemRect.onReadFlagChanged()
+                    }
                 }
             }
 

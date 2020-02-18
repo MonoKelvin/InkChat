@@ -9,8 +9,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-SINGLETON_STATIC_INITIALIZA(User);
-
 User::User(QObject* parent)
     : IChatObject(parent)
 {
@@ -37,7 +35,7 @@ void User::fromJson(const QJsonObject& json, bool cache)
     }
 
     if (cache) {
-        const auto fileName = AppPaths::UserDataFile();
+        const auto fileName = AppSettings::UserDataFile();
         isFileExists(fileName, true); // 总是返回true
 
         QFile file(fileName);
@@ -98,12 +96,12 @@ void User::addFriend(MyFriend* myFriend)
 bool User::hasCache()
 {
     // 当前登录的用户
-    mID = AppPaths::GetCurrentUserId();
+    mID = AppSettings::Instance()->getCurrentUserId();
     if (mID == 0) {
         return false;
     }
 
-    const auto fileName = AppPaths::UserDataFile();
+    const auto fileName = AppSettings::UserDataFile();
 
     if (isFileExists(fileName)) {
         QFile file(fileName);

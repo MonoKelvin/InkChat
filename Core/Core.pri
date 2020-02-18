@@ -7,7 +7,6 @@ HEADERS += \
         $$PWD/Http/ILoginOperation.h \
     $$PWD/IChatObject.h \
         $$PWD/InkChatApi.h \
-    $$PWD/Singleton.h \
         $$PWD/User.h \
         $$PWD/Utility.h \
     $$PWD/MyFriend.h

@@ -2,6 +2,7 @@
 
 #include <Http/HttpRequest.h>
 
+#include <QDateTime>
 #include <QDir>
 
 bool isDirExists(const QString& fullPath, bool makeIfNull, bool recursion)
@@ -55,4 +56,18 @@ void getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack)
 
         callBack(QPixmap(), QStringLiteral("IMAGE_LOAD_FAILED"));
     });
+}
+
+const QString GetMessageTime(const QDateTime& time)
+{
+    const auto curTime = QDateTime::currentDateTime();
+    const auto days = time.daysTo(curTime);
+
+    if (days < 1) {
+        return time.time().toString(QStringLiteral("hh:mm"));
+    } else if (days <= 7) {
+        return QString::number(days) + QObject::tr("天前");
+    } else {
+        return time.date().toString(QStringLiteral("yyyy-MM-dd"));
+    }
 }
