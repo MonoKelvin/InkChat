@@ -105,6 +105,9 @@ void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
     Q_UNUSED(engine)
     Q_ASSERT(QmlEngine != nullptr);
 
+    // 注册C++类型到QML
+    qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is an interface");
+    qmlRegisterUncreatableType<IChatItem>("ChatItem", 1, 0, "ChatItem", "Cannot create ChatItem, because it is an interface");
     qmlRegisterSingletonType<User>("UserModel", 1, 0, "UserModel", User::QmlSingletonTypeProvider);
 
     MESSAGEPAGE_INITIALIZA

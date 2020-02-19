@@ -1,7 +1,6 @@
 ﻿#ifndef APPSETTINGS_H
 #define APPSETTINGS_H
 
-#include <IChatObject.h>
 #include <InkChatApi.h>
 
 #include <QSettings>
@@ -63,7 +62,7 @@ public:
      * @param size 要获取的大小
      * @return 返回头像http地址
      */
-    inline static const QString UserAvatarUrl(unsigned int id, IChatObject::EAvatarSize size = IChatObject::AvatarSizeThumb)
+    inline static const QString UserAvatarUrl(unsigned int id, int size = 45)
     {
         return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(id);
     }

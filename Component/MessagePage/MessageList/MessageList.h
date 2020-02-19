@@ -10,6 +10,8 @@ class MessageItem;
 class MessageList : public QAbstractListModel {
     Q_OBJECT
 
+    Q_DISABLE_COPY_MOVE(MessageList)
+
     friend class MessageDatabase;
 
 public:

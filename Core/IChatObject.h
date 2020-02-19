@@ -100,8 +100,10 @@ public:
         emit onlineStateChanged();
     }
 
-    inline QString getHostAddress(void) const { return mHostAddress; }
+    inline void setHostAddress(const QString& address) { mHostAddress = address; }
+    inline const QString getHostAddress(void) const { return mHostAddress; }
 
+    inline void setRoleType(const ERoleType& type) { mRoleType = type; }
     inline ERoleType getRoleType(void) const { return mRoleType; }
 
     /**

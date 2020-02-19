@@ -1,9 +1,7 @@
 ﻿#ifndef ILOGINOPERATION_H
 #define ILOGINOPERATION_H
 
-#include "../User.h"
-
-#include <QSharedPointer>
+#include <User.h>
 
 class QQmlApplicationEngine;
 

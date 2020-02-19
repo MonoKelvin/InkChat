@@ -3,7 +3,8 @@
         <file>MessagePage.qml</file>
         <file>MessageList/MessageList.qml</file>
         <file>ChatPage/ChatPage.qml</file>
-        <file>ChatPage/ChatItem.qml</file>
         <file>ChatPage/ChatInputer.qml</file>
+        <file>ChatPage/ChatItem.qml</file>
+        <file>ChatPage/TextChatItem.qml</file>
     </qresource>
 </RCC>

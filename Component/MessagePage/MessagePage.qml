@@ -1,40 +1,10 @@
 ﻿import QtQuick 2.0
 import QtGraphicalEffects 1.0
-import ChatPageManage 1.0
 import "qrc:/Element/"
 import "qrc:/MessagePage/ChatPage"
 import "qrc:/MessagePage/MessageList"
 
 Item {
-
-
-    /**
-     * @berif 显示聊天视图
-     * @param 传入的聊天对象，可以是群聊或单个用户
-     */
-    function showChatView(chatObj) {}
-
-    Component.onCompleted: {
-        const t = new Date()
-        const curTime = t.getHours() + ":" + t.getMinutes()
-
-        chatPage.refresh([{
-                              "avatar": "file:///D:/GraduationProject/build-InkChatQml-Desktop_Qt_5_14_0_MinGW_64_bit-Debug/app/icon/default_avatar.png",
-                              "messageType": ChatPageManage.Message,
-                              "sender": ChatPageManage.Ta,
-                              "name": "Tnoy Stack",
-                              "message": "this is a message",
-                              "sendTime": curTime
-                          }, {
-                              "avatar": null,
-                              "messageType": ChatPageManage.Message,
-                              "sender": ChatPageManage.Me,
-                              "name": "Tnoy Stack",
-                              "message": "this is a messagethis is a messagethis is a messagethis is a messagethis is a messagethis is a message",
-                              "sendTime": curTime
-                          }])
-    }
-
     ChatPage {
         id: chatPage
         height: parent.height

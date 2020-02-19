@@ -5,6 +5,13 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
+#define CHAT_MAJOR_VERSION 1
+#define CHAT_MINOR_VERSION 0
+#define CHAT_REVERSION 0
+
+/** 每次刷新时获取聊天消息的最大数量 */
+#define CHAT_MESSAGE_FECTH_COUNT 30
+
 /** 基本Url地址 */
 #define ApiBaseUrl QStringLiteral("http://inkchat.com/api")
 //#define BaseUrl       "http://localhost:8080";
@@ -23,10 +30,6 @@
 
 /** 获取好友信息 */
 #define MyFriendUrl QString(ApiBaseUrl + "/user/friend.php")
-
-#define CHAT_MAJOR_VERSION 1
-#define CHAT_MINOR_VERSION 0
-#define CHAT_REVERSION 0
 
 // 解析消息出错时发送失败信号
 #define EMIT_FAILED_MESSAGE(_JsonDoc_, _FailSignal_)                        \

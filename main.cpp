@@ -16,9 +16,6 @@ int main(int argc, char *argv[])
     app.setFont(font);
 #endif
 
-    // 注册C++类型到QML
-    qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is an interface");
-
     LOGINOPERATION_INITIALIZA
 
     QQmlApplicationEngine engine;

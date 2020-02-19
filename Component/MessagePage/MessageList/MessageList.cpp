@@ -23,8 +23,7 @@ MessageList::MessageList(QObject* parent)
 
 MessageList::~MessageList()
 {
-    qDeleteAll(mMessages.begin(), mMessages.end());
-    mMessages.clear();
+    clearMessage();
 
     SAFE_DELETE(mMutex);
 }

@@ -1,6 +1,7 @@
 ﻿#include "MessageDatabase.h"
 
 #include <AppSettings.h>
+#include <ChatView.h>
 #include <MessageItem.h>
 #include <MessageList.h>
 #include <MyFriend.h>
@@ -29,6 +30,43 @@ QSqlError MessageDatabase::initDatabase()
         return mDatabase.lastError();
     }
 
+    QSqlQuery q;
+    if (q.prepare("insert into chatrecord (uid,type,isMe,time,data) values (?,?,?,?,?)")) {
+        q.addBindValue(2);
+        q.addBindValue(1);
+        q.addBindValue(true);
+        q.addBindValue(QDateTime::currentDateTime());
+        q.addBindValue("上一条消息，上一条消息上一条消息上一条消息");
+        q.exec();
+
+        q.addBindValue(2);
+        q.addBindValue(1);
+        q.addBindValue(false);
+        q.addBindValue(QDateTime::currentDateTime());
+        q.addBindValue("上一条消息，上一条消息上一条消息上一条消息，上一条消息一条消息，上一条消息上一条消息上一条消息，上一条消息");
+        q.exec();
+
+        q.addBindValue(2);
+        q.addBindValue(1);
+        q.addBindValue(true);
+        q.addBindValue(QDateTime::currentDateTime());
+        q.addBindValue("上");
+        q.exec();
+
+        q.addBindValue(2);
+        q.addBindValue(1);
+        q.addBindValue(false);
+        q.addBindValue(QDateTime::currentDateTime());
+        q.addBindValue("上一条消息");
+        q.exec();
+    }
+
+    if (q.exec(QStringLiteral("select * from chatrecord"))) {
+        while (q.next()) {
+            qDebug() << q.value(5);
+        }
+    }
+
     const QStringList tables = mDatabase.tables();
     if (tables.contains(QStringLiteral("message"), Qt::CaseInsensitive)
         || tables.contains(QStringLiteral("chatrecord"), Qt::CaseInsensitive)) {
@@ -50,10 +88,10 @@ QSqlError MessageDatabase::initDatabase()
         create table chatrecord(
             id integer primary key autoincrement,
             uid integer unsigned,
-            is_me boolean,
+            type integer,
+            isMe boolean,
             time datetime,
-            msg_type tinyint,
-            message text
+            data text
         ))");
 
     QSqlQuery query;
@@ -70,7 +108,7 @@ QSqlError MessageDatabase::initDatabase()
 bool MessageDatabase::loadMessageItems(MessageList* list)
 {
     QSqlQuery query;
-    /* if (query.prepare("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)")) {
+    if (query.prepare("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)")) {
         query.addBindValue(2);
         query.addBindValue(true);
         query.addBindValue(IChatObject::Friend);
@@ -97,7 +135,7 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         query.addBindValue(1);
         query.addBindValue(false);
         query.exec();
-    }*/
+    }
 
     if (!query.exec(QStringLiteral("select uid,roleType,lastMsg,lastTime,unreadMsgCount,readFlag from message where chat='1'"))) {
         return false;
@@ -130,6 +168,37 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
     }
 
     list->adjustMessageOrder();
+
+    return true;
+}
+#include <IChatItem.h>
+bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int id, IChatObject::ERoleType roleType)
+{
+    const auto SqlCommond = QStringLiteral("select (id,type,isMe,time,data) from chatrecord limit %1 offset %2");
+
+    QSqlQuery q;
+    if (!q.exec(SqlCommond.arg(CHAT_MESSAGE_FECTH_COUNT).arg(chatView->rowCount(QModelIndex())))) {
+        return false;
+    }
+
+    int type = 0;
+    while (q.next()) {
+        type = q.value(1).toInt();
+
+        QSharedPointer<IChatItem> item = QSharedPointer<IChatItem>(chatView->buildChatItem(type));
+        if (item.isNull()) {
+            return false;
+        }
+
+        QVariantMap data;
+        data.insert("id", q.value(0).toUInt());
+        data.insert("type", type);
+        data.insert("isMe", q.value(2).toBool());
+        data.insert("time", q.value(3).toDateTime());
+        data.insert("data", q.value(4));
+
+        item->unpackage(data);
+    }
 
     return true;
 }

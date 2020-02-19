@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.12
 import QtGraphicalEffects 1.0
-import ChatPageManage 1.0
+import ChatListModel 1.0
+import ChatItem 1.0
 import "qrc:/Element/"
 
 Rectangle {
@@ -15,13 +16,15 @@ Rectangle {
         anchors.fill: parent
         topMargin: titleBar.height
 
-        model: ListModel {
+        model: ChatListModel {
             id: chatListModel
         }
+
         delegate: Loader {
             width: chatListView.width
-            source: "ChatItem.qml"
+            source: model.chatRole.qmlFile()
         }
+
         footer: Loader {
             id: inputer
             z: 10
@@ -33,6 +36,7 @@ Rectangle {
                 anchors.fill: parent
                 onWheel: {
 
+                    // nothing to do.
                 }
             }
         }
@@ -47,9 +51,7 @@ Rectangle {
     Text {
         id: nochatText
         text: qsTr("暂时没有聊天消息...")
-        anchors.fill: parent
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
+        anchors.centerIn: parent
         font.pixelSize: appTheme.stdTextSize
         color: appTheme.subTextColor
         visible: false
@@ -112,21 +114,5 @@ Rectangle {
         // chatListModel.clear();
         nochatText.visible = true
         titleName = qsTr("聊天")
-    }
-
-    function refresh(items) {
-        chatListModel.clear()
-        for (var index = 0; index < items.length; index++) {
-            var buf = items[index]
-            chatListModel.append({
-                                     "_avatar": buf["avatar"] ? buf["avatar"] : "",
-                                     "_messageType": buf["messageType"],
-                                     "_name": buf["name"],
-                                     "_message": buf["message"],
-                                     "_sendTime": buf["sendTime"],
-                                     "_sendState": buf["sendState"] ? buf["sendState"] : ChatPageManage.Sending,
-                                     "_sender": buf["sender"]
-                                 })
-        }
     }
 }
