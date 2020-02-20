@@ -1,6 +1,10 @@
 ﻿#include "ChatView.h"
 
-#include <IChatItem.h>
+#include <AppSettings.h>
+#include <MessageDatabase.h>
+#include <Utility.h>
+
+QHash<int, QByteArray> ChatView::mRegistryChatClasses;
 
 ChatView::ChatView(QObject* parent)
     : QAbstractListModel(parent)
@@ -10,6 +14,29 @@ ChatView::ChatView(QObject* parent)
 ChatView::~ChatView()
 {
     clear();
+}
+
+IChatItem* ChatView::buildChatItem(int chatType)
+{
+    const auto className = mRegistryChatClasses.value(chatType);
+    const auto id = QMetaType::type(className);
+
+    // 通过反射机制创建实例
+    IChatItem* chat = nullptr;
+    if (id != QMetaType::UnknownType) {
+        chat = static_cast<IChatItem*>(QMetaType::create(id));
+    }
+
+    return chat;
+}
+
+void ChatView::load(unsigned int id)
+{
+    isFileExists(AppSettings::MessageCacheFile(), true);
+
+    if (!MessageDatabase::Instance()->loadChatMessages(this, id)) {
+        emit failed(tr("聊天记录加载失败，请重新刷新"));
+    }
 }
 
 void ChatView::clearChatRecord()
@@ -51,7 +78,7 @@ void ChatView::removeChatItem(int row, bool cascade)
     }
 }
 
-bool ChatView::insertMessage(int row, IChatItem* chat)
+bool ChatView::insertChat(int row, IChatItem* chat)
 {
     if (row >= 0 && row <= mChats.size()) {
         beginInsertRows(QModelIndex(), row, row);
@@ -74,7 +101,7 @@ bool ChatView::sendChat(IChatItem* chat)
 {
     // todo: 更新数据库
 
-    return insertMessage(mChats.size(), chat);
+    return insertChat(mChats.size(), chat);
 }
 
 QVariant ChatView::data(const QModelIndex& index, int role) const
@@ -82,7 +109,7 @@ QVariant ChatView::data(const QModelIndex& index, int role) const
     Q_UNUSED(role)
 
     if (index.row() >= 0 && index.row() < mChats.size()) {
-        if (role == IChatItem::ChatItemRole) {
+        if (role >= 0) {
             return QVariant::fromValue(mChats.at(index.row()));
         }
     }
@@ -93,17 +120,10 @@ QVariant ChatView::data(const QModelIndex& index, int role) const
 bool ChatView::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     if (index.row() >= 0 && index.row() < mChats.size()) {
-        if (role == IChatItem::ChatItemRole) {
+        if (role >= 0) {
             mChats.replace(index.row(), value.value<IChatItem*>());
             return true;
         }
     }
     return false;
-}
-
-QHash<int, QByteArray> ChatView::roleNames() const
-{
-    QHash<int, QByteArray> names;
-    names[IChatItem::ChatItemRole] = QByteArrayLiteral("chatRole");
-    return names;
 }

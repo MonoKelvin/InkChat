@@ -49,12 +49,11 @@ public:
      * @brief 加载聊天消息到聊天视图中
      * @param chatView 聊天视图 @see ChatView
      * @param id 聊天对象ID
-     * @param roleType 聊天对象类型
      * @return 加载成功返回true，否则返回false
      * @note 每次加载指定数量的聊天消息，最大为 @see CHAT_MESSAGE_FECTH_COUNT。加载时不
      * 会覆盖已加载的消息。
      */
-    bool loadChatMessages(ChatView* chatView, unsigned int id, IChatObject::ERoleType roleType);
+    bool loadChatMessages(ChatView* chatView, unsigned int id);
 
 private:
     Q_DISABLE_COPY_MOVE(MessageDatabase)

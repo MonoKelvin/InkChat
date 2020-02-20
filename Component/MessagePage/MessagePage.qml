@@ -36,7 +36,7 @@ Item {
         //     horizontalOffset: 1
         // }
         onItemClicked: {
-            console.log(msgId)
+            chatPage.loadChatRecord(chatObject)
         }
     }
 }

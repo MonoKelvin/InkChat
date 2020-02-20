@@ -6,6 +6,9 @@
 #include <QDateTime>
 #include <QSharedPointer>
 
+#define CHATITEM_CLASS(_ClassName_) \
+    Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr);
+
 /**
  * @brief 聊天消息基类，可以实现自定义聊天内容。比如消息气泡，文件、图片、视频等聊天内容
  */
@@ -13,26 +16,36 @@ class IChatItem : public QObject
 {
     Q_OBJECT
 
-    Q_DISABLE_COPY_MOVE(IChatItem)
-
-    friend class MessageDatabase;
     friend class ChatView;
 
 private:
     Q_PROPERTY(ESendState sendState READ getSendState WRITE setSendState NOTIFY sendStateChanged)
     Q_PROPERTY(unsigned int id READ getChatId CONSTANT)
     Q_PROPERTY(QString time READ getMessageTime CONSTANT)
-    Q_PROPERTY(IChatObject* sender READ getSender CONSTANT)
+    Q_PROPERTY(IChatObject *sender READ getSender CONSTANT)
 
 public:
     explicit IChatItem(QObject* parent = nullptr);
+    explicit IChatItem(const IChatItem& item);
     virtual ~IChatItem();
 
     /**
-     * @brief 角色类型枚举。子类必须重新定义不一样的值
+     * @brief 聊天项类型
+     * @note 子类必须设置ChatType为不同值来作为聊天项角色标记，若有多个自定义类，需要为每一
+     * 个ChatType重新定义不同的值。且所有值必须大于 @see Qt::UserRole
+     * @example
+     *
+     * class MyChatItem : public IChatItem
+     * {
+     * public:
+     *      enum { ChatType = Qt::UserRole + 1 }
+     *
+     *      // ...
+     * }
      */
-    enum ERole {
-        ChatItemRole = Qt::UserRole + 1
+    enum
+    {
+        ChatType = Qt::UserRole
     };
 
     /**
@@ -49,21 +62,14 @@ public:
     Q_ENUM(ESendState)
 
     inline ESendState getSendState(void) const { return mSendState; }
-    void setSendState(const ESendState& sendState);
-
-    /**
-     * @brief 获得qml组件文件路径。聊天视图中如果发送该类型的聊天控件，则使用的qml组件文件为其返回值
-     * @return 返回qml组件文件。
-     * @note 该组件文件必须包含在qrc文件中
-     */
-    Q_INVOKABLE virtual const QString qmlFile() = 0;
+    void setSendState(const ESendState &sendState);
 
     /**
      * @brief 获得消息的发送者
      * @note 默认角色类型为ERoleType::Me的发送对象是在聊天视图@see ChatView 的右边显示；
      * 其他类型都是在左边显示。
      */
-    inline IChatObject* getSender(void) const
+    inline IChatObject *getSender(void) const
     {
         return mChatObject.data();
     }
@@ -71,14 +77,22 @@ public:
     inline unsigned int getChatId(void) const { return mChatId; }
     inline void setChatId(unsigned int chatId) { mChatId = chatId; }
 
+    inline const QDateTime getTime(void) const { return mTime; }
+    inline void setTime(const QDateTime &time) { mTime = time; }
+
     /**
      * @brief 获得处理后的消息时间
      * @return 返回处理后的消息字符串，默认处理函数为 @see GetMessageTime
      * @see getTime
      */
     virtual const QString getMessageTime(void);
-    inline const QDateTime getTime(void) const { return mTime; }
-    inline void setTime(const QDateTime& time) { mTime = time; }
+
+    /**
+     * @brief 获得qml组件文件路径。聊天视图中如果发送该类型的聊天控件，则使用的qml组件文件为其返回值
+     * @return 返回qml组件文件。
+     * @note 该组件文件必须包含在qrc文件中
+     */
+    virtual const QString qmlFile() = 0;
 
     /**
      * @brief 接收数据抽象方法，旨在从网络信道接收数据，解析后给成员赋值。
@@ -99,14 +113,14 @@ public:
      * @param data 将数据封装到容器输出。第一位是数据名称，第二位参数是数据
      * @note 传出的数据会递交给数据库处理或发送消息，逆过程要和 @see unpackage 一致
      */
-    virtual void package(QVariantMap& data) = 0;
+    virtual void package(QVariantMap &data) = 0;
 
     /**
      * @brief 解包数据方法
      * @param data 来自外界的数据，进行内部处理。第一位是数据名称，第二位参数是数据
      * @note 一般用于从数据库中回复和接收消息，逆过程要和 @see package 一致
      */
-    virtual void unpackage(QVariantMap& data) = 0;
+    virtual void unpackage(QVariantMap &data) = 0;
 
 Q_SIGNALS:
     void sendStateChanged();

@@ -3,6 +3,7 @@ import QtGraphicalEffects 1.0
 import ChatListModel 1.0
 import ChatItem 1.0
 import "qrc:/Element/"
+import "qrc:/js/js/Utility.js" as Utility
 
 Rectangle {
     property alias titleName: titleNameText.text
@@ -10,19 +11,44 @@ Rectangle {
     color: appTheme.backgroundColor
     titleName: qsTr("聊天")
 
+    // 加载聊天视图，参数为聊天对象
+    function loadChatRecord(chatObject) {
+        nochatText.visible = false
+
+        titleName = chatObject.nickName
+        chatListModel.load(chatObject.id)
+    }
+
     ListView {
         id: chatListView
         width: parent.width
         anchors.fill: parent
         topMargin: titleBar.height
 
+        Text {
+            id: nochatText
+            text: qsTr("暂时没有聊天消息...")
+            anchors.centerIn: parent
+            font.pixelSize: appTheme.stdTextSize
+            color: appTheme.subTextColor
+            visible: true
+        }
+
         model: ChatListModel {
             id: chatListModel
+
+            onFailed: {
+                Utility.createToast(msg, window)
+
+                // 加载失败就设置为空的视图
+                nochatText.visible = false
+                titleName = qsTr("聊天")
+            }
         }
 
         delegate: Loader {
             width: chatListView.width
-            source: model.chatRole.qmlFile()
+            source: model.chatItem.qmlFile()
         }
 
         footer: Loader {
@@ -46,15 +72,6 @@ Rectangle {
             if (contentY > -titleBar.height)
                 blurEffect.update()
         }
-    }
-
-    Text {
-        id: nochatText
-        text: qsTr("暂时没有聊天消息...")
-        anchors.centerIn: parent
-        font.pixelSize: appTheme.stdTextSize
-        color: appTheme.subTextColor
-        visible: false
     }
 
     // 分割线
@@ -103,16 +120,5 @@ Rectangle {
             anchors.rightMargin: appTheme.stdSpacing
             anchors.verticalCenter: parent.verticalCenter
         }
-    }
-
-
-    /**
-     * 设置为空视图
-     */
-    function setVoidView() {
-        chatListView.visible = false
-        // chatListModel.clear();
-        nochatText.visible = true
-        titleName = qsTr("聊天")
     }
 }

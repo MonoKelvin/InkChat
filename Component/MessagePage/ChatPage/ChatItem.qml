@@ -23,7 +23,7 @@ Item {
     RowLayout {
         id: chatLayout
         spacing: appTheme.narrowSpacing
-        margins: ppTheme.stdSpacing
+        margins: appTheme.stdSpacing
 
         Avatar {
             id: avatar

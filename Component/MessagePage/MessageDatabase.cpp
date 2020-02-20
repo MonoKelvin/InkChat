@@ -12,6 +12,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+const auto SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 limit %2 offset %3");
+
 MessageDatabase::MessageDatabase()
 {
 }
@@ -28,43 +30,6 @@ QSqlError MessageDatabase::initDatabase()
 
     if (!mDatabase.open()) {
         return mDatabase.lastError();
-    }
-
-    QSqlQuery q;
-    if (q.prepare("insert into chatrecord (uid,type,isMe,time,data) values (?,?,?,?,?)")) {
-        q.addBindValue(2);
-        q.addBindValue(1);
-        q.addBindValue(true);
-        q.addBindValue(QDateTime::currentDateTime());
-        q.addBindValue("上一条消息，上一条消息上一条消息上一条消息");
-        q.exec();
-
-        q.addBindValue(2);
-        q.addBindValue(1);
-        q.addBindValue(false);
-        q.addBindValue(QDateTime::currentDateTime());
-        q.addBindValue("上一条消息，上一条消息上一条消息上一条消息，上一条消息一条消息，上一条消息上一条消息上一条消息，上一条消息");
-        q.exec();
-
-        q.addBindValue(2);
-        q.addBindValue(1);
-        q.addBindValue(true);
-        q.addBindValue(QDateTime::currentDateTime());
-        q.addBindValue("上");
-        q.exec();
-
-        q.addBindValue(2);
-        q.addBindValue(1);
-        q.addBindValue(false);
-        q.addBindValue(QDateTime::currentDateTime());
-        q.addBindValue("上一条消息");
-        q.exec();
-    }
-
-    if (q.exec(QStringLiteral("select * from chatrecord"))) {
-        while (q.next()) {
-            qDebug() << q.value(5);
-        }
     }
 
     const QStringList tables = mDatabase.tables();
@@ -108,7 +73,39 @@ QSqlError MessageDatabase::initDatabase()
 bool MessageDatabase::loadMessageItems(MessageList* list)
 {
     QSqlQuery query;
-    if (query.prepare("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)")) {
+
+    /*if (query.prepare("insert into chatrecord (uid,type,isMe,time,data) values (?,?,?,?,?)")) {
+        query.addBindValue(2);
+        query.addBindValue(1);
+        query.addBindValue(true);
+        query.addBindValue(QDateTime::currentDateTime());
+        query.addBindValue("上一条消息，上一条消息上一条消息上一条消息");
+        query.exec();
+
+        query.addBindValue(2);
+        query.addBindValue(1);
+        query.addBindValue(false);
+        query.addBindValue(QDateTime::currentDateTime());
+        query.addBindValue("上一条消息，上一条消息上一条消息上一条消息，上一条消息一条消息，上一条消息上一条消息上一条消息，上一条消息");
+        query.exec();
+
+        query.addBindValue(2);
+        query.addBindValue(1);
+        query.addBindValue(true);
+        query.addBindValue(QDateTime::currentDateTime());
+        query.addBindValue("上");
+        query.exec();
+
+        query.addBindValue(2);
+        query.addBindValue(1);
+        query.addBindValue(false);
+        query.addBindValue(QDateTime::currentDateTime());
+        query.addBindValue("上一条消息");
+        query.exec();
+        if (!query.exec(QStringLiteral("select * from chatrecord"))) {
+            qDebug() << query.lastError();
+        }
+    }if (query.prepare("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)")) {
         query.addBindValue(2);
         query.addBindValue(true);
         query.addBindValue(IChatObject::Friend);
@@ -135,7 +132,7 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         query.addBindValue(1);
         query.addBindValue(false);
         query.exec();
-    }
+    }*/
 
     if (!query.exec(QStringLiteral("select uid,roleType,lastMsg,lastTime,unreadMsgCount,readFlag from message where chat='1'"))) {
         return false;
@@ -171,33 +168,35 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
 
     return true;
 }
-#include <IChatItem.h>
-bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int id, IChatObject::ERoleType roleType)
-{
-    const auto SqlCommond = QStringLiteral("select (id,type,isMe,time,data) from chatrecord limit %1 offset %2");
 
+bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int id)
+{
     QSqlQuery q;
-    if (!q.exec(SqlCommond.arg(CHAT_MESSAGE_FECTH_COUNT).arg(chatView->rowCount(QModelIndex())))) {
+    if (!q.exec(SqlQueryChatById.arg(id).arg(CHAT_MESSAGE_FECTH_COUNT).arg(chatView->rowCount(QModelIndex())))) {
+        qDebug() << q.lastError();
         return false;
     }
 
     int type = 0;
     while (q.next()) {
+        // 聊天类型
         type = q.value(1).toInt();
 
-        QSharedPointer<IChatItem> item = QSharedPointer<IChatItem>(chatView->buildChatItem(type));
-        if (item.isNull()) {
+        IChatItem* item = chatView->buildChatItem(type);
+        if (nullptr == item) {
             return false;
         }
 
         QVariantMap data;
-        data.insert("id", q.value(0).toUInt());
-        data.insert("type", type);
-        data.insert("isMe", q.value(2).toBool());
-        data.insert("time", q.value(3).toDateTime());
-        data.insert("data", q.value(4));
+        data.insert(QStringLiteral("id"), q.value(0).toUInt());
+        data.insert(QStringLiteral("type"), type);
+        data.insert(QStringLiteral("isMe"), q.value(2).toBool());
+        data.insert(QStringLiteral("time"), q.value(3).toDateTime());
+        data.insert(QStringLiteral("data"), q.value(4));
 
         item->unpackage(data);
+
+        chatView->appendChat(item);
     }
 
     return true;

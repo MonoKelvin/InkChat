@@ -9,7 +9,7 @@ Rectangle {
     id: messageList
     color: appTheme.backgroundColor
 
-    signal itemClicked(var msgId)
+    signal itemClicked(var chatObject)
 
     Component.onCompleted: {
         listModel.load()
@@ -229,8 +229,9 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     msgListView.currentIndex = index
-                    // messageList.itemClicked(msgItem.chatObject.id)
                     msgItem.readFlag = true
+
+                    messageList.itemClicked(msgItem.chatObject)
                 }
             }
         }

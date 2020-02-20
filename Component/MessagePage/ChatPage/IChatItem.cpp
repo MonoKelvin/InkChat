@@ -11,6 +11,14 @@ IChatItem::IChatItem(QObject* parent)
 {
 }
 
+IChatItem::IChatItem(const IChatItem& item)
+    : mSendState(item.mSendState)
+    , mChatId(item.mChatId)
+    , mTime(item.mTime)
+    , mChatObject(item.mChatObject)
+{
+}
+
 IChatItem::~IChatItem()
 {
     mChatObject.clear();

@@ -13,13 +13,12 @@ class TextChatItem : public IChatItem
     Q_OBJECT
     Q_PROPERTY(QString text READ getText CONSTANT)
 public:
-    TextChatItem(QObject* parent = nullptr);
+    CHATITEM_CLASS(TextChatItem)
+
+    enum { ChatType = 1 };
 
     inline const QString getText() const { return mText; }
     inline void setText(const QString& text) { mText = text; }
-
-    void receiveData(QByteArray& data) override;
-    void sendData(QByteArray& data) override;
 
     void package(QVariantMap& data) override;
     void unpackage(QVariantMap& data) override;
