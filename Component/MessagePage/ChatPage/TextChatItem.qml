@@ -16,7 +16,6 @@ ChatItem {
             color: message.color
         }
 
-        // remove
         TextEdit {
             id: msgText
             text: chatItem.text
@@ -32,7 +31,7 @@ ChatItem {
     }
 
     Component.onCompleted: {
-        if (chatItem.chatObject.roleType !== ChatObject.Me) {
+        if (chatItem.sender.roleType !== ChatObject.Me) {
             message.color = appTheme.leftBubbleColor
             msgText.color = appTheme.leftBubbleTextColor
             corner.anchors.left = message.left

@@ -189,6 +189,7 @@ bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int id)
 
         QVariantMap data;
         data.insert(QStringLiteral("id"), q.value(0).toUInt());
+        data.insert(QStringLiteral("uid"), id);
         data.insert(QStringLiteral("type"), type);
         data.insert(QStringLiteral("isMe"), q.value(2).toBool());
         data.insert(QStringLiteral("time"), q.value(3).toDateTime());

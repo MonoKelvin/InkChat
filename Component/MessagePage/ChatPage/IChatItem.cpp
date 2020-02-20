@@ -1,5 +1,7 @@
 ﻿#include "IChatItem.h"
 
+#include <MyFriend.h>
+#include <User.h>
 #include <Utility.h>
 
 #include <QVariantMap>
@@ -21,7 +23,9 @@ IChatItem::IChatItem(const IChatItem& item)
 
 IChatItem::~IChatItem()
 {
-    mChatObject.clear();
+    if (mChatObject) {
+        mChatObject.clear();
+    }
 }
 
 void IChatItem::setSendState(const IChatItem::ESendState& sendState)
@@ -42,10 +46,14 @@ void IChatItem::unpackage(QVariantMap& data)
 {
     mChatId = data.value(QStringLiteral("id")).toUInt();
     mTime = data.value(QStringLiteral("time")).toDateTime();
+
+    const auto uid = data.value(QStringLiteral("uid")).toUInt();
+    mChatObject = User::Instance()->getFriendById(uid);
 }
 
 void IChatItem::package(QVariantMap& data)
 {
     data.insert(QStringLiteral("id"), mChatId);
+    data.insert(QStringLiteral("uid"), mChatObject->getID());
     data.insert(QStringLiteral("time"), mTime);
 }

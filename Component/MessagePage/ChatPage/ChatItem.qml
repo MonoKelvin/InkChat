@@ -12,7 +12,7 @@ Item {
     property var content: null
 
     // C++中对应的IChatItem对象
-    readonly property var chatItem: model.chatRole
+    readonly property var chatItem: model.chatItem
 
     // 内容的真实宽度，其最大宽度不大于该聊天项的0.7倍
     property int contentReadWidth
@@ -23,11 +23,12 @@ Item {
     RowLayout {
         id: chatLayout
         spacing: appTheme.narrowSpacing
-        margins: appTheme.stdSpacing
+        anchors.fill: parent
+        anchors.margins: appTheme.stdSpacing
 
         Avatar {
             id: avatar
-            imageSource: chatItem.chatObject.avatar
+            imageSource: chatItem.sender.avatar
         }
 
         ColumnLayout {
@@ -44,7 +45,7 @@ Item {
                 elide: Text.ElideRight
                 height: avatar.height / 2
                 visible: false
-                text: chatItem.chatObject.name
+                text: chatItem.sender.nickName
             }
 
             Item {
@@ -80,8 +81,8 @@ Item {
             return
 
         // 名称
-        if (chatItem.chatObject.roleType === ChatObject.LAN
-                || chatItem.chatObject.roleType === ChatObject.Group) {
+        if (chatItem.sender.roleType === ChatObject.LAN
+                || chatItem.sender.roleType === ChatObject.Group) {
             name.visible = true
         }
 

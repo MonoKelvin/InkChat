@@ -65,6 +65,12 @@ private:
 
     // 我的好友
     QList<MyFriend*> mFriends;
+
+    // 局域网聊天对象
+    // QList<LANChat*> mLANs;
+
+    // 群聊聊天对象
+    // QList<GroupChat*> mGroups;
 };
 
 #endif // USER_H

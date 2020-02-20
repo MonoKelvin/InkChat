@@ -4,7 +4,7 @@
 #include <IChatObject.h>
 
 #include <QDateTime>
-#include <QSharedPointer>
+#include <QPointer>
 
 #define CHATITEM_CLASS(_ClassName_) \
     Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr);
@@ -144,7 +144,7 @@ protected:
     QDateTime mTime;
 
     /** 发送聊天消息的对象 */
-    QSharedPointer<IChatObject> mChatObject;
+    QPointer<IChatObject> mChatObject;
 };
 
 #endif // ICHATITEM_H

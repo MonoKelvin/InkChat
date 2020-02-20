@@ -7,7 +7,7 @@
 #include <QTextCodec>
 
 /** Http请求超时间隔 */
-#define HTTP_TIMEOUT 6000
+#define HTTP_TIMEOUT 10000
 
 HttpRequest::HttpRequest(QObject *parent)
     : QObject(parent)
