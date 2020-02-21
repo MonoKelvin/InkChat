@@ -2,6 +2,8 @@
 
 #include <AppSettings.h>
 #include <MessageDatabase.h>
+#include <MyFriend.h>
+#include <User.h>
 #include <Utility.h>
 
 QHash<int, QByteArray> ChatView::mRegistryChatClasses;
@@ -16,7 +18,7 @@ ChatView::~ChatView()
     clear();
 }
 
-IChatItem* ChatView::buildChatItem(int chatType)
+IChatItem* ChatView::buildChatItem(int chatType, bool isMe, unsigned int uid)
 {
     const auto className = mRegistryChatClasses.value(chatType);
     const auto id = QMetaType::type(className);
@@ -25,9 +27,41 @@ IChatItem* ChatView::buildChatItem(int chatType)
     IChatItem* chat = nullptr;
     if (id != QMetaType::UnknownType) {
         chat = static_cast<IChatItem*>(QMetaType::create(id));
+
+        if (isMe) {
+            chat->mChatObject = User::Instance();
+        } else {
+            chat->mChatObject = User::Instance()->getFriendById(uid);
+        }
     }
 
     return chat;
+}
+
+IChatItem* ChatView::buildChatItem(int chatType, const QDateTime& time, const QVariant& data)
+{
+    const auto item = buildChatItem(chatType, true, User::Instance()->getID());
+    if (nullptr == item) {
+        return nullptr;
+    }
+
+    item->mTime = time;
+    item->praseData(data);
+
+    return item;
+}
+
+IChatItem* ChatView::buildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data)
+{
+    const auto item = buildChatItem(chatType, false, uid);
+    if (nullptr == item) {
+        return nullptr;
+    }
+
+    item->mTime = time;
+    item->praseData(data);
+
+    return item;
 }
 
 void ChatView::load(unsigned int id)
@@ -97,11 +131,24 @@ int ChatView::rowCount(const QModelIndex& parent) const
     return mChats.size();
 }
 
-bool ChatView::sendChat(IChatItem* chat)
+void ChatView::sendChat(const QString& msg)
 {
-    // todo: 更新数据库
+    const auto time = QDateTime::currentDateTime();
+    IChatItem* item = buildChatItem(IChatItem::Text, time, msg);
+    if (nullptr == item) {
+        emit failed(tr("消息项无效"));
+        return;
+    }
 
-    return insertChat(mChats.size(), chat);
+    if (!insertChat(mChats.size(), item)) {
+        emit failed(tr("消息发送失败"));
+        delete item;
+        item = nullptr;
+    }
+
+    if (!MessageDatabase::Instance()->saveAChatRecord(item)) {
+        emit failed(tr("聊天记录保存到本地失败"));
+    }
 }
 
 QVariant ChatView::data(const QModelIndex& index, int role) const

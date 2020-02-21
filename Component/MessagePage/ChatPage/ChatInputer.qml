@@ -10,6 +10,9 @@ Item {
 
     Component.onCompleted: foldUpHeight = height
 
+    // 当发送消息时的信号
+    signal sendChat(string content)
+
     onFoldUpChanged: {
         if (foldUp) {
             height = textBox.y + textBox.anchors.topMargin
@@ -33,23 +36,29 @@ Item {
 
     IconButton {
         id: sendIcon
+        width: 40
+        height: 40
+        radius: 20
+        normalColor: appTheme.primaryColor1
+        clickedColor: appTheme.primaryActiveColor1
         anchors {
             bottom: inputPanel.top
             bottomMargin: appTheme.narrowSpacing
             right: inputPanel.right
             rightMargin: appTheme.stdSpacing
         }
-        width: 40
-        height: 40
-        radius: 20
-        normalColor: appTheme.primaryColor1
-        clickedColor: appTheme.primaryActiveColor1
         layer.enabled: true
         layer.effect: DropShadow {
             radius: 12
             samples: 17
             color: Qt.lighter(appTheme.primaryColor1, 1.2)
             verticalOffset: 5
+        }
+        onClicked: {
+            if (textBox.text !== '') {
+                sendChat(textBox.text)
+                textBox.text = ''
+            }
         }
 
         Behavior on opacity {

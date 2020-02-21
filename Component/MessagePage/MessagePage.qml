@@ -2,9 +2,9 @@
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
 import "qrc:/MessagePage/MessageList"
+import "qrc:/js/js/Utility.js" as Utility
 
 Item {
-
     // 聊天视图加载器
     Item {
         id: chatContains
@@ -23,9 +23,10 @@ Item {
             property var chatObject
 
             onTriggered: {
-                if (chatObject === "")
+                if (chatObject === null)
                     return
 
+                // 如果该页面时没有打开过的动态加载一份
                 if (!(chatObject in chatContains.chatPages)) {
                     var component = Qt.createComponent(
                                 "qrc:/MessagePage/ChatPage/ChatPage.qml")
@@ -33,18 +34,67 @@ Item {
                     if (component.status === Component.Ready) {
                         var page = component.createObject(chatContains)
                         page.anchors.fill = chatContains
-                        chatContains.chatPages[chatObject] = page
+
+                        chatContains.chatPages[chatObject] = {
+                            "page": page,
+                            "time": Utility.currentTimeNumber()
+                        }
+
                         page.loadChatRecord(chatObject)
                     }
                 }
 
+                // 取消其他页面的可见性
                 for (var key in chatContains.chatPages) {
-                    chatContains.chatPages[key].visible = false
+                    chatContains.chatPages[key].page.visible = false
                 }
 
-                chatContains.chatPages[chatObject].visible = true
+                // 更新最近使用时间
+                chatContains.chatPages[chatObject].time = Utility.currentTimeNumber()
+                // 设为可见
+                chatContains.chatPages[chatObject].page.visible = true
             }
         }
+
+        // 用于定时销毁聊天页面的计时器，节约系统资源
+        Timer {
+            id: destroyPageTimer
+
+            // 每3分钟检查一遍
+            interval: 180000
+            repeat: true
+            running: true
+
+            // 使用最近未使用算法销毁页面
+            onTriggered: {
+                // 最小时间，表示最早使用的页面，初始化为无限大
+                var minTime = Infinity
+                // 页面总数
+                var count = 0
+
+                for (var key in chatContains.chatPages) {
+                    count++
+
+                    // 选择最早使用的页面
+                    if (chatContains.chatPages[key].time < minTime)
+                        minTime = chatContains.chatPages[key].time
+                }
+
+                // 超过6个页面就释放资源
+                if (count > 6) {
+                    for (var i in chatContains.chatPages) {
+                        // 销毁最早使用的页面
+                        if (minTime === chatContains.chatPages[i].time) {
+                            chatContains.chatPages[i].page.destroy()
+                            delete chatContains.chatPages[i]
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        Component.onCompleted: destroyPageTimer.start()
     }
 
     // 分割线

@@ -89,10 +89,10 @@ public:
 public Q_SLOTS:
     /**
      * @brief 发送一条聊天消息，并会改变数据库的内容
-     * @param message 消息项
-     * @return 发送成功并更新数据库成功返回true，否则返回false
+     * @param msg 普通文本消息
+     * @note 该方法是最常用来发送普通消息，不能富文本、文件、图片等
      */
-    bool sendChat(IChatItem* chat);
+    void sendChat(const QString& msg);
 
 protected:
     QVariant data(const QModelIndex& index, int role) const override;
@@ -115,12 +115,35 @@ protected:
     bool insertChat(int row, IChatItem* chat);
 
     /**
-     * @brief 通过给定聊天类类型构建一个聊天控件
+     * @brief 通过给定聊天类类型构建一个空的聊天控件
      * @param chatType 聊天类型 @see IChatItem::ChatType
+     * @param isMe 是否是我发送的消息
+     * @param uid 用户id
      * @return 返回创建好的聊天类，如果创建失败则返回nullptr
      * @note 该方法构建的聊天消息不会推送到聊天视图中
      */
-    IChatItem* buildChatItem(int chatType);
+    IChatItem* buildChatItem(int chatType, bool isMe, unsigned int uid);
+
+    /**
+     * @brief 构建一个“我”发送的聊天控件
+     * @param chatType 聊天类型 @see IChatItem::ChatType
+     * @param time 发送时间
+     * @param data 发送的数据
+     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
+     * @note 注意，构建好的聊天数据不会保存到数据库
+     */
+    IChatItem* buildChatItem(int chatType, const QDateTime& time, const QVariant& data);
+
+    /**
+     * @brief 构建一个对方发送过来的聊天控件
+     * @param chatType 聊天类型 @see IChatItem::ChatType
+     * @param uid 与我聊天的用户id
+     * @param time 接收时间
+     * @param data 接收的数据
+     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
+     * @note 注意，构建好的聊天数据不会保存到数据库
+     */
+    IChatItem* buildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data);
 
 public Q_SLOTS:
     /**

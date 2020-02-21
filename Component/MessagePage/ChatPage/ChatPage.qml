@@ -45,6 +45,14 @@ Rectangle {
             width: chatListView.width
             source: "ChatInputer.qml"
 
+            // 接收来自输入框的信号
+            Connections {
+                target: inputer.item
+                onSendChat: {
+                    chatListModel.sendChat(content)
+                }
+            }
+
             // 防止鼠标事件穿透
             MouseArea {
                 anchors.fill: parent

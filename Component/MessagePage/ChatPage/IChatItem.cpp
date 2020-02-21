@@ -9,6 +9,7 @@
 IChatItem::IChatItem(QObject* parent)
     : QObject(parent)
     , mSendState(Sending)
+    , mChatId(-1)
     , mTime(QDateTime::currentDateTime())
 {
 }
@@ -40,24 +41,4 @@ void IChatItem::setSendState(const IChatItem::ESendState& sendState)
 const QString IChatItem::getMessageTime()
 {
     return GetMessageTime(mTime);
-}
-
-void IChatItem::unpackage(QVariantMap& data)
-{
-    mChatId = data.value(QStringLiteral("id")).toUInt();
-    mTime = data.value(QStringLiteral("time")).toDateTime();
-
-    if (data.value(QStringLiteral("isMe")).toBool()) {
-        mChatObject = User::Instance();
-    } else {
-        const auto uid = data.value(QStringLiteral("uid")).toUInt();
-        mChatObject = User::Instance()->getFriendById(uid);
-    }
-}
-
-void IChatItem::package(QVariantMap& data)
-{
-    data.insert(QStringLiteral("id"), mChatId);
-    data.insert(QStringLiteral("uid"), mChatObject->getID());
-    data.insert(QStringLiteral("time"), mTime);
 }

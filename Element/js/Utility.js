@@ -28,3 +28,12 @@ function alpha(sourceColor, a) {
     res.a = a
     return res
 }
+
+
+/**
+ * 获得当前时间戳的数量
+ */
+function currentTimeNumber() {
+    var time = new Date()
+    return Number(time.getTime())
+}

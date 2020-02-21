@@ -17,6 +17,7 @@ class IChatItem : public QObject
     Q_OBJECT
 
     friend class ChatView;
+    friend class MessageDatabase;
 
 private:
     Q_PROPERTY(ESendState sendState READ getSendState WRITE setSendState NOTIFY sendStateChanged)
@@ -28,6 +29,22 @@ public:
     explicit IChatItem(QObject* parent = nullptr);
     explicit IChatItem(const IChatItem& item);
     virtual ~IChatItem();
+
+    /**
+     * @brief 基本聊天内容的类型
+     * @note 用户不可重定义
+     */
+    enum EBaseChatType {
+        Text = 1, // 普通文本
+        RichText, // 富文本
+        Time, // 时间
+        File, // 文件
+        Image, // 图片
+        MultiImages, // 多张图片
+        Video, // 视频
+        Audio // 音频
+    };
+    Q_ENUM(EBaseChatType)
 
     /**
      * @brief 聊天项类型
@@ -74,8 +91,8 @@ public:
         return mChatObject.data();
     }
 
-    inline unsigned int getChatId(void) const { return mChatId; }
-    inline void setChatId(unsigned int chatId) { mChatId = chatId; }
+    inline int getChatId(void) const { return mChatId; }
+    inline void setChatId(int chatId) { mChatId = chatId; }
 
     inline const QDateTime getTime(void) const { return mTime; }
     inline void setTime(const QDateTime &time) { mTime = time; }
@@ -109,18 +126,17 @@ public:
     //virtual void sendData(QByteArray& data) = 0;
 
     /**
-     * @brief 打包方法。用于保存在数据库中
-     * @param data 将数据封装到容器输出。第一位是数据名称，第二位参数是数据
-     * @note 传出的数据会递交给数据库处理或发送消息，逆过程要和 @see unpackage 一致
+     * @brief 解析数据方法
+     * @param data 来自外界的数据，进行内部处理。
+     * @note 一般用于将接收、发送的消息解析后保存并显示在界面
      */
-    virtual void package(QVariantMap &data) = 0;
+    virtual void praseData(const QVariant& data) = 0;
 
     /**
-     * @brief 解包数据方法
-     * @param data 来自外界的数据，进行内部处理。第一位是数据名称，第二位参数是数据
-     * @note 一般用于从数据库中回复和接收消息，逆过程要和 @see package 一致
+     * @brief 获取数据
+     * @return const QVariant 主要用于保存到数据库
      */
-    virtual void unpackage(QVariantMap &data) = 0;
+    virtual const QVariant getData(void) = 0;
 
 Q_SIGNALS:
     void sendStateChanged();
@@ -133,7 +149,7 @@ protected:
      * @brief 消息ID
      * @note 消息ID是用于排列消息顺序的，即最大ID的消息气泡将在聊天视图的最底端
      */
-    unsigned int mChatId;
+    int mChatId;
 
     /**
      * @brief 消息发送或接收的时间

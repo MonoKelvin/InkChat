@@ -15,13 +15,13 @@ class TextChatItem : public IChatItem
 public:
     CHATITEM_CLASS(TextChatItem)
 
-    enum { ChatType = 1 };
+    enum { ChatType = Text };
 
     inline const QString getText() const { return mText; }
     inline void setText(const QString& text) { mText = text; }
 
-    void package(QVariantMap& data) override;
-    void unpackage(QVariantMap& data) override;
+    void praseData(const QVariant& data) override;
+    const QVariant getData() override;
 
     Q_INVOKABLE inline const QString qmlFile() override
     {

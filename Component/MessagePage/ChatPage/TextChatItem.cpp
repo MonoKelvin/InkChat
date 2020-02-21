@@ -7,16 +7,12 @@ TextChatItem::TextChatItem(QObject* parent)
 {
 }
 
-void TextChatItem::package(QVariantMap& data)
+void TextChatItem::praseData(const QVariant& data)
 {
-    data.insert(QStringLiteral("data"), mText);
-
-    return IChatItem::package(data);
+    mText = data.toString();
 }
 
-void TextChatItem::unpackage(QVariantMap& data)
+const QVariant TextChatItem::getData()
 {
-    mText = data.value(QStringLiteral("data")).toString();
-
-    return IChatItem::unpackage(data);
+    return mText;
 }

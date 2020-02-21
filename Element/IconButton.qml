@@ -20,24 +20,23 @@ Rectangle {
     width: 24
     height: 24
     radius: appTheme.stdRadius
-    color: checked?clickedColor:normalColor
+    color: checked ? clickedColor : normalColor
 
-    signal clicked;
+    signal clicked
 
     onExclusiveGroupChanged: {
-        if(exclusiveGroup) {
-            exclusiveGroup.bindCheckable(iconButton);
-        }
+        if (exclusiveGroup)
+            exclusiveGroup.bindCheckable(iconButton)
     }
 
     //如果少了这个信号处理，则无法出现互斥效果
     onCheckedChanged: {
-        if(checked) {
-            color = clickedColor;
-            icon.source = clickedIcon;
+        if (checked) {
+            color = clickedColor
+            icon.source = clickedIcon
         } else {
-            color = normalColor;
-            icon.source = normalIcon;
+            color = normalColor
+            icon.source = normalIcon
         }
     }
 
@@ -51,17 +50,14 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onPressed: {
-            if(exclusiveGroup && checked) {
-                return;
-            }
-            checked = !checked;
-            parent.clicked();
+            if (exclusiveGroup && checked)
+                return
+            checked = !checked
         }
-
+        onClicked: parent.clicked()
         onReleased: {
-            if(!checkable) {
-                checked = !checked;
-            }
+            if (!checkable)
+                checked = !checked
         }
     }
 }
