@@ -13,7 +13,6 @@ Rectangle {
 
     // 加载聊天视图，参数为聊天对象
     function loadChatRecord(chatObject) {
-        nochatText.visible = false
 
         titleName = chatObject.nickName
         chatListModel.load(chatObject.id)
@@ -21,18 +20,8 @@ Rectangle {
 
     ListView {
         id: chatListView
-        width: parent.width
         anchors.fill: parent
         topMargin: titleBar.height
-
-        Text {
-            id: nochatText
-            text: qsTr("暂时没有聊天消息...")
-            anchors.centerIn: parent
-            font.pixelSize: appTheme.stdTextSize
-            color: appTheme.subTextColor
-            visible: true
-        }
 
         model: ChatListModel {
             id: chatListModel
@@ -41,7 +30,6 @@ Rectangle {
                 Utility.createToast(msg, window)
 
                 // 加载失败就设置为空的视图
-                nochatText.visible = false
                 titleName = qsTr("聊天")
             }
         }

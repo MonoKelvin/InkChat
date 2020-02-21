@@ -135,7 +135,7 @@ Q_SIGNALS:
 
 private:
     /** 所有的聊天消息容器 */
-    QList<IChatItem*> mChats;
+    QList<QPointer<IChatItem>> mChats;
 
     /**
      * @brief 注册的聊天类容器

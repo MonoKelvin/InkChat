@@ -228,10 +228,15 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    msgListView.currentIndex = index
-                    msgItem.readFlag = true
 
-                    messageList.itemClicked(msgItem.chatObject)
+                    // 加载聊天记录
+                    if (msgListView.currentIndex !== index)
+                        messageList.itemClicked(msgItem.chatObject)
+
+                    msgListView.currentIndex = index
+
+                    // 标记已读
+                    msgItem.readFlag = true
                 }
             }
         }

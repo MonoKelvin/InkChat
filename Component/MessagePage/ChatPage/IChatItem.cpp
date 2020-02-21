@@ -47,8 +47,12 @@ void IChatItem::unpackage(QVariantMap& data)
     mChatId = data.value(QStringLiteral("id")).toUInt();
     mTime = data.value(QStringLiteral("time")).toDateTime();
 
-    const auto uid = data.value(QStringLiteral("uid")).toUInt();
-    mChatObject = User::Instance()->getFriendById(uid);
+    if (data.value(QStringLiteral("isMe")).toBool()) {
+        mChatObject = User::Instance();
+    } else {
+        const auto uid = data.value(QStringLiteral("uid")).toUInt();
+        mChatObject = User::Instance()->getFriendById(uid);
+    }
 }
 
 void IChatItem::package(QVariantMap& data)

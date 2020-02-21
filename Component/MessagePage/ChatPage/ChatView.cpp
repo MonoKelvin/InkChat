@@ -110,7 +110,7 @@ QVariant ChatView::data(const QModelIndex& index, int role) const
 
     if (index.row() >= 0 && index.row() < mChats.size()) {
         if (role >= 0) {
-            return QVariant::fromValue(mChats.at(index.row()));
+            return QVariant::fromValue(mChats.at(index.row()).data());
         }
     }
 

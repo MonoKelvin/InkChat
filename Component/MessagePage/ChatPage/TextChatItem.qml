@@ -5,12 +5,13 @@ ChatItem {
     content: Rectangle {
         id: message
         radius: appTheme.bigRadius
-        width: contentReadWidth + 1
+        width: msgText.width
         height: msgText.implicitHeight
         clip: true
 
         Rectangle {
             id: corner
+            y: 0
             width: message.radius
             height: message.radius
             color: message.color
@@ -21,26 +22,24 @@ ChatItem {
             text: chatItem.text
             readOnly: true
             selectByMouse: true
-            padding: appTheme.stdSpacing
-            wrapMode: Text.WordWrap
             font.pixelSize: appTheme.stdTextSize
             selectedTextColor: appTheme.backgroundColor
             selectionColor: appTheme.primaryActiveColor1
-            width: contentReadWidth
+            wrapMode: Text.Wrap
+            padding: appTheme.stdSpacing
+            width: Math.min(contentMaxWidth, implicitWidth)
         }
     }
 
     Component.onCompleted: {
-        if (chatItem.sender.roleType !== ChatObject.Me) {
-            message.color = appTheme.leftBubbleColor
-            msgText.color = appTheme.leftBubbleTextColor
-            corner.anchors.left = message.left
-        } else {
+        if (chatItem.sender.roleType === ChatObject.Me) {
             message.color = appTheme.rightBubbleColor
             msgText.color = appTheme.rightBubbleTextColor
             corner.anchors.right = message.right
+        } else {
+            message.color = appTheme.leftBubbleColor
+            msgText.color = appTheme.leftBubbleTextColor
+            corner.anchors.left = message.left
         }
-
-        corner.y = 0
     }
 }

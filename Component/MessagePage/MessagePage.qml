@@ -1,16 +1,50 @@
 ﻿import QtQuick 2.0
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
-import "qrc:/MessagePage/ChatPage"
 import "qrc:/MessagePage/MessageList"
 
 Item {
-    ChatPage {
-        id: chatPage
+
+    // 聊天视图加载器
+    Item {
+        id: chatContains
         height: parent.height
         anchors.left: ml_cp_line.right
         anchors.right: parent.right
-        titleName: qsTr("聊天")
+
+        property var chatPages: new Object
+
+        Timer {
+            id: showPageTimer
+            interval: 10
+            repeat: false
+            running: false
+
+            property var chatObject
+
+            onTriggered: {
+                if (chatObject === "")
+                    return
+
+                if (!(chatObject in chatContains.chatPages)) {
+                    var component = Qt.createComponent(
+                                "qrc:/MessagePage/ChatPage/ChatPage.qml")
+
+                    if (component.status === Component.Ready) {
+                        var page = component.createObject(chatContains)
+                        page.anchors.fill = chatContains
+                        chatContains.chatPages[chatObject] = page
+                        page.loadChatRecord(chatObject)
+                    }
+                }
+
+                for (var key in chatContains.chatPages) {
+                    chatContains.chatPages[key].visible = false
+                }
+
+                chatContains.chatPages[chatObject].visible = true
+            }
+        }
     }
 
     // 分割线
@@ -36,7 +70,8 @@ Item {
         //     horizontalOffset: 1
         // }
         onItemClicked: {
-            chatPage.loadChatRecord(chatObject)
+            showPageTimer.chatObject = chatObject
+            showPageTimer.start()
         }
     }
 }
