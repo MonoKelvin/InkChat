@@ -8,6 +8,7 @@
 
 class QJSEngine;
 class MyFriend;
+class LanObject;
 
 class User : public IChatObject {
     Q_OBJECT
@@ -36,9 +37,37 @@ public:
 
     QQmlListProperty<MyFriend> getFriends(void);
 
+    /**
+     * @brief 通过好友id获取我的好友
+     * @param id 好友id
+     * @return 如果id不存在将返回nullptr，否则返回好友对象
+     */
     MyFriend* getFriendById(unsigned int id);
 
-    void addFriend(MyFriend* myFriend);
+    /**
+     * @brief 添加好友
+     * @param myFriend 好友类
+     */
+    inline void addFriend(MyFriend* myFriend)
+    {
+        mFriends.append(myFriend);
+    }
+
+    /**
+     * @brief 通过好友id获取我的局域网
+     * @param id 局域网id
+     * @return 如果id不存在将返回nullptr，否则返回局域网聊天对象
+     */
+    LanObject* getLanObjectById(unsigned int id);
+
+    /**
+     * @brief 添加一个局域网聊天对象
+     * @param lan 局域网类
+     */
+    inline void addLanObject(LanObject* lan)
+    {
+        mLANs.append(lan);
+    }
 
     static QObject* QmlSingletonTypeProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
     {
@@ -67,7 +96,7 @@ private:
     QList<MyFriend*> mFriends;
 
     // 局域网聊天对象
-    // QList<LANChat*> mLANs;
+    QList<LanObject*> mLANs;
 
     // 群聊聊天对象
     // QList<GroupChat*> mGroups;

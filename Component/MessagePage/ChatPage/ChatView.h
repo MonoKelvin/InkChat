@@ -5,6 +5,8 @@
 
 #include <QAbstractListModel>
 
+class QUdpSocket;
+
 class ChatView : public QAbstractListModel {
     Q_OBJECT
     Q_DISABLE_COPY_MOVE(ChatView)
@@ -89,10 +91,11 @@ public:
 public Q_SLOTS:
     /**
      * @brief 发送一条聊天消息，并会改变数据库的内容
+     * @param uid 发给用户id（当个用户或群聊）为uid的聊天对象
      * @param msg 普通文本消息
      * @note 该方法是最常用来发送普通消息，不能富文本、文件、图片等
      */
-    void sendChat(const QString& msg);
+    void sendChat(unsigned int uid, const QString& msg);
 
 protected:
     QVariant data(const QModelIndex& index, int role) const override;
@@ -148,9 +151,9 @@ protected:
 public Q_SLOTS:
     /**
      * @brief 加载与给定用户id的聊天消息
-     * @param id 与“我”聊天的用户id
+     * @param uid 与“我”聊天的用户id
      */
-    void load(unsigned int id);
+    void load(unsigned int uid);
 
 Q_SIGNALS:
     /** 信号：任何失败消息产生时将会发送的信号 */

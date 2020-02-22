@@ -58,7 +58,7 @@ Rectangle {
         }
     }
 
-    ListView {
+    AdvancedList {
         id: msgListView
         width: parent.width
         anchors.top: toolBar.bottom
@@ -66,6 +66,14 @@ Rectangle {
         clip: true
         focus: true
         currentIndex: -1
+
+        onLoading: {
+            var i = 0
+            while (i++ < 100000000)
+                i++
+
+            loadState = AdvancedList.Loaded
+        }
 
         model: MessageListModel {
             id: listModel

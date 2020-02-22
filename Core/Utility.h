@@ -84,4 +84,16 @@ const QString GetMessageTime(const QDateTime& time);
         }                        \
     } while (0)
 
+/**
+ * @brief 选择一个可用的端口号
+ * @param defaultPort 默认端口号。如果该端口号没被占用就直接返回，否则从系统中选择一个未被占
+ * 用的端口号。
+ * @param maxCount 最大重选次数。如果默认端口号已被占用，则每次增加或减少某个特定的数，增加或
+ * 减少次数为该值。
+ * @return 返回一个未被占用的端口号。如果超过maxCount还是未找到未被占用的端口，则返回0
+ */
+quint16 selectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
+
+const QString getLocalHostAddress();
+
 #endif // UTILITY_H

@@ -18,9 +18,11 @@ Item {
             height = textBox.y + textBox.anchors.topMargin
             sendIcon.opacity = 0
             textBox.opacity = 0
+            sendIcon.visible = 0
         } else {
             height = foldUpHeight
             sendIcon.opacity = 1
+            sendIcon.visible = 1
             textBox.opacity = 1
         }
 

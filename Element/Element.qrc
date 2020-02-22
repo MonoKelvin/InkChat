@@ -11,6 +11,7 @@
         <file>LoadingDialog.qml</file>
         <file>WindowHeader.qml</file>
         <file>Badge.qml</file>
+        <file>AdvancedList.qml</file>
     </qresource>
     <qresource prefix="/js">
         <file>js/Utility.js</file>

@@ -1,6 +1,6 @@
 ﻿#include "TextChatItem.h"
 
-#include <QVariantMap>
+#include <QVariant>
 
 TextChatItem::TextChatItem(QObject* parent)
     : IChatItem(parent)

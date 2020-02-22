@@ -26,6 +26,8 @@ MessageList::~MessageList()
     clearMessage();
 
     SAFE_DELETE(mMutex);
+
+    qDebug() << "MessageList Destroyed";
 }
 
 void MessageList::clearMessage()

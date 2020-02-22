@@ -6,7 +6,12 @@
 #include <QDateTime>
 #include <QPointer>
 
+/** 继承自IChatItem的子类必须使用该宏 */
 #define CHATITEM_CLASS(_ClassName_) \
+private:                            \
+    friend class ChatView;          \
+                                    \
+public:                             \
     Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr);
 
 /**
@@ -17,6 +22,7 @@ class IChatItem : public QObject
     Q_OBJECT
 
     friend class ChatView;
+    friend class ChatManager;
     friend class MessageDatabase;
 
 private:
@@ -31,39 +37,22 @@ public:
     virtual ~IChatItem();
 
     /**
-     * @brief 基本聊天内容的类型
+     * @brief 系统定义的基本聊天内容的类型
      * @note 用户不可重定义
      */
     enum EBaseChatType {
         Text = 1, // 普通文本
         RichText, // 富文本
-        Time, // 时间
         File, // 文件
         Image, // 图片
         MultiImages, // 多张图片
         Video, // 视频
-        Audio // 音频
+        Audio, // 音频
+        Notification, // 通知
+        UserEntry, // 用户进入局域网
+        UserLeft, // 用户离开局域网
     };
     Q_ENUM(EBaseChatType)
-
-    /**
-     * @brief 聊天项类型
-     * @note 子类必须设置ChatType为不同值来作为聊天项角色标记，若有多个自定义类，需要为每一
-     * 个ChatType重新定义不同的值。且所有值必须大于 @see Qt::UserRole
-     * @example
-     *
-     * class MyChatItem : public IChatItem
-     * {
-     * public:
-     *      enum { ChatType = Qt::UserRole + 1 }
-     *
-     *      // ...
-     * }
-     */
-    enum
-    {
-        ChatType = Qt::UserRole
-    };
 
     /**
      * @brief 聊天消息发送状态枚举
@@ -77,6 +66,12 @@ public:
         Rejected, // 发送被拒绝，一般被拒绝的是文件，其他内容谨慎使用
     };
     Q_ENUM(ESendState)
+
+    /**
+     * @brief 获得聊天类型
+     * @return 聊天类型，该返回值尽量使用先对枚举ChatType赋值，再返回
+     */
+    virtual unsigned int getChatType() const = 0;
 
     inline ESendState getSendState(void) const { return mSendState; }
     void setSendState(const ESendState &sendState);
@@ -142,6 +137,24 @@ Q_SIGNALS:
     void sendStateChanged();
 
 protected:
+    /**
+     * @brief 聊天项类型
+     * @note 子类必须设置ChatType为不同值来作为聊天项角色标记，若有多个自定义类，需要为每一
+     * 个ChatType重新定义不同的值。且所有值必须大于 @see Qt::UserRole
+     * @example
+     *
+     * class MyChatItem : public IChatItem
+     * {
+     * protected:
+     *      enum { ChatType = Qt::UserRole + 1 }
+     *
+     *      // ...
+     * public:
+     *      unsigned int getChatType() const { return ChatType; }
+     * }
+     */
+    enum { ChatType = Qt::UserRole };
+
     /** 发送状态 */
     ESendState mSendState;
 

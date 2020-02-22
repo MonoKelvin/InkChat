@@ -6,6 +6,8 @@ import "qrc:/Element/"
 import "qrc:/js/js/Utility.js" as Utility
 
 Rectangle {
+    // 当前聊天对象的id
+    property int chatObjId
     property alias titleName: titleNameText.text
 
     color: appTheme.backgroundColor
@@ -16,9 +18,12 @@ Rectangle {
 
         titleName = chatObject.nickName
         chatListModel.load(chatObject.id)
+
+        // 加载完立刻滚动到底部
+        chatListView.positionViewAtEnd()
     }
 
-    ListView {
+    AdvancedList {
         id: chatListView
         anchors.fill: parent
         topMargin: titleBar.height
@@ -28,17 +33,28 @@ Rectangle {
 
             onFailed: {
                 Utility.createToast(msg, window)
-
-                // 加载失败就设置为空的视图
-                titleName = qsTr("聊天")
             }
         }
 
+        // 消息代理
         delegate: Loader {
             width: chatListView.width
             source: model.chatItem.qmlFile()
         }
 
+        // 上拉加载
+        header: Text {
+            id: loadMoreText
+            text: qsTr("下拉刷新")
+            font.pixelSize: appTheme.smallTextSize
+            color: appTheme.primaryColor1
+            width: chatListView.width
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            height: 0
+        }
+
+        // 输入框
         footer: Loader {
             id: inputer
             z: 10
@@ -49,7 +65,10 @@ Rectangle {
             Connections {
                 target: inputer.item
                 onSendChat: {
-                    chatListModel.sendChat(content)
+                    chatListModel.sendChat(chatObjId, content)
+
+                    // 滚动到底部
+                    chatListView.positionViewAtEnd()
                 }
             }
 

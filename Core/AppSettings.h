@@ -13,6 +13,8 @@ class AppSettings : public QSettings {
     explicit AppSettings(QObject* parent = nullptr);
 
 public:
+    ~AppSettings(void);
+
     // APP应用程序文件夹
     inline static const QString AppDir()
     {

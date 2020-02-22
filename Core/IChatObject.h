@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+/**
+ * @brief 聊天对象基类接口
+ */
 class IChatObject : public QObject {
     Q_OBJECT
 
@@ -101,7 +104,7 @@ public:
     }
 
     inline void setHostAddress(const QString& address) { mHostAddress = address; }
-    inline const QString getHostAddress(void) const { return mHostAddress; }
+    inline const QString getHostAddress() { return mHostAddress; }
 
     inline void setRoleType(const ERoleType& type) { mRoleType = type; }
     inline ERoleType getRoleType(void) const { return mRoleType; }
@@ -110,7 +113,6 @@ public:
      * @brief 解析json数据，一般是来自数据库的数据
      * @param json json对象
      * @param cache 是否缓存数据
-     * @note 任何出错信息将以throw的形式抛出，所以尽量在外部使用try-catch块捕捉
      */
     virtual void fromJson(const QJsonObject& json, bool cache = true) = 0;
 

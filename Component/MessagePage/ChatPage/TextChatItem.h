@@ -12,16 +12,20 @@ class TextChatItem : public IChatItem
 {
     Q_OBJECT
     Q_PROPERTY(QString text READ getText CONSTANT)
-public:
+
     CHATITEM_CLASS(TextChatItem)
 
-    enum { ChatType = Text };
-
+public:
     inline const QString getText() const { return mText; }
     inline void setText(const QString& text) { mText = text; }
 
     void praseData(const QVariant& data) override;
     const QVariant getData() override;
+
+    unsigned int getChatType() const override
+    {
+        return ChatType;
+    }
 
     Q_INVOKABLE inline const QString qmlFile() override
     {
@@ -29,6 +33,8 @@ public:
     }
 
 private:
+    enum { ChatType = Text };
+
     /** 聊天的文本内容 */
     QString mText;
 };

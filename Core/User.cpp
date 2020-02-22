@@ -1,6 +1,7 @@
 ﻿#include "User.h"
 
 #include <AppSettings.h>
+#include <LanObject.h>
 #include <MyFriend.h>
 #include <Utility.h>
 
@@ -13,11 +14,15 @@ User::User(QObject* parent)
     : IChatObject(parent)
 {
     mRoleType = ERoleType::Me;
+    mHostAddress = getLocalHostAddress();
 }
 
 User::~User()
 {
     mFriends.clear();
+    mLANs.clear();
+
+    qDebug() << "User Model Destroyed";
 }
 
 void User::fromJson(const QJsonObject& json, bool cache)
@@ -27,11 +32,20 @@ void User::fromJson(const QJsonObject& json, bool cache)
     mAccount = json.value(QLatin1String("account")).toString();
     mPassword = json.value(QLatin1String("password")).toString();
 
-    QJsonArray friends = json.value(QLatin1String("friends")).toArray();
-    for (const auto i : friends) {
+    // 加载好友
+    QJsonArray chatObjs = json.value(QLatin1String("friends")).toArray();
+    for (const auto i : chatObjs) {
         MyFriend* f = new MyFriend(this);
-        f->fromJson(i.toObject());
+        f->fromJson(i.toObject(), cache);
         addFriend(f);
+    }
+
+    // 加载局域网聊天群
+    chatObjs = json.value(QLatin1String("lans")).toArray();
+    for (const auto i : chatObjs) {
+        LanObject* lan = new LanObject(this);
+        lan->fromJson(i.toObject(), cache);
+        addLanObject(lan);
     }
 
     if (cache) {
@@ -50,9 +64,7 @@ void User::fromJson(const QJsonObject& json, bool cache)
             throw tr("用户数据文件写入失败！");
         }
 
-        if (cache) {
-            cacheAvatar(AvatarSizeMax);
-        }
+        cacheAvatar(AvatarSizeMax);
     }
 }
 
@@ -63,11 +75,19 @@ QJsonObject User::toJson()
     json.insert(QLatin1String("account"), QJsonValue(mAccount));
     json.insert(QLatin1String("password"), QJsonValue(mPassword));
 
+    // 好友
     QJsonArray friends;
     for (const auto i : mFriends) {
         friends.append(i->toJson());
     }
     json.insert(QLatin1String("friends"), friends);
+
+    // 局域网
+    QJsonArray lans;
+    for (const auto i : mLANs) {
+        lans.append(i->toJson());
+    }
+    json.insert(QLatin1String("lans"), lans);
 
     return json;
 }
@@ -88,9 +108,15 @@ MyFriend* User::getFriendById(unsigned int id)
     return nullptr;
 }
 
-void User::addFriend(MyFriend* myFriend)
+LanObject* User::getLanObjectById(unsigned int id)
 {
-    mFriends.append(myFriend);
+    for (int i = 0; i < mLANs.size(); i++) {
+        if (mLANs.at(i)->getID() == id) {
+            return mLANs[i];
+        }
+    }
+
+    return nullptr;
 }
 
 bool User::hasCache()

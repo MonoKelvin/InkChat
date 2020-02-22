@@ -64,11 +64,11 @@ IChatItem* ChatView::buildChatItem(int chatType, unsigned int uid, const QDateTi
     return item;
 }
 
-void ChatView::load(unsigned int id)
+void ChatView::load(unsigned int uid)
 {
     isFileExists(AppSettings::MessageCacheFile(), true);
 
-    if (!MessageDatabase::Instance()->loadChatMessages(this, id)) {
+    if (!MessageDatabase::Instance()->loadChatMessages(this, uid)) {
         emit failed(tr("聊天记录加载失败，请重新刷新"));
     }
 }
@@ -131,26 +131,6 @@ int ChatView::rowCount(const QModelIndex& parent) const
     return mChats.size();
 }
 
-void ChatView::sendChat(const QString& msg)
-{
-    const auto time = QDateTime::currentDateTime();
-    IChatItem* item = buildChatItem(IChatItem::Text, time, msg);
-    if (nullptr == item) {
-        emit failed(tr("消息项无效"));
-        return;
-    }
-
-    if (!insertChat(mChats.size(), item)) {
-        emit failed(tr("消息发送失败"));
-        delete item;
-        item = nullptr;
-    }
-
-    if (!MessageDatabase::Instance()->saveAChatRecord(item)) {
-        emit failed(tr("聊天记录保存到本地失败"));
-    }
-}
-
 QVariant ChatView::data(const QModelIndex& index, int role) const
 {
     Q_UNUSED(role)
@@ -173,4 +153,24 @@ bool ChatView::setData(const QModelIndex& index, const QVariant& value, int role
         }
     }
     return false;
+}
+
+void ChatView::sendChat(unsigned int uid, const QString& msg)
+{
+    const auto time = QDateTime::currentDateTime();
+    IChatItem* item = buildChatItem(IChatItem::Text, time, msg);
+    if (nullptr == item) {
+        emit failed(tr("消息项无效"));
+        return;
+    }
+
+    if (!insertChat(mChats.size(), item)) {
+        emit failed(tr("消息发送失败"));
+        delete item;
+        item = nullptr;
+    }
+
+    if (!MessageDatabase::Instance()->saveAChatRecord(uid, item)) {
+        emit failed(tr("聊天记录保存到本地失败"));
+    }
 }

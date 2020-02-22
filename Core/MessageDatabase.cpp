@@ -12,8 +12,11 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-const auto SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 limit %2 offset %3");
-const auto SqlInsertChatRecord = QStringLiteral("insert into chatrecord (uid,type,isMe,time,data) values (?,?,?,?,?)");
+const auto SqlQueryMessage = QStringLiteral("select uid,roleType,lastMsg,lastTime,unreadMsgCount,readFlag from message where chat='1'");
+const auto SqlInsertMessage = QStringLiteral("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)");
+
+const auto SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
+const auto SqlInsertChatRecord = QStringLiteral("insert into chatrecord (id,uid,type,isMe,time,data) values (null,?,?,?,?,?)");
 
 MessageDatabase::MessageDatabase()
 {
@@ -22,6 +25,8 @@ MessageDatabase::MessageDatabase()
 MessageDatabase::~MessageDatabase()
 {
     close();
+
+    qDebug() << "MessageDatabase Destroyed";
 }
 
 QSqlError MessageDatabase::initDatabase()
@@ -68,14 +73,8 @@ QSqlError MessageDatabase::initDatabase()
         return query.lastError();
     }
 
-    return QSqlError();
-}
-
-bool MessageDatabase::loadMessageItems(MessageList* list)
-{
-    QSqlQuery query;
-
-    /*if (query.prepare("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)")) {
+    // TODO: need to remove
+    if (query.prepare(SqlInsertMessage)) {
         query.addBindValue(2);
         query.addBindValue(true);
         query.addBindValue(IChatObject::Friend);
@@ -102,9 +101,15 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         query.addBindValue(1);
         query.addBindValue(false);
         query.exec();
-    }*/
+    }
 
-    if (!query.exec(QStringLiteral("select uid,roleType,lastMsg,lastTime,unreadMsgCount,readFlag from message where chat='1'"))) {
+    return QSqlError();
+}
+
+bool MessageDatabase::loadMessageItems(MessageList* list)
+{
+    QSqlQuery query;
+    if (!query.exec(SqlQueryMessage)) {
         return false;
     }
 
@@ -142,19 +147,17 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
 bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
 {
     QSqlQuery q;
-    if (!q.exec(SqlQueryChatById.arg(uid).arg(CHAT_MESSAGE_FECTH_COUNT).arg(chatView->rowCount(QModelIndex())))) {
+    if (!q.exec(SqlQueryChatById.arg(uid).arg(chatView->mChats.size()).arg(3))) {
         qDebug() << q.lastError();
         return false;
     }
 
     int type = 0;
-    bool isMe = false;
-
     while (q.next()) {
         // 聊天类型
         type = q.value(1).toInt();
 
-        IChatItem* item = chatView->buildChatItem(type, isMe, uid);
+        IChatItem* item = chatView->buildChatItem(type, q.value(2).toBool(), uid);
         if (nullptr == item) {
             return false;
         }
@@ -163,21 +166,21 @@ bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
         item->mTime = q.value(3).toDateTime();
         item->praseData(q.value(4));
 
-        chatView->appendChat(item);
+        chatView->insertChat(0, item);
     }
 
     return true;
 }
 
-bool MessageDatabase::saveAChatRecord(IChatItem* item)
+bool MessageDatabase::saveAChatRecord(unsigned int uid, IChatItem* item)
 {
     QSqlQuery query;
     if (!query.prepare(SqlInsertChatRecord)) {
         return false;
     }
 
-    query.addBindValue(item->mChatObject->getID());
-    query.addBindValue(item->ChatType);
+    query.addBindValue(uid);
+    query.addBindValue(item->getChatType());
     query.addBindValue((item->mChatObject->getRoleType() == IChatObject::Me));
     query.addBindValue(item->mTime);
     query.addBindValue(item->getData());

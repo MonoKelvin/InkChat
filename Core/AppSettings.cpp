@@ -6,6 +6,11 @@ AppSettings::AppSettings(QObject* parent)
     mCurrentUser = value(QStringLiteral("user/currentUser"), 0).toUInt();
 }
 
+AppSettings::~AppSettings()
+{
+    qDebug() << "AppSettings Destroyed";
+}
+
 void AppSettings::LoadAppTheme(const QString& themeFile)
 {
     Q_UNUSED(themeFile)

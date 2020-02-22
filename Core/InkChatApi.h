@@ -10,7 +10,7 @@
 #define CHAT_REVERSION 0
 
 /** 每次刷新时获取聊天消息的最大数量 */
-#define CHAT_MESSAGE_FECTH_COUNT 30
+#define CHAT_RECORD_FECTH_COUNT 30
 
 /** 基本Url地址 */
 #define ApiBaseUrl QStringLiteral("http://inkchat.com/api")
