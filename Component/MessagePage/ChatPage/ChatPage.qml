@@ -6,18 +6,20 @@ import "qrc:/Element/"
 import "qrc:/js/js/Utility.js" as Utility
 
 Rectangle {
-    // 当前聊天对象的id
-    property int chatObjId
     property alias titleName: titleNameText.text
 
     color: appTheme.backgroundColor
     titleName: qsTr("聊天")
 
+    // 私有：当前聊天对象的id
+    property int _chatObjId
+
     // 加载聊天视图，参数为聊天对象
     function loadChatRecord(chatObject) {
 
         titleName = chatObject.nickName
-        chatListModel.load(chatObject.id)
+        _chatObjId = chatObject.id
+        chatListModel.load(_chatObjId)
 
         // 加载完立刻滚动到底部
         chatListView.positionViewAtEnd()
@@ -27,6 +29,21 @@ Rectangle {
         id: chatListView
         anchors.fill: parent
         topMargin: titleBar.height
+
+        // 未加载前的数量，便于加载后定位
+        property int _oldCount: 0
+
+        onLoading: {
+            _oldCount = count
+            chatListModel.load(_chatObjId)
+            loadState = AdvancedList.Loaded
+        }
+
+        onLoaded: {
+            positionViewAtIndex(count - _oldCount, ListView.Beginning)
+            if (contentY > 0)
+                contentY -= titleBar.height + appTheme.stdSpacing
+        }
 
         model: ChatListModel {
             id: chatListModel
@@ -42,18 +59,6 @@ Rectangle {
             source: model.chatItem.qmlFile()
         }
 
-        // 上拉加载
-        header: Text {
-            id: loadMoreText
-            text: qsTr("下拉刷新")
-            font.pixelSize: appTheme.smallTextSize
-            color: appTheme.primaryColor1
-            width: chatListView.width
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            height: 0
-        }
-
         // 输入框
         footer: Loader {
             id: inputer
@@ -65,7 +70,7 @@ Rectangle {
             Connections {
                 target: inputer.item
                 onSendChat: {
-                    chatListModel.sendChat(chatObjId, content)
+                    chatListModel.sendChat(_chatObjId, content)
 
                     // 滚动到底部
                     chatListView.positionViewAtEnd()
@@ -115,7 +120,7 @@ Rectangle {
             id: blurEffect
             target: titleBar
             background: chatListView
-            blurRadius: 128
+            blurRadius: 80
         }
 
         Text {
@@ -123,9 +128,7 @@ Rectangle {
             height: parent.height
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            anchors.left: parent.left
-            anchors.right: menuIconBtn.left
-            anchors.rightMargin: appTheme.stdSpacing
+            anchors.centerIn: parent
             font.pixelSize: appTheme.titleTextSize
         }
 

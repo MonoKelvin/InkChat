@@ -66,6 +66,7 @@ Rectangle {
         clip: true
         focus: true
         currentIndex: -1
+        releaseString: qsTr("释放刷新")
 
         onLoading: {
             var i = 0

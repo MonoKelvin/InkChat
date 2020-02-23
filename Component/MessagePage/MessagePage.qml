@@ -34,7 +34,6 @@ Item {
                     if (component.status === Component.Ready) {
                         var page = component.createObject(chatContains)
                         page.anchors.fill = chatContains
-                        page.chatObjId = chatObject.id
 
                         chatContains.chatPages[chatObject] = {
                             "page": page,

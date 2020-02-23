@@ -147,7 +147,7 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
 bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
 {
     QSqlQuery q;
-    if (!q.exec(SqlQueryChatById.arg(uid).arg(chatView->mChats.size()).arg(3))) {
+    if (!q.exec(SqlQueryChatById.arg(uid).arg(chatView->mChats.size()).arg(CHAT_RECORD_FECTH_COUNT))) {
         qDebug() << q.lastError();
         return false;
     }

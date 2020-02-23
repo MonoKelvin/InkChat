@@ -1,8 +1,9 @@
 ﻿import QtQuick 2.14
 
-/** 高级列表控件，提供下拉刷新功能。但不可以定义header了（下拉控件即为header） */
+/** 高级列表控件，提供下拉刷新功能。*/
 ListView {
     id: listView
+    topMargin: 0
 
     enum ELoadState {
         Ready,
@@ -18,8 +19,6 @@ ListView {
     property string releaseString: qsTr("释放加载更多")
     // 加载时显示的文字
     property string loadingString: qsTr("正在加载...")
-    // 加载成功显示的文字
-    property string loadedString: loadingString
     // 加载失败时显示的文字
     property string loadFailedString: qsTr("加载失败！")
 
@@ -37,60 +36,66 @@ ListView {
     // 加载失败信号
     signal loadFailed
 
+    // 更新加载文本的内容
+    function _updateLoadContent() {
+        if (contentY < -loadHeight - topMargin)
+            loadState = AdvancedList.StartLoad
+        else if (contentY < -topMargin && loadState === AdvancedList.StartLoad)
+            loadState = AdvancedList.Loading
+        else if (dragging)
+            loadState = AdvancedList.Ready
+    }
+
+    Component.onCompleted: {
+        contentYChanged.connect(_updateLoadContent)
+    }
+
     onLoadStateChanged: {
         switch (loadState) {
         case AdvancedList.Ready:
-            headerItem.text = refreshString
+            loadText.text = refreshString
             break
         case AdvancedList.StartLoad:
-            headerItem.text = releaseString
+            loadText.text = releaseString
             break
         case AdvancedList.Loading:
-            headerItem.text = loadingString
+            loadText.text = loadingString
+
+            contentYAni.to = -loadHeight - topMargin
+            contentYAni.start()
+
+            if (footerItem)
+                footerItem.y = height - footerItem.height
+
             timer.start()
             break
         case AdvancedList.Loaded:
-            headerItem.text = loadedString
+            contentY = -topMargin
             loaded()
+            loadState = AdvancedList.Ready
             break
         case AdvancedList.LoadFailed:
-            headerItem.text = loadFailedString
+            loadText.text = loadFailedString
             loadFailed()
             break
         }
     }
 
-    // 上拉加载
-    header: Text {
-        id: loadMoreText
-        color: appTheme.primaryColor1
+    Text {
+        id: loadText
+        color: appTheme.subTextColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: appTheme.smallTextSize
         width: listView.width
-        height: listView.contentY < 0 ? -listView.contentY : 0
+        height: contentY < -topMargin ? -contentY - topMargin : topMargin
         text: refreshString
-    }
-    headerPositioning: ListView.PullBackHeader
-
-    onContentYChanged: {
-        if (contentY < -loadHeight)
-            loadState = AdvancedList.StartLoad
-        else if (loadState === AdvancedList.StartLoad)
-            loadState = AdvancedList.Loading
+        y: topMargin
+        z: -1
+        visible: contentY < -topMargin
     }
 
-    onMovementEnded: {
-        if (contentY < -loadHeight) {
-            loadState = AdvancedList.Loading
-            contentYAni.to = -loadHeight
-        } else {
-            loadState = AdvancedList.Ready
-            contentYAni.to = 0
-        }
-
-        contentYAni.start()
-    }
+    boundsBehavior: Flickable.DragOverBounds
 
     // 使用计时器来触发加载后台的任务
     Timer {
@@ -100,15 +105,12 @@ ListView {
 
         onTriggered: {
             listView.loading()
-            listView.loadState = AdvancedList.Ready
         }
     }
 
     NumberAnimation {
         id: contentYAni
-        target: listView
         property: "contentY"
         duration: 200
-        running: true
     }
 }
