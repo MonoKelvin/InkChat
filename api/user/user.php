@@ -33,7 +33,7 @@ function verifyLoginById($id, $account, $password)
         }
 
         $res['Friends'] = $db->getAll(
-            'SELECT `id`,`md5`,`hostAddress`,`remark`,`top`,`nickName`,
+            'SELECT `id`,`md5`,`remark`,`top`,`nickName`,
             `signature`,`gender`,`subgroup`
             FROM GetUserFriends
             WHERE `uid`=' . $id
@@ -45,7 +45,6 @@ function verifyLoginById($id, $account, $password)
             'nickName' => $res['NickName'],
             'signature' => $res['Signature'],
             'gender' => $res['Gender'],
-            'hostAddress' => $res['HostAddress'],
             'friends' => $res['Friends'],
         ]);
     } else {
@@ -90,7 +89,7 @@ function verifyLoginByPassword($account, $password)
     }
 
     $res['Friends'] = $db->getAll(
-        'SELECT `id`,`hostAddress`,`remark`,`top`,`nickName`,`md5`,`signature`,`gender`,`subgroup`
+        'SELECT `id`,`remark`,`top`,`nickName`,`md5`,`signature`,`gender`,`subgroup`
         FROM GetUserFriends
         WHERE `uid`=' . $res['ID']
     );
@@ -106,7 +105,6 @@ function verifyLoginByPassword($account, $password)
         'nickName' => $res['NickName'],
         'signature' => $res['Signature'],
         'gender' => $res['Gender'],
-        'hostAddress' => $res['HostAddress'],
         'friends' => $res['Friends'],
     ]);
 }
@@ -128,7 +126,7 @@ function getUserFriends($id)
         die;
     }
     $res = $db->getAll(
-        'SELECT `id`,`md5`,`hostAddress`,`remark`,`top`,`nickName`,`signature`,`gender`,`subgroup`
+        'SELECT `id`,`md5`,`remark`,`top`,`nickName`,`signature`,`gender`,`subgroup`
         FROM GetUserFriends
         WHERE `uid`=' . $id
     );
@@ -154,7 +152,7 @@ function getUserFriendsForGroup($id)
         die;
     }
     $res = $db->getAll(
-        'SELECT `id`,`md5`,`hostAddress`,`remark`,`top`,`nickName`,`signature`,`gender`,`subgroup`
+        'SELECT `id`,`md5`,`remark`,`top`,`nickName`,`signature`,`gender`,`subgroup`
         FROM GetUserFriends
         WHERE `uid`=' . $id
     );
@@ -180,4 +178,42 @@ function getUserFriendsForGroup($id)
     }
 
     reply($group);
+}
+
+/**
+ * 更新用户好友的信息
+ * @param int $uid 用户id
+ * @param int $fid 好友id
+ * @param array $data 要更新的数据，只有 remark、top、subgroup三个可以更改
+ */
+function updateFriendInfo($uid, $fid, $data)
+{
+    $db = @MySqlAPI::getInstance();
+    if (!$db) {
+        errorReply(600);
+        $db->close();
+        die;
+    }
+
+    $sql = 'update `friend` set';
+
+    // 设置更新的数据
+    if (@$data['top'] !== null)
+        $sql .= ' `top`=' . $data['top'];
+    if (@$data['remark'] !== null)
+        $sql .= ',`remark`=\'' . $data['remark'] . '\'';
+    if (@$data['subgroup'] !== null)
+        $sql .= ',`subgroup`=\'' . $data['subgroup'] . '\'';
+
+    $sql = ltrim($sql, ',');
+    $sql .= ' where `uid`=' . $uid . ' and `fid`=' . $fid;
+
+    $res = $db->query($sql);
+    $db->close();
+
+    if ($res) {
+        reply($res);
+    } else {
+        errorReply(750);
+    }
 }

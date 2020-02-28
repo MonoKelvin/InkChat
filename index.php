@@ -67,6 +67,19 @@
                 </div>
             </form>
         </li>
+        <li>
+            更新好友数据：
+            <form action="./api/user/update_friend.php" method="post">
+                <div>
+                    <input name="uid" type="number" value="1">
+                    <input name="fid" type="number" value="2">
+                    <input name="top" value="1">
+                    <input name="remark" value="备注">
+                    <input name="subgroup" value="">
+                    <button type="submit">测试</button>
+                </div>
+            </form>
+        </li>
     </ul>
 </body>
 

@@ -69,10 +69,10 @@ function avatarResize($file_name, $newsize = 45)
 
     // header('Content-Type: image/png');
 
-    // 将图片塞进去，根据图片不同的格式选用不同的方法，同时降低适当质量。
-    if ($size[2] == 1) $result = @imagegif($newimg, null, 8);
-    if ($size[2] == 2) $result = @imagejpeg($newimg, null, 8);
-    if ($size[2] == 3) $result = @imagepng($newimg, null, 8);
+    // 将图片塞进去，根据图片不同的格式选用不同的方法。
+    if ($size[2] == 1) $result = @imagegif($newimg, null);
+    if ($size[2] == 2) $result = @imagejpeg($newimg, null);
+    if ($size[2] == 3) $result = @imagepng($newimg, null);
 
     // 销毁资源
     @imagedestroy($newimg);
