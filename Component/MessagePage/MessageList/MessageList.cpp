@@ -67,6 +67,13 @@ bool MessageList::insertMessage(int index, MessageItem* message)
     return false;
 }
 
+void MessageList::setMessageTop(MessageItem* item, bool isTop, bool moveToBottom)
+{
+    Q_UNUSED(moveToBottom)
+
+    item->mChatObject->setIsTop(isTop);
+}
+
 MessageItem* MessageList::getMessage(int index) const
 {
     if (index >= 0 && index < mMessages.size()) {

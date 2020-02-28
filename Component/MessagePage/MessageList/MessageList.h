@@ -93,6 +93,23 @@ public:
     }
 
     /**
+     * @brief 设置消息项的是否置顶
+     * @param item 消息项
+     * @param isTop 是否置顶，true时置顶，否则为取消置顶
+     * @param moveToBottom 是否移动到最底部
+     * @note isTop 会受 moveToBottom 影响。
+     * 如果moveToBottom为true：
+     *  isTop = true: item将移动到所有置顶项的最下方
+     *  isTop = false: 移动到所有项的最下方
+     * 如果moveToBottom为false：
+     *  isTop = true: item将移动到所有置顶项的最上方
+     *  isTop = false: 移动到所有项的最上方
+     * 
+     * TODO：目前不支持moveToBottom参数的作用
+     */
+    Q_INVOKABLE void setMessageTop(MessageItem* item, bool isTop = true, bool moveToBottom = false);
+
+    /**
      * @brief 给定父元素下的行数量，即消息总数
      * @param parent 指定的父元素，如果父元素为空，即直接传入QModelIndex()，
      * 得到的是所有元素的数量
@@ -121,7 +138,7 @@ protected:
 
     /**
      * @brief 调整消息的顺序
-     * @note 目前只支持按指定顺序调整
+     * @note 目前只支持按置顶顺序调整
      * @todo Add sort type in next version
      */
     void adjustMessageOrder(/* EMessageSortType type = SortByTopOrder */);

@@ -18,6 +18,9 @@ const auto SqlInsertMessage = QStringLiteral("insert into message (uid,chat,role
 const auto SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
 const auto SqlInsertChatRecord = QStringLiteral("insert into chatrecord (id,uid,type,isMe,time,data) values (null,?,?,?,?,?)");
 
+const auto SqlUpdateReadFlag = QStringLiteral("update message set readFlag=%1 where uid=%2");
+const auto SqlUpdateUnreadMsgCount = QStringLiteral("update message set unreadMsgCount=%1 where uid=%2");
+
 MessageDatabase::MessageDatabase()
 {
 }
@@ -111,6 +114,28 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
     list->adjustMessageOrder();
 
     return true;
+}
+
+bool MessageDatabase::updateReadFlag(MessageItem* item)
+{
+    QSqlQuery q;
+    if (q.exec(SqlUpdateReadFlag.arg(item->mReadFlag).arg(item->mChatObject->getID()))) {
+        return true;
+    }
+
+    qDebug() << q.lastError();
+    return false;
+}
+
+bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
+{
+    QSqlQuery q;
+    if (q.exec(SqlUpdateReadFlag.arg(item->mUnreadMsgCount).arg(item->mChatObject->getID()))) {
+        return true;
+    }
+
+    qDebug() << q.lastError();
+    return false;
 }
 
 bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)

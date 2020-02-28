@@ -10,7 +10,7 @@ Menu {
     property color borderColor: appTheme.tintColor
     property int borderWidth: 1
     property int bordeRadius: appTheme.stdRadius
-    property color shadowColor: appTheme.shadowColor2
+    property color shadowColor: appTheme.shadowColor
 
     property color menuColor: appTheme.backgroundColor
     property color hoveredColor: appTheme.tintColor
@@ -28,19 +28,27 @@ Menu {
     leftPadding: 1
     rightPadding: 1
 
-    // 私有属性：是否正在打开菜单。主要用于动画的延迟打开、关闭检测
-    property bool _isOpening: false
-    onOpened: {
-        menuBackground.width = menuWidth + leftPadding + rightPadding
-        _isOpening = true
+    enter: Transition {
+        NumberAnimation {
+            target: menuBackground
+            property: "width"
+            easing.type: Easing.OutQuint
+            duration: 200
+            from: 0
+            to: menuWidth + leftPadding + rightPadding
+        }
     }
-    onClosed: {
-        if (_isOpening)
-            visible = true
+    exit: Transition {
+        NumberAnimation {
+            target: menuBackground
+            property: "width"
+            easing.type: Easing.OutQuint
+            duration: 200
+            from: menuWidth
+            to: 0
+        }
+    }
 
-        _isOpening = false
-        menuBackground.width = 0
-    }
     Component.onCompleted: {
         topPadding += borderWidth
         bottomPadding += borderWidth
@@ -61,22 +69,10 @@ Menu {
         layer.enabled: true
         layer.effect: DropShadow {
             id: dropShadow
-            radius: 18
+            radius: 22
             samples: 20
-            verticalOffset: 9
+            verticalOffset: 10
             color: shadowColor
-        }
-
-        Behavior on width {
-            NumberAnimation {
-                id: showAnimation
-                easing.type: Easing.OutQuint
-                duration: 200
-                onRunningChanged: {
-                    if (!running && !_isOpening)
-                        contextMenu.close()
-                }
-            }
         }
     }
 

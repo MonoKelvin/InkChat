@@ -29,7 +29,10 @@
 #define SignupUrl QString(ApiBaseUrl + "/user/signup.php")
 
 /** 获取好友信息 */
-#define MyFriendUrl QString(ApiBaseUrl + "/user/friend.php")
+#define MyFriendsUrl QString(ApiBaseUrl + "/user/friend.php")
+
+/** 更新好友信息地址，气候参数需自己制定 */
+#define UpdateFriendUrl QString(ApiBaseUrl + "user/update_friend.php?")
 
 // 解析消息出错时发送失败信号
 #define EMIT_FAILED_MESSAGE(_JsonDoc_, _FailSignal_)                        \

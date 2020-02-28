@@ -1,4 +1,5 @@
 ﻿import QtQuick 2.14
+import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
 import MessageListModel 1.0
 import ChatObject 1.0
@@ -67,6 +68,30 @@ Rectangle {
         focus: true
         currentIndex: -1
         releaseString: qsTr("释放刷新")
+
+        // 消息项的右键菜单
+        StyleMenu {
+            id: itemMenu
+
+            // 传入的消息item对象
+            property var msgItem: null
+
+            // 当要显示时（未完全打开）
+            onAboutToShow: {
+                readFlagAction.text = msgItem.readFlag ? qsTr("标为未读") : qsTr(
+                                                             "标为已读")
+                topAction.text = msgItem.chatObject.isTop ? qsTr("取消置顶") : qsTr(
+                                                                "置顶")
+            }
+            Action {
+                id: readFlagAction
+                onTriggered: itemMenu.msgItem.readFlag = !itemMenu.msgItem.readFlag
+            }
+            Action {
+                id: topAction
+                onTriggered: itemMenu.msgItem.chatObject.isTop = !itemMenu.msgItem.chatObject.isTop
+            }
+        }
 
         onLoading: {
             var i = 0
@@ -236,16 +261,35 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                onPressed: parent.color = appTheme.widgetColor
+                onReleased: if (!msgItem.chatObject.isTop)
+                                parent.color = appTheme.backgroundColor
+
                 onClicked: {
+                    if (mouse.button === Qt.LeftButton) {
+                        // 加载聊天记录
+                        if (msgListView.currentIndex !== index)
+                            itemClicked(msgItem.chatObject)
 
-                    // 加载聊天记录
-                    if (msgListView.currentIndex !== index)
-                        messageList.itemClicked(msgItem.chatObject)
+                        msgListView.currentIndex = index
 
-                    msgListView.currentIndex = index
+                        // 标记已读
+                        msgItem.readFlag = true
+                    } else {
+                        itemMenu.msgItem = msgItem
+                        itemMenu.popup()
+                    }
+                }
 
-                    // 标记已读
-                    msgItem.readFlag = true
+                // 支持长按弹出菜单
+                onPressAndHold: {
+                    if (!msgItem.chatObject.isTop)
+                        parent.color = appTheme.backgroundColor
+
+                    itemMenu.msgItem = msgItem
+                    itemMenu.popup()
                 }
             }
         }

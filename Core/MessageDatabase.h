@@ -13,6 +13,7 @@ class MessageList;
 /**
  * @brief 消息数据库类
  * @note 主要完成消息的数据库管理，对消息增删查
+ * TODO 把部分方法返回值改为void，错误消息使用变量QSqlError保存
  */
 class MessageDatabase : public QObject {
 
@@ -53,6 +54,20 @@ public:
      * @return bool 加载成功返回true，否则返回false
      */
     bool loadLanMessageItems(MessageList* list, const QString& hostAddress = QString());
+
+    /**
+     * @brief 更新阅读消息标记
+     * @param item 消息项
+     * @return 更新成功返回true，否则返回false
+     */
+    bool updateReadFlag(MessageItem* item);
+
+    /**
+     * @brief 更新未读消息数量
+     * @param item 消息项
+     * @return 更新成功返回true，否则返回false
+     */
+    bool updateUnreadMsgCount(MessageItem* item);
 
     /**
      * @brief 加载聊天消息到聊天视图中

@@ -13,7 +13,6 @@ class MessageItem : public QObject {
     friend class MessageList;
     friend class MessageDatabase;
 
-    Q_PROPERTY(bool dirty READ getDirty WRITE setDirty NOTIFY dirtyChanged)
     Q_PROPERTY(bool readFlag READ getReadFlag WRITE setReadFlag NOTIFY readFlagChanged)
     Q_PROPERTY(QString time READ getTime CONSTANT)
     Q_PROPERTY(QString message READ getMessage CONSTANT)
@@ -23,13 +22,6 @@ class MessageItem : public QObject {
 public:
     explicit MessageItem(QObject* parent = nullptr);
     ~MessageItem();
-
-    inline bool getDirty(void) const { return mDirty; }
-    inline void setDirty(bool dirty)
-    {
-        mDirty = dirty;
-        emit dirtyChanged();
-    }
 
     IChatObject* getChatObject() const { return mChatObject.get(); }
 
@@ -42,14 +34,19 @@ public:
     inline void setReadFlag(bool readFlag)
     {
         if (readFlag != mReadFlag) {
-            setDirty(true);
             mReadFlag = readFlag;
             emit readFlagChanged();
         }
     }
 
     inline int getUnreadMsgCount(void) const { return mUnreadMsgCount; }
-    void setUnreadMsgCount(int count);
+    inline void setUnreadMsgCount(int count)
+    {
+        if (count != mUnreadMsgCount) {
+            mUnreadMsgCount = count;
+            emit unreadMsgCountChanged();
+        }
+    }
 
 Q_SIGNALS:
     void dirtyChanged();
@@ -57,9 +54,6 @@ Q_SIGNALS:
     void unreadMsgCountChanged();
 
 private:
-    /** 脏位。只有内部数据修改后该值位true，否则位false，方便保存减少数据的保存 */
-    bool mDirty;
-
     /** 是否已经读过消息了 */
     bool mReadFlag;
 

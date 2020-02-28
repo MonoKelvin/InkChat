@@ -1,6 +1,6 @@
 ﻿#include "MessageItem.h"
 
-//#include <MessageDatabase.h>
+#include <MessageDatabase.h>
 #include <Utility.h>
 
 #include <QDateTime>
@@ -9,28 +9,21 @@
 
 MessageItem::MessageItem(QObject* parent)
     : QObject(parent)
-    , mDirty(false)
     , mReadFlag(false)
     , mUnreadMsgCount(0)
     , mChatObject(nullptr)
 {
-    //    connect(this, &MessageItem::destroyed, [this] {
-    //        if (mDirty) {
-    //        }
-    //    });
+    connect(this, &MessageItem::readFlagChanged, [this] {
+        MessageDatabase::Instance()->updateReadFlag(this);
+    });
+    connect(this, &MessageItem::unreadMsgCountChanged, [this] {
+        MessageDatabase::Instance()->updateReadFlag(this);
+    });
 }
 
 MessageItem::~MessageItem()
 {
     if (!mChatObject.isNull()) {
         mChatObject.clear();
-    }
-}
-
-void MessageItem::setUnreadMsgCount(int count)
-{
-    if (count != mUnreadMsgCount) {
-        mUnreadMsgCount = count;
-        emit unreadMsgCountChanged();
     }
 }
