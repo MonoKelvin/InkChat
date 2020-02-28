@@ -6,5 +6,6 @@
         <file>ChatPage/ChatInputer.qml</file>
         <file>ChatPage/ChatItem.qml</file>
         <file>ChatPage/TextChatItem.qml</file>
+        <file>ChatPage/AudioChatItem.qml</file>
     </qresource>
 </RCC>

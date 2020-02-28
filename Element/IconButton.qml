@@ -1,6 +1,5 @@
 ﻿import QtQuick 2.1
 import QtQuick.Controls 1.4
-import "qrc:/Element/"
 
 Rectangle {
     id: iconButton

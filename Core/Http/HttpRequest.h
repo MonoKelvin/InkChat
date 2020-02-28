@@ -2,7 +2,6 @@
 #define HTTPREQUEST_H
 
 #include <QObject>
-#include <QString>
 
 class QTimer;
 class QNetworkAccessManager;
@@ -22,11 +21,11 @@ public:
 
     void sendRequest(const QString &strUrl, HttpRequestType type = GET, const QString &postParams = QString());
 
-signals:
-    // http请求
+Q_SIGNALS:
+    // 信号：http请求
     void request(bool bSuccess, const QByteArray &strResult);
 
-private slots:
+private Q_SLOTS:
     // http请求结束
     void requestFinished();
 
@@ -34,13 +33,13 @@ private slots:
     void requestTimeout();
 
 private:
-    //网络管理类
+    /** 网络管理类 */
     QNetworkAccessManager *mNetworkManager;
 
-    //封装请求返回信息
+    /** 封装请求返回信息 */
     QNetworkReply *mNetworkReply;
 
-    //请求超时计时器
+    /** 请求超时计时器 */
     QTimer *mTimer;
 };
 

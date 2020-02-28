@@ -59,7 +59,7 @@ Item {
 
                 Item {
                     id: contentContainer
-                    width: content.width
+                    width: parent.width
                     height: content.height
                     clip: true
 
@@ -77,7 +77,7 @@ Item {
                     id: timeText
                     color: appTheme.subTextColor
                     font.pixelSize: appTheme.smallTextSize
-                    Layout.fillWidth: true
+                    width: parent.width
                     text: chatItem.time
                 }
             }

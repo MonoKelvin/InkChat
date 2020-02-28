@@ -47,6 +47,14 @@ public:
     bool loadMessageItems(MessageList* list);
 
     /**
+     * @brief 加载的局域网消息到列表中
+     * @param list 消息列表 @see MessageList
+     * @param hostAddress 局域网地址，如果为空则默认加载所有本地保存的局域网消息
+     * @return bool 加载成功返回true，否则返回false
+     */
+    bool loadLanMessageItems(MessageList* list, const QString& hostAddress = QString());
+
+    /**
      * @brief 加载聊天消息到聊天视图中
      * @param chatView 聊天视图 @see ChatView
      * @param uid 聊天对象ID

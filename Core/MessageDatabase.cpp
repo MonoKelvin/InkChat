@@ -72,37 +72,6 @@ QSqlError MessageDatabase::initDatabase()
     if (!query.exec(SqlCreateChatRecordTable)) {
         return query.lastError();
     }
-
-    // TODO: need to remove
-    if (query.prepare(SqlInsertMessage)) {
-        query.addBindValue(2);
-        query.addBindValue(true);
-        query.addBindValue(IChatObject::Friend);
-        query.addBindValue("上一条消息，上一条消息上一条消息上一条消息，上一条消息");
-        query.addBindValue(QDateTime::currentDateTime());
-        query.addBindValue(5);
-        query.addBindValue(false);
-        query.exec();
-
-        query.addBindValue(3);
-        query.addBindValue(true);
-        query.addBindValue(IChatObject::Friend);
-        query.addBindValue("上一条消息");
-        query.addBindValue(QDateTime(QDate(2020, 2, 16)));
-        query.addBindValue(200);
-        query.addBindValue(true);
-        query.exec();
-
-        query.addBindValue(4);
-        query.addBindValue(true);
-        query.addBindValue(IChatObject::Friend);
-        query.addBindValue("Hello! How are you?");
-        query.addBindValue(QDateTime(QDate(2020, 1, 10)));
-        query.addBindValue(1);
-        query.addBindValue(false);
-        query.exec();
-    }
-
     return QSqlError();
 }
 

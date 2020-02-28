@@ -37,3 +37,38 @@ function currentTimeNumber() {
     var time = new Date()
     return Number(time.getTime())
 }
+
+
+/**
+ * 从毫秒数获得时间长，格式为 [hh:]mm:ss
+ * @param milliseconds 毫秒数
+ * @param includeHours 是否包括小时
+ */
+function timeLengthFromMilliseconds(milliseconds, includeHours) {
+    const total = milliseconds / 1000
+    const m = parseInt(total / 60)
+    const ss = parseInt(total % 60)
+
+    let result = ''
+    // 小时
+    if (includeHours === true) {
+        const h = parseInt(total / 3600)
+        if (h < 10) {
+            result += '0'
+        }
+        result += h + ':'
+    }
+
+    // 分钟
+    if (m < 10) {
+        result += '0'
+    }
+    result += m + ':'
+    // 秒数
+    if (ss < 10) {
+        result += '0'
+    }
+    result += ss
+
+    return result
+}

@@ -120,7 +120,7 @@ Rectangle {
             id: blurEffect
             target: titleBar
             background: chatListView
-            blurRadius: 80
+            blurRadius: 64
         }
 
         Text {

@@ -12,6 +12,8 @@
         <file>WindowHeader.qml</file>
         <file>Badge.qml</file>
         <file>AdvancedList.qml</file>
+        <file>StyleMenu.qml</file>
+        <file>Icon.qml</file>
     </qresource>
     <qresource prefix="/js">
         <file>js/Utility.js</file>

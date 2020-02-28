@@ -1,10 +1,8 @@
 ﻿#include "HttpRequest.h"
 
 #include <QTimer>
-#include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
-#include <QTextCodec>
 
 /** Http请求超时间隔 */
 #define HTTP_TIMEOUT 10000
@@ -26,8 +24,7 @@ void HttpRequest::sendRequest(const QString &strUrl, HttpRequestType type, const
     netRequest.setUrl(QUrl(strUrl));
 
     // https请求，需ssl支持(下载openssl拷贝libeay32.dll和ssleay32.dll文件至Qt bin目录或程序运行目录)
-    if (strUrl.toLower().startsWith("https"))
-    {
+    if (strUrl.toLower().startsWith(QStringLiteral("https"))) {
         QSslConfiguration sslConfig;
         sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
         sslConfig.setProtocol(QSsl::TlsV1_1);
@@ -83,7 +80,7 @@ void HttpRequest::requestFinished()
 
 void HttpRequest::requestTimeout()
 {
-    emit request(false, "timeout"); //请求失败
+    emit request(false, QByteArrayLiteral("timeout")); //请求失败
     mNetworkReply->deleteLater();
     this->deleteLater(); //释放内存
 }

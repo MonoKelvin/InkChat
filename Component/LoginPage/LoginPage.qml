@@ -22,8 +22,6 @@ ApplicationWindow {
         Login,
         // 注册
         Signup,
-        // 跳过登录，一般登录过后会保存用户数据到本地
-        JumpLogin,
         // 退出或关闭登录界面
         Exit
     }
@@ -69,7 +67,7 @@ ApplicationWindow {
             ibPassword.text = password
         }
         Component.onCompleted: {
-            loginRequest()
+            autoLoginRequest()
         }
     }
 
