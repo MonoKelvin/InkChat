@@ -25,6 +25,25 @@ public:
 
     IChatObject* getChatObject() const { return mChatObject.get(); }
 
+    /**
+     * @brief 设置聊天对象
+     * @param chatObject 聊天对象类，内容不可为空
+     * @see void setChatObject(IChatObject* chatObject)
+     * @warning 该方法只可使用一次。即之后不能够再设置聊天对象类
+     */
+    void setChatObject(QSharedPointer<IChatObject> chatObject);
+
+    /**
+     * @brief 设置聊天对象
+     * @param chatObject 聊天对象类，内容不可为空
+     * @see void setChatObject(QSharedPointer<IChatObject> chatObject)
+     * @warning 该方法只可使用一次。即之后不能够再设置聊天对象类
+     */
+    inline void setChatObject(IChatObject* chatObject)
+    {
+        setChatObject(QSharedPointer<IChatObject>(chatObject));
+    }
+
     inline const QString getTime(void) const { return mTime; }
 
     inline const QString getMessage(void) const { return mMessage; }
@@ -52,6 +71,9 @@ Q_SIGNALS:
     void dirtyChanged();
     void readFlagChanged();
     void unreadMsgCountChanged();
+
+private Q_SLOTS:
+    void onTopChanged();
 
 private:
     /** 是否已经读过消息了 */

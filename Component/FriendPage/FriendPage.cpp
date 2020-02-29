@@ -21,7 +21,7 @@ void FriendPage::requestFriendsData(User* user)
 {
     // 请求好友数据
     HttpRequest* request = new HttpRequest;
-    request->sendRequest(MyFriendUrl, HttpRequest::POST, QString("id=%1").arg(user->getID()));
+    request->sendRequest(MyFriendsUrl, HttpRequest::POST, QString("id=%1").arg(user->getID()));
     connect(request, &HttpRequest::request, [this, user](bool success, const QByteArray& jsonData) {
         QJsonParseError err;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);

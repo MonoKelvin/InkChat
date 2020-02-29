@@ -65,22 +65,28 @@ public:
     inline bool getIsTop() const { return mIsTop; }
     inline void setIsTop(bool isTop)
     {
-        mIsTop = isTop;
-        emit isTopChanged();
+        if (isTop != mIsTop) {
+            mIsTop = isTop;
+            emit isTopChanged();
+        }
     }
 
     inline const QString getNickName(void) const { return mNickName; }
     inline void setNickName(const QString& nickName)
     {
-        mNickName = nickName;
-        emit nickNameChanged();
+        if (nickName != mNickName) {
+            mNickName = nickName;
+            emit nickNameChanged();
+        }
     }
 
     inline QString getSignature(void) const { return mSignature; }
-    inline void setSignature(const QString& value)
+    inline void setSignature(const QString& signature)
     {
-        mSignature = value;
-        emit signatureChanged();
+        if (signature != mSignature) {
+            mSignature = signature;
+            emit signatureChanged();
+        }
     }
 
     /**
@@ -92,15 +98,19 @@ public:
     inline char getGender(void) const { return mGender; }
     inline void setGender(char gender)
     {
-        mGender = gender;
-        emit genderChanged();
+        if (gender != mGender) {
+            mGender = gender;
+            emit genderChanged();
+        }
     }
 
     inline EOnlineState getOnlineState(void) const { return mOnlineState; }
     inline void setOnlineState(EOnlineState onlineState)
     {
-        mOnlineState = onlineState;
-        emit onlineStateChanged();
+        if (onlineState != mOnlineState) {
+            mOnlineState = onlineState;
+            emit onlineStateChanged();
+        }
     }
 
     inline void setHostAddress(const QString& address) { mHostAddress = address; }

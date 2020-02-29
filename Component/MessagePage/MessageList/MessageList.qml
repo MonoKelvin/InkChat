@@ -64,7 +64,7 @@ Rectangle {
         width: parent.width
         anchors.top: toolBar.bottom
         anchors.bottom: parent.bottom
-        clip: true
+        //clip: true
         focus: true
         currentIndex: -1
         releaseString: qsTr("释放刷新")
@@ -78,6 +78,12 @@ Rectangle {
 
             // 当要显示时（未完全打开）
             onAboutToShow: {
+                // 如果没选中当前项就激活
+                if (listModel.getRow(msgItem) === msgListView.currentIndex)
+                    readFlagAction.enabled = false
+                else
+                    readFlagAction.enabled = true
+
                 readFlagAction.text = msgItem.readFlag ? qsTr("标为未读") : qsTr(
                                                              "标为已读")
                 topAction.text = msgItem.chatObject.isTop ? qsTr("取消置顶") : qsTr(
@@ -89,7 +95,14 @@ Rectangle {
             }
             Action {
                 id: topAction
-                onTriggered: itemMenu.msgItem.chatObject.isTop = !itemMenu.msgItem.chatObject.isTop
+                onTriggered: {
+                    // 先保存当前选中的item
+                    listModel.setCurrentSelectedIndex(msgListView.currentIndex)
+
+                    // 设置是否置顶
+                    listModel.setMessageTop(itemMenu.msgItem,
+                                            !itemMenu.msgItem.chatObject.isTop)
+                }
             }
         }
 
@@ -111,16 +124,11 @@ Rectangle {
         delegate: Rectangle {
             property var msgItem: model.msgObject
             property bool isCurrentItem: msgListView.currentIndex === index
+            property bool isTop: model.msgObject.chatObject.isTop
 
             id: msgItemRect
             height: 70
             width: msgListView.width
-            color: {
-                if (msgItem.chatObject.isTop)
-                    return appTheme.widgetColor
-                else
-                    return appTheme.backgroundColor
-            }
             z: isCurrentItem ? 10 : 1
             layer.enabled: isCurrentItem
             layer.effect: DropShadow {
@@ -129,41 +137,10 @@ Rectangle {
                 color: isCurrentItem ? appTheme.shadowColor : "transparent"
                 verticalOffset: 6
             }
+            onIsTopChanged: {
+                msgListView.currentIndex = listModel.getCurrentSelectedIndex()
 
-            function onReadFlagChanged() {
-                if (msgItem.readFlag) {
-                    msgBadge.visible = false
-                } else {
-                    if (msgItem.unreadMsgCount <= 0) {
-                        return
-                    }
-
-                    msgBadge.visible = true
-                }
-            }
-
-            function onUnreadMsgCountChanged() {
-                if (msgItem.readFlag)
-                    return
-
-                if (msgItem.unreadMsgCount <= 0) {
-                    msgBadge.width = 0
-                    msgBadge.visible = false
-                    return
-                }
-
-                msgBadge.visible = true
-                if (msgItem.unreadMsgCount <= 99) {
-                    msgBadge.text = msgItem.unreadMsgCount
-                } else {
-                    msgBadge.text = "99+"
-                }
-                msgBadge.width = msgBadge.contentWidth + 14
-            }
-
-            Component.onCompleted: {
-                msgItem.readFlagChanged.connect(onReadFlagChanged)
-                msgItem.unreadMsgCountChanged.connect(onUnreadMsgCountChanged)
+                color = isTop ? appTheme.widgetColor : appTheme.backgroundColor
             }
 
             Avatar {
@@ -248,35 +225,32 @@ Rectangle {
                 }
                 Badge {
                     id: msgBadge
-                    visible: true
                     y: messageText.y
                     anchors.right: parent.right
-                    text: msgItem.unreadMsgCount
-
-                    Component.onCompleted: {
-                        msgItemRect.onReadFlagChanged()
-                    }
+                    width: contentWidth + 14
+                    text: (msgItem.unreadMsgCount > 99) ? "99+" : msgItem.unreadMsgCount
+                    visible: msgItem.readFlag ? false : true
                 }
             }
 
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
+                hoverEnabled: true
 
                 onPressed: parent.color = appTheme.widgetColor
+                onExited: if (!msgItem.chatObject.isTop)
+                              parent.color = appTheme.backgroundColor
                 onReleased: if (!msgItem.chatObject.isTop)
                                 parent.color = appTheme.backgroundColor
 
                 onClicked: {
                     if (mouse.button === Qt.LeftButton) {
-                        // 加载聊天记录
-                        if (msgListView.currentIndex !== index)
+                        if (msgListView.currentIndex !== index) {
+                            msgListView.currentIndex = index
+                            msgItem.readFlag = true
                             itemClicked(msgItem.chatObject)
-
-                        msgListView.currentIndex = index
-
-                        // 标记已读
-                        msgItem.readFlag = true
+                        }
                     } else {
                         itemMenu.msgItem = msgItem
                         itemMenu.popup()

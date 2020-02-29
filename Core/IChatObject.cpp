@@ -5,7 +5,6 @@
 #include <QFileInfo>
 
 #include <QHostAddress>
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkInterface>
 #include <QPixmap>
@@ -16,28 +15,10 @@ IChatObject::IChatObject(QObject* parent)
     , mRoleType(AllUser)
     , mOnlineState(NoneState)
 {
-    connect(this, &IChatObject::isTopChanged, [this] {
-        const auto postData = QStringLiteral("uid=%1&fid=%2&top=%3")
-                                  .arg(AppSettings::Instance()->getCurrentUserId())
-                                  .arg(mID)
-                                  .arg(mIsTop);
-
-        HttpRequest* request = new HttpRequest;
-        request->sendRequest(UpdateFriendUrl, HttpRequest::POST, postData);
-
-        connect(request, &HttpRequest::request, [this](bool success, const QByteArray& jsonData) {
-            Q_UNUSED(jsonData)
-
-            if (!success) {
-                emit failed(tr("远程同步失败！"));
-            }
-        });
-    });
 }
 
 IChatObject::~IChatObject()
 {
-    qDebug() << "IChatObject Destroyed: " << mNickName;
 }
 
 const QString IChatObject::getAvatar() const

@@ -13,8 +13,6 @@
 MessageList::MessageList(QObject* parent)
     : QAbstractListModel(parent)
 {
-    mMutex = new QMutex(QMutex::Recursive);
-
     const auto error = MessageDatabase::Instance()->initDatabase();
     if (error.type() != QSqlError::NoError) {
         emit failed(tr("消息数据库打开失败，原因：") + error.text());
@@ -25,79 +23,103 @@ MessageList::~MessageList()
 {
     clearMessage();
 
-    SAFE_DELETE(mMutex);
-
     qDebug() << "MessageList Destroyed";
 }
 
 void MessageList::clearMessage()
 {
-    mMutex->lock();
     beginResetModel();
     qDeleteAll(mMessages.begin(), mMessages.end());
     mMessages.clear();
     endResetModel();
-    mMutex->unlock();
+
+    if (mCurrentSelectedItem) {
+        mCurrentSelectedItem->deleteLater();
+    }
 }
 
 void MessageList::removeMessage(int index)
 {
     if (index >= 0 && index < mMessages.size()) {
-        mMutex->lock();
         beginRemoveRows(QModelIndex(), index, index);
-        const auto object = mMessages.at(index);
-        mMessages.removeAt(index);
-        object->deleteLater();
+        const auto it = mMessages.begin() + index;
+        mMessages.erase(it, it + 1);
         endRemoveRows();
-        mMutex->unlock();
     }
 }
 
-bool MessageList::insertMessage(int index, MessageItem* message)
+void MessageList::insertMessage(int index, MessageItem* message)
 {
     if (index >= 0 && index <= mMessages.size()) {
-        mMutex->lock();
         beginInsertRows(QModelIndex(), index, index);
         mMessages.insert(index, message);
         endInsertRows();
-        mMutex->unlock();
-        return true;
     }
-
-    return false;
 }
 
-void MessageList::setMessageTop(MessageItem* item, bool isTop, bool moveToBottom)
+void MessageList::moveMessage(int from, int to)
 {
-    Q_UNUSED(moveToBottom)
+    if (from < 0
+        || from >= mMessages.size()
+        || to < 0
+        || to >= mMessages.size()) {
+        return;
+    }
 
-    item->mChatObject->setIsTop(isTop);
+    emit layoutAboutToBeChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
+    if (beginMoveRows(QModelIndex(), from, from, QModelIndex(), to)) {
+        if (from != to) {
+            mMessages.move(from, to);
+        }
+        endMoveRows();
+    }
+    emit layoutChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
+
+    /*
+    emit layoutAboutToBeChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
+    QVector<QPair<MessageItem*, int> > list;
+    const int lstCount = mMessages.count();
+    list.reserve(lstCount);
+    for (int i = 0; i < lstCount; ++i)
+        list.append(QPair<MessageItem*, int>(mMessages.at(i), i));
+
+    mMessages.clear();
+    QVector<int> forwarding(lstCount);
+    for (int i = 0; i < lstCount; ++i) {
+        mMessages.append(list.at(i).first);
+        forwarding[list.at(i).second] = i;
+    }
+
+    QModelIndexList oldList = persistentIndexList();
+    QModelIndexList newList;
+    const int numOldIndexes = oldList.count();
+    newList.reserve(numOldIndexes);
+    for (int i = 0; i < numOldIndexes; ++i)
+        newList.append(index(forwarding.at(oldList.at(i).row()), 0));
+    changePersistentIndexList(oldList, newList);
+    emit layoutChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
+    */
+}
+
+void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
+{
+    const int sourceIndex = getRow(message);
+
+    if (isTop) {
+        moveMessage(sourceIndex, 0);
+    } else {
+        moveMessage(sourceIndex, mMessages.size() - 1);
+    }
+
+    message->mChatObject->setIsTop(isTop);
 }
 
 MessageItem* MessageList::getMessage(int index) const
 {
     if (index >= 0 && index < mMessages.size()) {
-        mMutex->lock();
-        const auto msg = mMessages.at(index);
-        mMutex->unlock();
-        return msg;
+        return mMessages.at(index);
     }
     return nullptr;
-}
-
-int MessageList::getRow(MessageItem* message) const
-{
-    mMutex->lock();
-    int row = mMessages.indexOf(message);
-    mMutex->unlock();
-
-    return row;
-}
-
-int MessageList::rowCount(const QModelIndex& parent) const
-{
-    Q_UNUSED(parent)
-    return mMessages.size();
 }
 
 QVariant MessageList::data(const QModelIndex& index, int role) const
@@ -117,9 +139,7 @@ bool MessageList::setData(const QModelIndex& index, const QVariant& value, int r
 {
     if (index.row() >= 0 && index.row() < mMessages.size()) {
         if (role & IChatObject::AllUser) {
-            mMutex->lock();
             mMessages.replace(index.row(), value.value<MessageItem*>());
-            mMutex->unlock();
             return true;
         }
     }
@@ -138,7 +158,21 @@ QHash<int, QByteArray> MessageList::roleNames() const
     return names;
 }
 
-bool MessageList::ariseMessage(MessageItem* message)
+void MessageList::setCurrentSelectedIndex(int index)
+{
+    if (index < 0 || index >= mMessages.size()) {
+        return;
+    }
+
+    mCurrentSelectedItem = mMessages.at(index);
+}
+
+int MessageList::getCurrentSelectedIndex()
+{
+    return mMessages.indexOf(mCurrentSelectedItem);
+}
+
+void MessageList::ariseMessage(MessageItem* message)
 {
     /**
      * 如果消息列表中有目标消息项
@@ -146,9 +180,6 @@ bool MessageList::ariseMessage(MessageItem* message)
      *  b.如果未置顶：找到置顶的所有消息，把message移动到它下面，并更新其相关数据
      */
     const int sourceIndex = getRow(message);
-    if (sourceIndex == -1) {
-        return false;
-    }
 
     int targetIndex = 0;
     if (!message->mChatObject->getIsTop()) {
@@ -163,31 +194,9 @@ bool MessageList::ariseMessage(MessageItem* message)
         //         break;
         //     }
         // }
-        if (targetIndex == mMessages.size()) {
-            return false;
-        }
     }
 
-    mMutex->lock();
-    beginMoveRows(QModelIndex(), sourceIndex, sourceIndex, QModelIndex(), targetIndex);
-    mMessages.move(sourceIndex, targetIndex);
-    endMoveRows();
-    mMutex->unlock();
-
-    return true;
-}
-
-void MessageList::adjustMessageOrder()
-{
-    for (int i = 0; i < mMessages.size(); i++) {
-        if (mMessages.at(i)->mChatObject->getIsTop()) {
-            mMutex->lock();
-            beginMoveRows(QModelIndex(), i, i, QModelIndex(), 0);
-            mMessages.move(i, 0);
-            endMoveRows();
-            mMutex->unlock();
-        }
-    }
+    moveMessage(sourceIndex, targetIndex);
 }
 
 bool MessageList::refresh()
@@ -199,7 +208,14 @@ void MessageList::load(void)
 {
     isFileExists(AppSettings::MessageCacheFile(), true);
 
-    if (!MessageDatabase::Instance()->loadMessageItems(this)) {
+    if (MessageDatabase::Instance()->loadMessageItems(this)) {
+        int pos = 0;
+        for (int i = 0; i < mMessages.size(); i++) {
+            if (mMessages.at(i)->mChatObject->getIsTop()) {
+                mMessages.move(i, pos++);
+            }
+        }
+    } else {
         emit failed(tr("消息加载失败，请重新刷新"));
     }
 }

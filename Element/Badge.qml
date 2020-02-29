@@ -1,7 +1,8 @@
 ﻿import QtQuick 2.0
+import QtQuick.Controls 2.4
 
 Rectangle {
-
+    property alias contentWidth: contentText.implicitWidth
     property alias text: contentText.text
     property alias textColor: contentText.color
 

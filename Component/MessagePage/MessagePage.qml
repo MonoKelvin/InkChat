@@ -11,6 +11,7 @@ Item {
         height: parent.height
         anchors.left: ml_cp_line.right
         anchors.right: parent.right
+        z: 11 // 大于聊天项，确保能覆盖住聊天项的阴影
 
         property var chatPages: new Object
 

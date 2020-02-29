@@ -50,19 +50,19 @@ QSqlError MessageDatabase::initDatabase()
     const auto SqlCreateMessageItemTable = QLatin1String(R"(
         create table message(
             uid integer unsigned primary key,
-            chat boolean,
+            chat boolean defult 0,
             roleType smallint,
             lastMsg varchar,
             lastTime datetime,
-            unreadMsgCount integer,
-            readFlag boolean
+            unreadMsgCount integer default 1,
+            readFlag boolean default 1
         ))");
 
     const auto SqlCreateChatRecordTable = QLatin1String(R"(
         create table chatrecord(
             id integer primary key autoincrement,
             uid integer unsigned,
-            type integer,
+            type integer default 1,
             isMe boolean,
             time datetime,
             data text
@@ -89,9 +89,11 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         MessageItem* item = new MessageItem;
 
         const auto roleType = query.value(1).toInt();
+        const auto chatObjId = query.value(0).toUInt();
+
         switch (roleType & IChatObject::AllUser) {
         case IChatObject::Friend:
-            item->mChatObject = QSharedPointer<IChatObject>(User::Instance()->getFriendById(query.value(0).toUInt()));
+            item->setChatObject(User::Instance()->getFriendById(chatObjId));
             break;
         default:
             break;
@@ -110,8 +112,6 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
 
         list->appendMessage(item);
     }
-
-    list->adjustMessageOrder();
 
     return true;
 }
