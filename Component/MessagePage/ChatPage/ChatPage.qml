@@ -132,7 +132,7 @@ Rectangle {
             font.pixelSize: appTheme.titleTextSize
         }
 
-        IconButton {
+        StyleButton {
             id: menuIconBtn
             anchors.right: parent.right
             anchors.rightMargin: appTheme.stdSpacing

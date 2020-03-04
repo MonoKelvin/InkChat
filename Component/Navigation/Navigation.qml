@@ -1,5 +1,5 @@
 ﻿import QtQuick 2.1
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.4
 import "qrc:/Element/"
 
 Rectangle {
@@ -19,47 +19,47 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
 
-        ExclusiveGroup {
-            id: exclusiveGroup
-        }
-
         Component.onCompleted: {
             btnMessage.checked = true
         }
 
-        IconButton {
+        StyleButton {
             id: btnMessage
             width: 40
             height: 40
+            radius: appTheme.stdRadius
             checkable: true
-            exclusiveGroup: exclusiveGroup
+            autoExclusive: true
             onCheckedChanged: if (checked)
                                   currentIndex = 0
         }
-        IconButton {
+        StyleButton {
             id: btnFriend
             width: 40
             height: 40
+            radius: appTheme.stdRadius
             checkable: true
-            exclusiveGroup: exclusiveGroup
+            autoExclusive: true
             onCheckedChanged: if (checked)
                                   currentIndex = 1
         }
-        IconButton {
+        StyleButton {
             id: btnMine
             width: 40
             height: 40
+            radius: appTheme.stdRadius
             checkable: true
-            exclusiveGroup: exclusiveGroup
+            autoExclusive: true
             onCheckedChanged: if (checked)
                                   currentIndex = 2
         }
-        IconButton {
+        StyleButton {
             id: btnSettings
             width: 40
             height: 40
+            radius: appTheme.stdRadius
             checkable: true
-            exclusiveGroup: exclusiveGroup
+            autoExclusive: true
             onCheckedChanged: if (checked)
                                   currentIndex = 3
         }

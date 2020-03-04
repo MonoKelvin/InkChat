@@ -1,7 +1,6 @@
 ﻿<RCC>
     <qresource prefix="/Element">
         <file>AppTheme.qml</file>
-        <file>IconButton.qml</file>
         <file>Avatar.qml</file>
         <file>InputBox.qml</file>
         <file>BlurEffect.qml</file>
@@ -13,6 +12,10 @@
         <file>Badge.qml</file>
         <file>AdvancedList.qml</file>
         <file>StyleMenu.qml</file>
+        <file>EmojiGridList.qml</file>
+        <file>EmojiPanel.qml</file>
+        <file>StyleButton.qml</file>
+        <file>ImageBrowser_new.qml</file>
         <file>Icon.qml</file>
     </qresource>
     <qresource prefix="/js">

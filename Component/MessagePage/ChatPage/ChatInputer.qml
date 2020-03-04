@@ -1,8 +1,10 @@
 ﻿import QtQuick 2.14
 import QtGraphicalEffects 1.0
 import "qrc:/Element/"
+import "qrc:/js/js/Utility.js" as Utility
 
 Item {
+    id: root
     property int foldUpHeight
     property bool foldUp: false
 
@@ -36,13 +38,13 @@ Item {
         }
     }
 
-    IconButton {
+    StyleButton {
         id: sendIcon
         width: 40
         height: 40
         radius: 20
         normalColor: appTheme.primaryColor1
-        clickedColor: appTheme.primaryActiveColor1
+        pressedColor: appTheme.primaryActiveColor1
         anchors {
             bottom: inputPanel.top
             bottomMargin: appTheme.narrowSpacing
@@ -93,24 +95,40 @@ Item {
                 width: parent.width
                 height: textIcon.height
 
-                IconButton {
+                StyleButton {
                     id: textIcon
                     checkable: true
                     checked: true
                 }
-                IconButton {
+                StyleButton {
+                    id: emojiIcon
+                    radius: appTheme.stdRadius
+
+                    function onEmojiSelected(emoji) {
+                        textBox.textBox.insert(textBox.textBox.cursorPosition,
+                                               emoji)
+                    }
+
+                    onClicked: {
+                        Utility.createEmojiPanel(x, root.y + 5, root.parent, onEmojiSelected)
+                    }
+                }
+                StyleButton {
                     id: imageIcon
+                    radius: appTheme.stdRadius
                 }
-                IconButton {
+                StyleButton {
                     id: videoIcon
+                    radius: appTheme.stdRadius
                 }
-                IconButton {
+                StyleButton {
                     id: fileIcon
+                    radius: appTheme.stdRadius
                 }
-                IconButton {
+                StyleButton {
                     id: flodUpIcon
+                    radius: appTheme.stdRadius
                     onClicked: foldUp = !foldUp
-                    normalColor: appTheme.primaryColor1
                 }
             }
 

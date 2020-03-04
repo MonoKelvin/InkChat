@@ -18,6 +18,27 @@ function createToast(text, parent, duration, showType) {
 
 
 /**
+ * 创建一个emoji输入面板
+ * @param x 面板的x坐标
+ * @param y 面板的y坐标，该坐标不是最后面板显示的真实坐标，会减去面板的height
+ * @param parent 要显示在哪个父对象里
+ * @param callBack 回调函数，即输入面板中点击某个emoji时响应的事件函数，其格式为：
+ *  function callBack(string emoji)
+ * @note 一般x、y为鼠标点击时的全局坐标（相对于Window.window）
+ */
+function createEmojiPanel(x, y, parent, callBack) {
+    var component = Qt.createComponent("qrc:/Element/EmojiPanel.qml")
+    if (component.status === Component.Ready) {
+        var emojiPanel = component.createObject(parent)
+        emojiPanel.x = x
+        emojiPanel.y = y - emojiPanel.height
+        emojiPanel.open()
+        emojiPanel.selected.connect(callBack)
+    }
+}
+
+
+/**
  * 获得一个新颜色，改颜色的alpha来自原颜色的alpha通道，但不会改变原颜色值
  * @param color|string sourceColor 源色
  * @param real a 透明通道，范围是0.0-1.0，0.0表示全透明；1.0表示不透明

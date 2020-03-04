@@ -36,9 +36,9 @@ Rectangle {
         InputBox {
             id: searchBox
             placeholderText: qsTr("搜索...")
-            icon: IconButton {
-                clickedColor: appTheme.primaryColor1
-                checked: true
+            icon: StyleButton {
+                radius: appTheme.stdRadius
+                pressedColor: appTheme.primaryColor1
             }
             anchors {
                 verticalCenter: parent.verticalCenter
@@ -49,7 +49,7 @@ Rectangle {
             }
         }
 
-        IconButton {
+        StyleButton {
             id: toolBtn
             anchors.right: parent.right
             anchors.rightMargin: appTheme.stdSpacing
@@ -269,7 +269,8 @@ Rectangle {
         }
     }
 
-    IconButton {
+
+    /*StyleButton {
         id: backToTop
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -278,7 +279,7 @@ Rectangle {
         height: 40
         radius: 20
         normalColor: appTheme.primaryColor1
-        clickedColor: appTheme.primaryActiveColor1
+        pressedColor: appTheme.primaryActiveColor1
         layer.enabled: true
         layer.effect: DropShadow {
             radius: 12
@@ -286,5 +287,5 @@ Rectangle {
             color: Qt.lighter(appTheme.primaryColor1, 1.2)
             verticalOffset: 5
         }
-    }
+    }*/
 }

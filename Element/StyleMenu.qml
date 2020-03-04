@@ -76,6 +76,7 @@ Menu {
         }
     }
 
+
     delegate: MenuItem {
         id: menuItem
         implicitWidth: menuWidth
@@ -180,6 +181,7 @@ Menu {
                 itemBg.color = pressedColor
             }
         }
+
         onHighlightedChanged: {
             if (highlighted) {
                 contentText.color = hoveredTextColor
