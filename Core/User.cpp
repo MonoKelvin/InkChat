@@ -14,7 +14,7 @@ User::User(QObject* parent)
     : IChatObject(parent)
 {
     mRoleType = ERoleType::Me;
-    mHostAddress = getLocalHostAddress();
+    mHostAddress = getWirelessAddress();
 }
 
 User::~User()

@@ -94,6 +94,11 @@ const QString GetMessageTime(const QDateTime& time);
  */
 quint16 selectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
 
-const QString getLocalHostAddress();
+/**
+ * @brief 获取连接并激活的无线网IP地址
+ * @param netName 传出的无线网名，比如“wireless_32768”
+ * @return 返回连接并激活的无线网IP地址
+ */
+const QString getWirelessAddress(QString* netName = nullptr);
 
 #endif // UTILITY_H

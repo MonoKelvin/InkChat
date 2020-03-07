@@ -48,6 +48,7 @@ public:
         MultiImages, // 多张图片
         Video, // 视频
         Audio, // 音频
+
         Notification, // 通知
         UserEntry, // 用户进入局域网
         UserLeft, // 用户离开局域网

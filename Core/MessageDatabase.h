@@ -81,11 +81,11 @@ public:
 
     /**
      * @brief 保存一条聊天记录
-     * @param uid 和我聊天的对象（单个用户或群聊）的id
+     * @param chatObjId 和我聊天的对象（单个用户或群聊）的id
      * @param item 消息
      * @return 保存成功返回true，并且将成功后的消息id保存到item中，保存失败返回false
      */
-    bool saveAChatRecord(unsigned int uid, IChatItem* item);
+    bool saveAChatRecord(unsigned int chatObjId, IChatItem* item);
 
 private:
     Q_DISABLE_COPY_MOVE(MessageDatabase)

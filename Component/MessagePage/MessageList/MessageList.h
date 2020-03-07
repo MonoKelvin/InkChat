@@ -130,13 +130,17 @@ public:
         return mMessages.size();
     }
 
+    bool canFetchMore(const QModelIndex& parent) const override;
+
+    MessageItem* getCurrentSelectedItem(void) const;
+
 Q_SIGNALS:
     void saved();
     void loaded();
     void failed(const QString&);
 
 public Q_SLOTS:
-    bool refresh();
+    void fetchMore(const QModelIndex& parent) override;
 
     /**
      * @brief 加载缓存的聊天数据
@@ -184,7 +188,10 @@ private:
     /** 消息 */
     QList<MessageItem*> mMessages;
 
-    /** 当前被选中的item，方便更新列表时也更新item索引 */
+    /** 
+     * @brief 当前被选中的item
+     * @note 方便更新列表时也更新item索引，同时判断当前打开的聊天视图，在收发数据时数据有用
+     */
     QPointer<MessageItem> mCurrentSelectedItem;
 };
 

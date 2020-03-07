@@ -191,7 +191,7 @@ protected:
     // 在线状态
     EOnlineState mOnlineState;
 
-    // 主机地址
+    // 主机地址，如果是局域网对象则保存的应该是局域网地址
     QString mHostAddress;
 };
 

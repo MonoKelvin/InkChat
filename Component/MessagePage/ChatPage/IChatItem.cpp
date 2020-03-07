@@ -4,6 +4,7 @@
 #include <User.h>
 #include <Utility.h>
 
+#include <QDebug>
 #include <QVariantMap>
 
 IChatItem::IChatItem(QObject* parent)
@@ -24,6 +25,7 @@ IChatItem::IChatItem(const IChatItem& item)
 
 IChatItem::~IChatItem()
 {
+    qDebug() << "Chat Item Destroyed: " << this;
     if (mChatObject) {
         mChatObject.clear();
     }

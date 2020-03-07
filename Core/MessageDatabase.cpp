@@ -151,7 +151,7 @@ bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
         // 聊天类型
         type = q.value(1).toInt();
 
-        IChatItem* item = chatView->buildChatItem(type, q.value(2).toBool(), uid);
+        IChatItem* item = chatView->BuildChatItem(type, q.value(2).toBool(), uid);
         if (nullptr == item) {
             return false;
         }
@@ -166,14 +166,14 @@ bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
     return true;
 }
 
-bool MessageDatabase::saveAChatRecord(unsigned int uid, IChatItem* item)
+bool MessageDatabase::saveAChatRecord(unsigned int chatObjId, IChatItem* item)
 {
     QSqlQuery query;
     if (!query.prepare(SqlInsertChatRecord)) {
         return false;
     }
 
-    query.addBindValue(uid);
+    query.addBindValue(chatObjId);
     query.addBindValue(item->getChatType());
     query.addBindValue((item->mChatObject->getRoleType() == IChatObject::Me));
     query.addBindValue(item->mTime);

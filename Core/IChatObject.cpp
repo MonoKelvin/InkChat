@@ -4,9 +4,7 @@
 #include <Http/HttpRequest.h>
 #include <QFileInfo>
 
-#include <QHostAddress>
 #include <QJsonObject>
-#include <QNetworkInterface>
 #include <QPixmap>
 
 IChatObject::IChatObject(QObject* parent)

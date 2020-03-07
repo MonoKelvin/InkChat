@@ -114,6 +114,11 @@ void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
     message->mChatObject->setIsTop(isTop);
 }
 
+MessageItem* MessageList::getCurrentSelectedItem() const
+{
+    return mCurrentSelectedItem.data();
+}
+
 MessageItem* MessageList::getMessage(int index) const
 {
     if (index >= 0 && index < mMessages.size()) {
@@ -197,11 +202,6 @@ void MessageList::ariseMessage(MessageItem* message)
     }
 
     moveMessage(sourceIndex, targetIndex);
-}
-
-bool MessageList::refresh()
-{
-    return true;
 }
 
 void MessageList::load(void)

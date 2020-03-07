@@ -1,6 +1,7 @@
 ﻿#include "ChatView.h"
 
 #include <AppSettings.h>
+#include <ChatManager.h>
 #include <MessageDatabase.h>
 #include <MyFriend.h>
 #include <User.h>
@@ -16,9 +17,10 @@ ChatView::ChatView(QObject* parent)
 ChatView::~ChatView()
 {
     clear();
+    qDebug() << "Chat View Destroy: " << this;
 }
 
-IChatItem* ChatView::buildChatItem(int chatType, bool isMe, unsigned int uid)
+IChatItem* ChatView::BuildChatItem(int chatType, bool isMe, unsigned int uid)
 {
     const auto className = mRegistryChatClasses.value(chatType);
     const auto id = QMetaType::type(className);
@@ -38,9 +40,9 @@ IChatItem* ChatView::buildChatItem(int chatType, bool isMe, unsigned int uid)
     return chat;
 }
 
-IChatItem* ChatView::buildChatItem(int chatType, const QDateTime& time, const QVariant& data)
+IChatItem* ChatView::BuildChatItem(int chatType, const QDateTime& time, const QVariant& data)
 {
-    const auto item = buildChatItem(chatType, true, User::Instance()->getID());
+    const auto item = BuildChatItem(chatType, true, User::Instance()->getID());
     if (nullptr == item) {
         return nullptr;
     }
@@ -51,9 +53,9 @@ IChatItem* ChatView::buildChatItem(int chatType, const QDateTime& time, const QV
     return item;
 }
 
-IChatItem* ChatView::buildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data)
+IChatItem* ChatView::BuildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data)
 {
-    const auto item = buildChatItem(chatType, false, uid);
+    const auto item = BuildChatItem(chatType, false, uid);
     if (nullptr == item) {
         return nullptr;
     }
@@ -158,7 +160,7 @@ bool ChatView::setData(const QModelIndex& index, const QVariant& value, int role
 void ChatView::sendChat(unsigned int uid, const QString& msg)
 {
     const auto time = QDateTime::currentDateTime();
-    IChatItem* item = buildChatItem(IChatItem::Text, time, msg);
+    IChatItem* item = BuildChatItem(IChatItem::Text, time, msg);
     if (nullptr == item) {
         emit failed(tr("消息项无效"));
         return;

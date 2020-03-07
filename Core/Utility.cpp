@@ -82,13 +82,35 @@ quint16 selectAvailablePort(quint16 defaultPort, int maxCount)
 {
 }
 
-const QString getLocalHostAddress()
+const QString getWirelessAddress(QString* netName)
 {
-    foreach (auto address, QNetworkInterface::allAddresses()) {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol) {
-            return address.toString();
+    const auto addList = QNetworkInterface::allInterfaces();
+    QString hrn;
+
+    for (QNetworkInterface ni : addList) {
+
+        hrn = ni.humanReadableName();
+
+        // 过滤掉不需要的网卡IP地址
+        if (-1 != hrn.indexOf(QLatin1String("VMware"))
+            || -1 != hrn.indexOf(QLatin1String("Loopback"))
+            || -1 != hrn.indexOf(QLatin1String("VirtualBox"))) {
+            continue;
+        }
+
+        // 挑选激活并使用的IP地址
+        if (ni.flags() & (QNetworkInterface::IsUp | QNetworkInterface::IsRunning)) {
+            // entry.at(0) 是IPv6信息
+            const auto ip = ni.addressEntries().at(1).ip();
+            if (ip.protocol() == QAbstractSocket::IPv4Protocol
+                && -1 != ni.name().indexOf(QLatin1String("wireless"))) {
+                if (nullptr != netName) {
+                    *netName = hrn;
+                }
+                return ip.toString();
+            }
         }
     }
 
-    return QString();
+    return QHostAddress(QHostAddress::LocalHost).toString();
 }
