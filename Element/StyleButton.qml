@@ -4,6 +4,7 @@ import QtQuick.Controls 2.4
 Button {
     id: root
 
+    property alias textColor: text.color
     property alias radius: bg.radius
     property color normalColor: "transparent"
     property color hoveredColor: appTheme.tintColor
@@ -13,6 +14,7 @@ Button {
     height: 24
     hoverEnabled: true
     focusPolicy: "NoFocus"
+    font.pixelSize: appTheme.stdTextSize
 
     background: Rectangle {
         id: bg
@@ -22,5 +24,13 @@ Button {
                 return pressedColor
             return root.down ? pressedColor : (root.hovered ? hoveredColor : normalColor)
         }
+    }
+
+    contentItem: Text {
+        id: text
+        text: root.text
+        font: root.font
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
     }
 }

@@ -17,6 +17,7 @@ IChatObject::IChatObject(QObject* parent)
 
 IChatObject::~IChatObject()
 {
+    qDebug() << "User: " << mNickName << ", ID:" << mID << "Destroyed";
 }
 
 const QString IChatObject::getAvatar() const

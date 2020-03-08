@@ -204,6 +204,10 @@ void MessageList::ariseMessage(MessageItem* message)
     moveMessage(sourceIndex, targetIndex);
 }
 
+void MessageList::fetchMore(const QModelIndex&)
+{
+}
+
 void MessageList::load(void)
 {
     isFileExists(AppSettings::MessageCacheFile(), true);

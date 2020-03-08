@@ -32,8 +32,67 @@ ApplicationWindow {
     // 是否正在进行请求，包括登录、注册请求
     property bool isRequesting: false
 
+    Component.onCompleted: {
+        opacityAnimation.start()
+        autoLoginTimer.start()
+        loadingDialog.text = qsTr("自动登录中...")
+        loadingDialog.showDialog(window.contentItem)
+    }
+
+    onClosing: loginOperation.destroy()
+
+    onIsRequestingChanged: {
+        if (isRequesting) {
+            loginButton.enabled = false
+            signupButton.enabled = false
+        } else {
+            loginButton.enabled = true
+            signupButton.enabled = true
+        }
+    }
+
+    onActionChanged: {
+        switch (window.action) {
+        case LoginPage.Login:
+            loginButton.text = qsTr("登录")
+            signupButton.text = qsTr("注册")
+
+            ibNickName.visible = false
+            ibRecheckPwd.visible = false
+            forgetPwdText.visible = true
+
+            ibAccount.placeholderText = qsTr("账号")
+            ibPassword.placeholderText = qsTr("密码")
+            break
+        case LoginPage.Signup:
+            loginButton.text = qsTr("注册")
+            signupButton.text = qsTr("返回登录")
+
+            ibNickName.visible = true
+            ibRecheckPwd.visible = true
+            forgetPwdText.visible = false
+
+            ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）")
+            ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）")
+            break
+        default:
+            window.close()
+            break
+        }
+    }
+
     AppTheme {
         id: appTheme
+    }
+
+    Timer {
+        id: autoLoginTimer
+        // 等待4s，看是否用户取消自动登录
+        interval: 4000
+        running: false
+        onTriggered: {
+            loginOperation.autoLoginRequest()
+        }
     }
 
     LoginWithQQMail {
@@ -44,7 +103,8 @@ ApplicationWindow {
             isRequesting = false
         }
         onVerified: {
-            loadingDialog.delayCloseDialog(qsTr("登录成功"), function () {
+            loadingDialog.text = qsTr("登录成功")
+            loadingDialog.delayCloseDialog(function () {
                 // 动作为：退出登录页面
                 action = LoginPage.Exit
                 // 重定向到主页面
@@ -52,7 +112,8 @@ ApplicationWindow {
             })
         }
         onRegistered: {
-            loadingDialog.delayCloseDialog(qsTr("注册成功"))
+            loadingDialog.text = qsTr("注册成功")
+            loadingDialog.delayCloseDialog()
 
             ibNickName.clear()
             ibAccount.clear()
@@ -62,21 +123,9 @@ ApplicationWindow {
             isRequesting = false
         }
         onAutoLogin: {
-            loadingDialog.showDialog(window.contentItem, qsTr("自动登录中..."))
             ibAccount.text = account
             ibPassword.text = password
         }
-        Component.onCompleted: {
-            autoLoginRequest()
-        }
-    }
-
-    Component.onCompleted: {
-        opacityAnimation.start()
-    }
-
-    onClosing: {
-        loginOperation.destroy()
     }
 
     LoadingDialog {
@@ -286,46 +335,6 @@ ApplicationWindow {
                         window.action = LoginPage.Login
                 }
             }
-        }
-    }
-
-    onIsRequestingChanged: {
-        if (isRequesting) {
-            loginButton.enabled = false
-            signupButton.enabled = false
-        } else {
-            loginButton.enabled = true
-            signupButton.enabled = true
-        }
-    }
-
-    onActionChanged: {
-        switch (window.action) {
-        case LoginPage.Login:
-            loginButton.text = qsTr("登录")
-            signupButton.text = qsTr("注册")
-
-            ibNickName.visible = false
-            ibRecheckPwd.visible = false
-            forgetPwdText.visible = true
-
-            ibAccount.placeholderText = qsTr("账号")
-            ibPassword.placeholderText = qsTr("密码")
-            break
-        case LoginPage.Signup:
-            loginButton.text = qsTr("注册")
-            signupButton.text = qsTr("返回登录")
-
-            ibNickName.visible = true
-            ibRecheckPwd.visible = true
-            forgetPwdText.visible = false
-
-            ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）")
-            ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）")
-            break
-        default:
-            window.close()
-            break
         }
     }
 }

@@ -11,6 +11,8 @@ typedef quint16 Port;
 
 class IChatItem;
 class QUdpSocket;
+class IChatObject;
+class ChatView;
 //class TcpServer;
 
 /**
@@ -36,13 +38,21 @@ public:
     }
 
     /**
-     * @brief 以广播形式发送我的消息
-     * @return type 消息类型，根据该类型可以按照不同的解析方式来解析data生成聊天记录
-     * @param data 要发送的数据
+     * @brief 发送消息
+     * @param view 聊天视图。消息将被发送到UI界面呈现
+     * @param chatObj 聊天对象
+     * @param type 消息类型
+     * @param data 要发送的消息数据
      * @return qint64 返回发送成功的字节数，如果失败则返回-1
-     * @note 该消息主要针对UDP广播协议
      */
-    qint64 broadcastMessage(int type, const QVariant& data);
+    qint64 sendMessage(ChatView* view, IChatObject* chatObj, int type, const QVariant& data);
+
+    /**
+     * @brief 加载聊天记录
+     * @param view 聊天视图
+     * @param chatObj 聊天对象
+     */
+    void loadChatRecords(ChatView* view, IChatObject* chatObj);
 
 private Q_SLOTS:
     /**
@@ -64,7 +74,6 @@ private Q_SLOTS:
     //void update(unsigned int chatObjId);
 
 Q_SIGNALS:
-    void failed(const QString& msg);
 
     /**
      * @brief 信号：接收到数据

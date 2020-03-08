@@ -77,15 +77,15 @@ public:
      * @note 每次加载指定数量的聊天消息，最大为 @see CHAT_MESSAGE_FECTH_COUNT。加载时不
      * 会覆盖已加载的消息。
      */
-    bool loadChatMessages(ChatView* chatView, unsigned int uid);
+    bool loadChatItems(ChatView* chatView, unsigned int uid);
 
+    //public Q_SLOTS:
     /**
      * @brief 保存一条聊天记录
-     * @param chatObjId 和我聊天的对象（单个用户或群聊）的id
      * @param item 消息
      * @return 保存成功返回true，并且将成功后的消息id保存到item中，保存失败返回false
      */
-    bool saveAChatRecord(unsigned int chatObjId, IChatItem* item);
+    bool saveAChatRecord(IChatItem* item);
 
 private:
     Q_DISABLE_COPY_MOVE(MessageDatabase)

@@ -124,14 +124,14 @@ public:
      * @param json json对象
      * @param cache 是否缓存数据
      */
-    virtual void fromJson(const QJsonObject& json, bool cache = true) = 0;
+    virtual void fromJson(const QJsonObject& json, bool cache = true);
 
     /**
      * @brief 将数据转换成json格式
      * @param fetchIfNull 如果数据为空就先从数据库中获取，然后再返回，如果获取失败则返回空Json对象
      * @return QJsonObject json对象
      */
-    virtual QJsonObject toJson(/*bool fetchIfNull = true*/) = 0;
+    virtual QJsonObject toJson(/*bool fetchIfNull = true*/);
 
 protected Q_SLOTS:
     /**

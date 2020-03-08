@@ -17,6 +17,7 @@
         <file>StyleButton.qml</file>
         <file>ImageBrowser_new.qml</file>
         <file>Icon.qml</file>
+        <file>PopupDialog.qml</file>
     </qresource>
     <qresource prefix="/js">
         <file>js/Utility.js</file>

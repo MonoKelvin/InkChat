@@ -9,17 +9,16 @@ Rectangle {
     property alias titleName: titleNameText.text
 
     color: appTheme.backgroundColor
-    titleName: qsTr("聊天")
 
-    // 私有：当前聊天对象的id
-    property int _chatObjId
+    // 私有：当前聊天对象
+    property var _chatObj
 
     // 加载聊天视图，参数为聊天对象
     function loadChatRecord(chatObject) {
+        _chatObj = chatObject
 
-        titleName = chatObject.nickName
-        _chatObjId = chatObject.id
-        chatListModel.load(_chatObjId)
+        titleName = _chatObj.nickName
+        chatListModel.load(_chatObj)
 
         // 加载完立刻滚动到底部
         chatListView.positionViewAtEnd()
@@ -35,7 +34,7 @@ Rectangle {
 
         onLoading: {
             _oldCount = count
-            chatListModel.load(_chatObjId)
+            chatListModel.load(_chatObj)
             loadState = AdvancedList.Loaded
         }
 
@@ -70,7 +69,7 @@ Rectangle {
             Connections {
                 target: inputer.item
                 onSendChat: {
-                    chatListModel.sendChat(_chatObjId, content)
+                    chatListModel.sendChat(_chatObj, content)
 
                     // 滚动到底部
                     chatListView.positionViewAtEnd()

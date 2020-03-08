@@ -78,6 +78,7 @@ QtObject {
     property color widgetColor: tintColor
     property color shadowColor: "#2054565a"
     property color borderColor: Qt.darker(backgroundColor, 1.2)
+    property color dimColor: "#2a000000"
 
     property color leftBubbleColor: primaryColor1
     property color leftBubbleTextColor: backgroundColor

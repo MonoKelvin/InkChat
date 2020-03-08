@@ -138,7 +138,7 @@ bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
     return false;
 }
 
-bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
+bool MessageDatabase::loadChatItems(ChatView* chatView, unsigned int uid)
 {
     QSqlQuery q;
     if (!q.exec(SqlQueryChatById.arg(uid).arg(chatView->mChats.size()).arg(CHAT_RECORD_FECTH_COUNT))) {
@@ -166,14 +166,14 @@ bool MessageDatabase::loadChatMessages(ChatView* chatView, unsigned int uid)
     return true;
 }
 
-bool MessageDatabase::saveAChatRecord(unsigned int chatObjId, IChatItem* item)
+bool MessageDatabase::saveAChatRecord(IChatItem* item)
 {
     QSqlQuery query;
     if (!query.prepare(SqlInsertChatRecord)) {
         return false;
     }
 
-    query.addBindValue(chatObjId);
+    query.addBindValue(item->mChatObject->getID());
     query.addBindValue(item->getChatType());
     query.addBindValue((item->mChatObject->getRoleType() == IChatObject::Me));
     query.addBindValue(item->mTime);

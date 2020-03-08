@@ -1,154 +1,78 @@
 ﻿import QtQuick 2.14
-import QtQuick.Controls 2.0
 import "qrc:/js/js/Utility.js" as Utility
 
-Rectangle {
-    property bool modality: true
+PopupDialog {
+    property alias text: contentText.text
     property color dotColor: appTheme.primaryColor1
-
-    id: background
-    opacity: 0
-    visible: false
-    color: Utility.alpha(appTheme.mainTextColor, 0.3)
-    z: Infinity
-
-    // 取消信号，只有在非模态对话框状态点击屏幕后才会发出。
-    signal cancel
-
-    Behavior on opacity {
-        NumberAnimation {
-            duration: 200
-        }
-    }
-
-    // 显示对话框，并设置文本内容
-    function showDialog(parent, text) {
-        contentText.text = text
-        background.anchors.fill = parent
-        background.visible = true
-        background.opacity = 1
-    }
-
-    // 立即关闭
-    function closeDialog() {
-        background.opacity = 0
-        background.visible = false
-    }
-
-    // 延迟关闭，可以设置一个文本。之后调用then函数
-    function delayCloseDialog(text, then, delay) {
-        contentText.text = text
-
-        closeTimer.triggered.connect(function () {
-            background.visible = false
-            if (then !== undefined) {
-                then()
-            }
-        })
-
-        closeTimer.interval = (typeof delay !== "number") ? 1000 : delay
-        closeTimer.start()
-    }
+    readonly property real cRadius: 25
+    readonly property real dotSize: 6
 
     onVisibleChanged: visible ? canvasTimer.start() : canvasTimer.stop()
 
-    Timer {
-        id: closeTimer
-    }
-
-    Rectangle {
-        id: loading
-        anchors.centerIn: parent
-        color: appTheme.backgroundColor
-        radius: appTheme.stdRadius
-        width: 120
-        height: 120
-
-        readonly property real cRadius: 25
-        readonly property real dotSize: 6
+    contentItem: Canvas {
         property real curAngle: 0
         property real dotX: 25.0
         property real dotY: 3.0
 
-        Canvas {
-            id: canvas
-            width: 2 * (loading.cRadius + loading.dotSize)
-            height: width
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: appTheme.stdSpacing
+        id: canvas
+        width: 2 * (cRadius + dotSize)
+        height: width
+        anchors.horizontalCenter: parent.horizontalCenter
 
-            onPaint: {
-                var ctx = canvas.getContext("2d")
-                const r = loading.dotSize / 2
+        onPaint: {
+            var ctx = canvas.getContext("2d")
+            const r = dotSize / 2
 
-                // 清理画布
-                ctx.clearRect(0, 0, canvas.width, canvas.height)
+            // 清理画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-                // 绘制圆圈
-                ctx.lineWidth = 1.5
-                ctx.strokeStyle = Utility.alpha(appTheme.mainTextColor, 0.1)
-                ctx.beginPath()
-                ctx.arc(loading.cRadius + r, loading.cRadius + r,
-                        loading.cRadius, 0, 360, true)
-                ctx.stroke()
+            // 绘制圆圈
+            ctx.lineWidth = 1.6
+            ctx.strokeStyle = Utility.alpha(appTheme.mainTextColor, 0.2)
+            ctx.beginPath()
+            ctx.arc(cRadius + r, cRadius + r, cRadius, 0, 360, true)
+            ctx.stroke()
 
-                // 绘制圆点
-                ctx.lineWidth = 1.5
-                ctx.strokeStyle = appTheme.backgroundColor
-                ctx.fillStyle = background.dotColor
-                ctx.beginPath()
-                ctx.ellipse(loading.dotX - r, loading.dotY - r,
-                            loading.dotSize, loading.dotSize)
-                ctx.fill()
-            }
+            // 绘制圆点
+            ctx.lineWidth = 1.5
+            ctx.strokeStyle = appTheme.backgroundColor
+            ctx.fillStyle = dotColor
+            ctx.beginPath()
+            ctx.ellipse(dotX - r, dotY - r, dotSize, dotSize)
+            ctx.fill()
+        }
 
-            Timer {
-                id: canvasTimer
-                interval: 10
-                repeat: true
-                onTriggered: {
-                    const r = loading.dotSize / 2
-                    loading.dotX = r + loading.cRadius * (1 + Math.cos(
-                                                              loading.curAngle))
-                    loading.dotY = r + loading.cRadius * (1 + Math.sin(
-                                                              loading.curAngle))
+        Timer {
+            id: canvasTimer
+            interval: 10
+            repeat: true
+            onTriggered: {
+                const r = dotSize / 2
+                canvas.dotX = r + cRadius * (1 + Math.cos(canvas.curAngle))
+                canvas.dotY = r + cRadius * (1 + Math.sin(canvas.curAngle))
 
-                    // 控制转速（到底部加速，到顶部减速）
-                    loading.curAngle += 2 / (70 - loading.dotY)
-                    if (loading.curAngle >= 2 * Math.PI) {
-                        loading.curAngle = 0.0
-                    }
-
-                    canvas.requestPaint()
+                // 控制转速（到底部加速，到顶部减速）
+                canvas.curAngle += 2 / (70 - canvas.dotY)
+                if (canvas.curAngle >= 2 * Math.PI) {
+                    canvas.curAngle = 0.0
                 }
-            }
 
-            Component.onCompleted: {
-                canvasTimer.start()
+                canvas.requestPaint()
             }
         }
 
-        Text {
-            id: contentText
-            width: parent.width
-            padding: appTheme.stdSpacing
-            anchors.bottom: parent.bottom
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: appTheme.stdTextSize
-            color: appTheme.mainTextColor
+        Component.onCompleted: {
+            canvasTimer.start()
         }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        preventStealing: true
-        onClicked: {
-            if (!modality) {
-                background.closeDialog()
-                background.cancel()
-            }
-        }
+    footerItem: Text {
+        id: contentText
+        padding: appTheme.narrowSpacing
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.pixelSize: appTheme.stdTextSize
+        color: appTheme.mainTextColor
+        anchors.centerIn: parent
     }
 }

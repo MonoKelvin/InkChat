@@ -130,8 +130,6 @@ public:
         return mMessages.size();
     }
 
-    bool canFetchMore(const QModelIndex& parent) const override;
-
     MessageItem* getCurrentSelectedItem(void) const;
 
 Q_SIGNALS:
@@ -140,7 +138,7 @@ Q_SIGNALS:
     void failed(const QString&);
 
 public Q_SLOTS:
-    void fetchMore(const QModelIndex& parent) override;
+    void fetchMore(const QModelIndex&) override;
 
     /**
      * @brief 加载缓存的聊天数据

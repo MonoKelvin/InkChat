@@ -78,7 +78,7 @@ public:
      * @brief 清空所有的聊天记录，同时也会清空本地聊天数据库中的对应记录。谨慎使用
      * @note 如果只清空视图界面的聊天元素，不关联数据库，使用 @see clear
      */
-    void clearChatRecord();
+    Q_INVOKABLE void clearChatRecord();
 
     /**
      * @brief 清空所有的聊天记录，不会清空本地聊天数据库中的对应记录。
@@ -119,22 +119,35 @@ public:
     int rowCount(const QModelIndex& parent) const override;
 
     /**
+     * @brief 发送一条文本聊天消息，会改变数据库的内容
+     * @param chatObj 聊天对象
+     * @param msg 普通文本消息
+     * @note 该方法是最常用来发送普通消息或富文本
+     */
+    Q_INVOKABLE inline void sendChat(IChatObject* chatObj, const QString& msg)
+    {
+        sendChat(chatObj, IChatItem::Text, msg);
+    }
+
+    /**
+     * @brief 发送一条聊天消息，会改变数据库的内容
+     * @param chatObj 聊天对象
+     * @param type 消息类型
+     * @param data 消息数据
+     * @note 该方法为通用方法，可以发送普通文本、富文本、图片和文件等控件
+     */
+    Q_INVOKABLE void sendChat(IChatObject* chatObj, int chatType, const QVariant& data);
+
+public Q_SLOTS:
+    /**
      * @brief 直接在尾部追加一条消息，不会改变数据库的内容
      * @param chat 要追加的聊天消息
+     * @note 该方法通常作为接收消息使用
      */
     inline void appendChat(IChatItem* chat)
     {
         insertChat(mChats.size(), chat);
     }
-
-public Q_SLOTS:
-    /**
-     * @brief 发送一条聊天消息，并会改变数据库的内容
-     * @param uid 发给用户id（当个用户或群聊）为uid的聊天对象
-     * @param msg 普通文本消息
-     * @note 该方法是最常用来发送普通消息，不能富文本、文件、图片等
-     */
-    void sendChat(unsigned int uid, const QString& msg);
 
 protected:
     QVariant data(const QModelIndex& index, int role) const override;
@@ -146,16 +159,21 @@ protected:
         return mRegistryChatClasses;
     }
 
+Q_SIGNALS:
+    void failed(const QString& msg);
+
+    /**
+     * @brief 信号：用户没有找到，即不是我的好友发送的消息
+     * @param item 聊天信息
+     */
+    //void userMissed(IChatItem* item);
+
 public Q_SLOTS:
     /**
      * @brief 加载与给定用户id的聊天消息
-     * @param uid 与“我”聊天的用户id
+     * @param chatObj 聊天对象
      */
-    void load(unsigned int uid);
-
-Q_SIGNALS:
-    /** 信号：任何失败消息产生时将会发送的信号 */
-    void failed(const QString& msg);
+    void load(IChatObject* chatObj);
 
 private:
     /** 所有的聊天消息容器 */

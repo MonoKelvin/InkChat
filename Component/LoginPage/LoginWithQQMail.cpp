@@ -26,13 +26,16 @@ LoginWithQQMail::~LoginWithQQMail()
 
 void LoginWithQQMail::autoLoginRequest()
 {
-    static bool skip = AppSettings::Value(QStringLiteral("login/autoLogin"), false).toBool();
+    bool skip = AppSettings::Value(QStringLiteral("login/autoLogin"), false).toBool();
     const auto& user = User::Instance();
 
     // 判断是否可以跳过登录
-    if (skip && user->hasCache()) {
-        // 当取消自动登录时，应该强制为不可跳过登录
-        skip = false;
+    if (skip) {
+        if (!user->hasCache()) {
+            emit failed(QStringLiteral("用户消息读取出错"));
+            return;
+        }
+
         emit autoLogin(user->mAccount, user->mPassword);
 
         // 封装请求数据
@@ -67,6 +70,8 @@ void LoginWithQQMail::autoLoginRequest()
                 EMIT_FAILED_MESSAGE(jsonDoc, failed);
             }
         });
+    } else {
+        emit failed(QStringLiteral(""));
     }
 }
 
