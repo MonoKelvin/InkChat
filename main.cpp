@@ -1,5 +1,5 @@
 ﻿#include <AppSettings.h>
-#include <LoginWithQQMail.h>
+#include <LoginDelegate.h>
 
 #include <QFont>
 #include <QGuiApplication>
@@ -12,14 +12,14 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
 #if defined(Q_OS_WIN)
-    QFont font = AppSettings::Value(QStringLiteral("app/font"), "微软雅黑").toString();
+    QFont font = AppSettings::Value(QStringLiteral("App/font"), "微软雅黑").toString();
     app.setFont(font);
 #endif
 
-    LOGINOPERATION_INITIALIZA
+    LOGINDELEGATE_INITIALIZA
 
     QQmlApplicationEngine engine;
-    LoginWithQQMail::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
+    LoginDelegate::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
 
     return app.exec();
 }

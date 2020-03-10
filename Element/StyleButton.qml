@@ -30,6 +30,7 @@ Button {
         id: text
         text: root.text
         font: root.font
+        anchors.fill: parent
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
     }

@@ -31,7 +31,7 @@ void FriendPage::requestFriendsData(User* user)
                 for (const auto frd : jsonDoc.array()) {
                     MyFriend* myFriend = new MyFriend(user);
                     myFriend->fromJson(frd.toObject());
-                    user->addFriend(myFriend);
+                    user->addChatObject(myFriend);
                 }
             } else {
                 emit failed(tr("好友数据获取失败"));

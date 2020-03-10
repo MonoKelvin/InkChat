@@ -1,19 +1,20 @@
 ﻿import QtQuick 2.7
 import QtQuick.Controls 2.14
 import QtGraphicalEffects 1.0
-import LoginWithQQMail 1.0
+import QtQuick.Layouts 1.0
+import LoginDelegate 1.0
 import "qrc:/Element/"
-import "qrc:/js/js/Utility.js" as ToastJs
+import "qrc:/js/js/Utility.js" as Utility
 
 ApplicationWindow {
     id: window
     title: "InkChat"
     width: 810
-    height: 518
+    height: 500
     visible: true
     opacity: 0
     color: appTheme.backgroundColor
-    flags: Qt.Window | Qt.FramelessWindowHint
+    flags: Qt.Dialog
     minimumWidth: 720
     minimumHeight: 460
 
@@ -59,7 +60,7 @@ ApplicationWindow {
 
             ibNickName.visible = false
             ibRecheckPwd.visible = false
-            forgetPwdText.visible = true
+            lanModelBadge.visible = true
 
             ibAccount.placeholderText = qsTr("账号")
             ibPassword.placeholderText = qsTr("密码")
@@ -70,7 +71,7 @@ ApplicationWindow {
 
             ibNickName.visible = true
             ibRecheckPwd.visible = true
-            forgetPwdText.visible = false
+            lanModelBadge.visible = false
 
             ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）")
             ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）")
@@ -91,16 +92,17 @@ ApplicationWindow {
         interval: 4000
         running: false
         onTriggered: {
-            loginOperation.autoLoginRequest()
+            loadingDialog.closeButtonActive = false
+            loginOperation.autoLoginDelegate()
         }
     }
 
-    LoginWithQQMail {
+    LoginDelegate {
         id: loginOperation
         onFailed: function (msg) {
-            ToastJs.createToast(msg, window)
-            loadingDialog.closeDialog()
+            Utility.createToast(msg, window)
             isRequesting = false
+            loadingDialog.closeDialog()
         }
         onVerified: {
             loadingDialog.text = qsTr("登录成功")
@@ -122,14 +124,19 @@ ApplicationWindow {
 
             isRequesting = false
         }
-        onAutoLogin: {
-            ibAccount.text = account
-            ibPassword.text = password
+        onAutoLogin: function (mapping) {
+            ibAccount.text = mapping["account"]
+            ibPassword.text = mapping["password"]
         }
     }
 
     LoadingDialog {
         id: loadingDialog
+        onCancel: if(autoLoginTimer) {
+                      loadingDialog.closeButton = false
+                      autoLoginTimer.stop()
+                      autoLoginTimer.destroy()
+                  }
     }
 
     NumberAnimation {
@@ -145,7 +152,7 @@ ApplicationWindow {
         id: infoPannel
         color: appTheme.tintColor
         height: parent.height
-        width: parent.width * 0.618
+        width: Number(parent.width * 0.618)
 
         // todo: 替换成logo
         Image {
@@ -174,7 +181,7 @@ ApplicationWindow {
 
         Text {
             id: developerText
-            textFormat: TextEdit.RichText
+            textFormat: Text.RichText
             horizontalAlignment: Image.AlignHCenter
             verticalAlignment: Image.AlignVCenter
             font.pixelSize: appTheme.smallTextSize
@@ -255,17 +262,37 @@ ApplicationWindow {
                 visible: false
             }
 
-            Text {
-                id: forgetPwdText
-                width: parent.width
-                text: '<a href="http://inkchat.com/api/forget_pwd"><span style="text-decoration: underline;color: '
-                      + appTheme.primaryColor1 + ';">' + qsTr(
-                          '忘记密码？') + '</span></a>'
-                textFormat: Text.RichText
-                horizontalAlignment: Text.AlignRight
-                linkColor: appTheme.primaryColor1
-                font.pixelSize: appTheme.stdTextSize
-                onLinkActivated: Qt.openUrlExternally(link)
+            Badge {
+                id: lanModelBadge
+                anchors.right: parent.right
+                contentText.topPadding: appTheme.tinySpacing
+                contentText.bottomPadding: appTheme.tinySpacing
+                radius: appTheme.stdRadius
+                text: qsTr("离线模式")
+                layer.enabled: false
+                layer.effect: DropShadow {
+                    radius: 12
+                    samples: 17
+                    color: appTheme.subColor2
+                    verticalOffset: 4
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    preventStealing: true
+
+                    // 针对鼠标操作
+                    onEntered: parent.layer.enabled = true
+                    onExited: parent.layer.enabled = false
+                    // 针对触摸操作
+                    onPressed: parent.layer.enabled = true
+                    onReleased: if(!containsMouse) parent.layer.enabled = false
+
+                    onClicked: {
+                        lanModelControl.visible = true
+                    }
+                }
             }
         }
 
@@ -287,39 +314,38 @@ ApplicationWindow {
                                 ) === '' || (window.action === LoginPage.Signup
                                              && ibNickName.text.trim(
                                                  ) === '')) {
-                        ToastJs.createToast(qsTr("内容不允许为空"), window)
+                        Utility.createToast(qsTr("内容不允许为空"), window)
                         return
                     }
 
                     if (ibPassword.text.length < 6) {
-                        ToastJs.createToast(qsTr("密码至少位6个字符"), window)
+                        Utility.createToast(qsTr("密码至少位6个字符"), window)
                         return
                     }
 
                     if (window.action === LoginPage.Signup
                             && ibRecheckPwd.text !== ibPassword.text) {
-                        ToastJs.createToast(qsTr("两次输入的密码不一样"), window)
+                        Utility.createToast(qsTr("两次输入的密码不一样"), window)
                         return
                     }
 
                     isRequesting = true
 
                     if (window.action === LoginPage.Login) {
-                        loginOperation.loginRequest({
+                        loginOperation.loginDelegate({
                                                         "account": ibAccount.text,
                                                         "password": ibPassword.text
-                                                    })
-                        loadingDialog.showDialog(window.contentItem,
-                                                 qsTr("正在登录..."))
+                                                    }, LoginDelegate.QQMailLogin)
+                        loadingDialog.text = qsTr("正在登录...")
                     } else {
-                        loginOperation.signupRequest({
+                        loginOperation.signupDelegate({
                                                          "nickName": ibNickName.text,
                                                          "account": ibAccount.text,
                                                          "password": ibPassword.text
-                                                     })
-                        loadingDialog.showDialog(window.contentItem,
-                                                 qsTr("正在注册..."))
+                                                     }, LoginDelegate.QQMailLogin)
+                        loadingDialog.text = qsTr("正在注册...")
                     }
+                    loadingDialog.showDialog(window.contentItem)
                 }
             }
 
@@ -333,6 +359,106 @@ ApplicationWindow {
                         window.action = LoginPage.Signup
                     else
                         window.action = LoginPage.Login
+                }
+            }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: window.contentItem
+        preventStealing: true
+        visible: lanModelControl.visible
+    }
+
+    Rectangle {
+        id: lanModelControl
+        visible: false
+        width: 350
+        height: 240
+        anchors.centerIn: parent
+        border.color: appTheme.tintColor
+        radius: appTheme.stdRadius
+        color: appTheme.backgroundColor
+        layer.enabled: true
+        layer.effect: DropShadow {
+            id: dropShadow
+            radius: 22
+            samples: 20
+            verticalOffset: 10
+            color: appTheme.shadowColor
+        }
+        transform: Scale {
+            id: scaleTrans
+            origin.x: lanModelControl.width / 2
+            xScale: 0.0
+
+            Behavior on xScale {
+                NumberAnimation {
+                    easing.type: Easing.OutQuart
+                    duration: 200
+                }
+            }
+        }
+
+        onVisibleChanged: {
+            if(visible) {
+                scaleTrans.xScale = 1.0
+            } else
+                scaleTrans.xScale = 0.0
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: appTheme.stdSpacing
+            spacing: appTheme.narrowSpacing
+
+            Text {
+                id: title
+                text: qsTr("离线模式登录")
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: appTheme.stdTextSize
+                color: appTheme.mainTextColor
+                Layout.fillWidth: true
+            }
+
+            Text {
+                id: hintText
+                wrapMode: Text.Wrap
+                font.pixelSize: appTheme.smallTextSize
+                color: appTheme.subTextColor
+                topPadding: appTheme.stdSpacing
+                text: qsTr("使用离线模式登录，就无法连接远程数据库、无法创建新的用户，但应用可以连接局域网络并且会保存你的聊天记录和相关配置数据。")
+                Layout.fillWidth: true
+            }
+
+            InputBox {
+                id: lockInputBox
+                Layout.minimumHeight: 40
+                placeholderText: qsTr("解锁密码")
+                Layout.fillWidth: true
+                echoMode: InputBox.Password
+            }
+
+            Item {
+                Layout.fillWidth: true
+                height: appTheme.stdWidgetHeight
+
+                StyleButton {
+                    height: parent.height
+                    anchors.left: parent.left
+                    anchors.right: parent.horizontalCenter
+                    radius: appTheme.stdRadius
+                    text: qsTr("取消")
+                    onClicked: lanModelControl.visible = false
+                }
+                StyleButton {
+                    height: parent.height
+                    anchors.right: parent.right
+                    anchors.left: parent.horizontalCenter
+                    radius: appTheme.stdRadius
+                    text: qsTr("确定")
+                    onClicked: {}
                 }
             }
         }

@@ -96,9 +96,10 @@ quint16 selectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
 
 /**
  * @brief 获取连接并激活的无线网IP地址
+ * @param mac 传出的mac物理地址
  * @param netName 传出的无线网名，比如“wireless_32768”
- * @return 返回连接并激活的无线网IP地址
+ * @return 返回连接并激活的无线网IP地址，如果没有连接无线网则返回空字符串
  */
-const QString getWirelessAddress(QString* netName = nullptr);
+const QString getWirelessAddress(QString* mac = nullptr, QString* netName = nullptr);
 
 #endif // UTILITY_H

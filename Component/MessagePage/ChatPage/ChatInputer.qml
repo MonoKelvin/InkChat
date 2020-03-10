@@ -44,6 +44,7 @@ Item {
         height: 40
         radius: 20
         normalColor: appTheme.primaryColor1
+        hoveredColor: appTheme.primaryColor1
         pressedColor: appTheme.primaryActiveColor1
         anchors {
             bottom: inputPanel.top

@@ -15,7 +15,7 @@ class ILoginOperation : public QObject
 {
     Q_OBJECT
 public:
-    ILoginOperation(QObject *parent = nullptr)
+    explicit ILoginOperation(QObject* parent = nullptr)
         : QObject(parent)
     {
     }
@@ -40,17 +40,23 @@ public:
      * @param const QVariantMap& 找回密码时提供的验证键值对，通常为手机号或邮箱
      * @note 该方法不是必须继承实现的
      */
-    virtual void forgetPassword(const QVariantMap &) {}
+    virtual void forgetPassword(const QVariantMap&) {}
 
-protected slots:
+    /**
+     * @brief 自动登录请求
+     * @note 该方法不是必须继承实现的
+     */
+    virtual void autoLoginRequest() {}
+
+public Q_SLOTS:
     /**
      * @brief 重定向方法。主要针对使用QWidget作为界面的开发
-     * @param const QWidget& 传入的QWidget控件
+     * @param QWidget* 传入的QWidget控件
      * @note 在登录成功（或注册成功）后，虽然@see verified 信号是立刻发生的，但UI页面可能
      * 有自己的事务要处理，所以只有UI页面发出最后的关闭（或其他重定向信号）事件时，该方法才是最
      * 后需要调用的。
      */
-    virtual void redirect(const QWidget&) {}
+    virtual void redirect(QWidget*) {}
 
     /**
      * @brief 重定向方法。主要针对使用QML作为界面的开发
@@ -59,10 +65,8 @@ protected slots:
      * @note 在登录成功（或注册成功）后，虽然@see verified 信号是立刻发生的，但UI页面可能
      * 有自己的事务要处理，所以只有UI页面发出最后的关闭（或其他重定向信号）事件时，该方法才是最
      * 后需要调用的。
-     * @note 重定向后，可以在新是QML页面使用`UserModel`获取用户数据，如需使用其他名称，则
-     * 重写该方法。
      */
-    Q_INVOKABLE virtual void redirect(QQmlApplicationEngine*, const QUrl&) {}
+    virtual void redirect(QQmlApplicationEngine*, const QUrl&) {}
 
 Q_SIGNALS:
     /**
@@ -80,6 +84,12 @@ Q_SIGNALS:
      * @brief 信号：登录、注册失败时发送
      */
     void failed(const QString&);
+
+    /**
+     * @brief 信号：自动登录成功
+     * @param const QVariantMap& 登录成功后传出的参数
+     */
+    void autoLogin(const QVariantMap&);
 
 private:
     Q_DISABLE_COPY(ILoginOperation)

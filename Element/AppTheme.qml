@@ -70,7 +70,7 @@ QtObject {
 
     property color primaryColor4: "#2bff75"
 
-    property color mainTextColor: "#333b50"
+    property color mainTextColor: "#2d3135"
     readonly property color subTextColor: Qt.lighter(mainTextColor, 3.0)
 
     property color tintColor: "#f5f6fa"
@@ -78,7 +78,7 @@ QtObject {
     property color widgetColor: tintColor
     property color shadowColor: "#2054565a"
     property color borderColor: Qt.darker(backgroundColor, 1.2)
-    property color dimColor: "#2a000000"
+    property color dimColor: "#12000000"
 
     property color leftBubbleColor: primaryColor1
     property color leftBubbleTextColor: backgroundColor
@@ -106,7 +106,7 @@ QtObject {
     property color offlineStateColor: subTextColor
     property color busyStateColor: primaryColor2
 
-    property int stdWidgetHeight: 32
+    property int stdWidgetHeight: 36
     property int stdBadgeHeight: 18
 
     function getDefaultUrl() {

@@ -82,7 +82,7 @@ quint16 selectAvailablePort(quint16 defaultPort, int maxCount)
 {
 }
 
-const QString getWirelessAddress(QString* netName)
+const QString getWirelessAddress(QString* mac, QString* netName)
 {
     const auto addList = QNetworkInterface::allInterfaces();
     QString hrn;
@@ -104,13 +104,14 @@ const QString getWirelessAddress(QString* netName)
             const auto ip = ni.addressEntries().at(1).ip();
             if (ip.protocol() == QAbstractSocket::IPv4Protocol
                 && -1 != ni.name().indexOf(QLatin1String("wireless"))) {
-                if (nullptr != netName) {
+                if (mac)
+                    *mac = ni.hardwareAddress();
+                if (netName)
                     *netName = hrn;
-                }
                 return ip.toString();
             }
         }
     }
 
-    return QHostAddress(QHostAddress::LocalHost).toString();
+    return QString();
 }

@@ -15,7 +15,7 @@ PopupDialog {
         property real dotY: 3.0
 
         id: canvas
-        width: 2 * (cRadius + dotSize)
+        width: 2 * cRadius + dotSize
         height: width
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -68,7 +68,7 @@ PopupDialog {
 
     footerItem: Text {
         id: contentText
-        padding: appTheme.narrowSpacing
+        padding: appTheme.stdSpacing
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: appTheme.stdTextSize

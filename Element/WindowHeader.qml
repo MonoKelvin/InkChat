@@ -1,29 +1,35 @@
 ﻿import QtQuick 2.0
 
-Rectangle {
+MouseArea {
     id: header
+    x: 0
+    y: 0
+    width: parent.width
+    height: 36
 
-    property alias title: titleText.text
+    property point clickPos: "0,0"
 
-    Rectangle {
-        id: borderRadius
-        color: parent.color
-        visible: (parent.radius == 0)
-        width: parent.width
-        height: parent.radius
+    onPressed: clickPos  = Qt.point(mouse.x, mouse.y)
+
+    onPositionChanged: {
+        window.x += mouse.x - clickPos.x
+        window.y += mouse.y - clickPos.y
     }
 
-    Text {
-        id: titleText
-        font.pixelSize: appTheme.stdTextSize
-        color: appTheme.mainTextColor
-        //        height: header.height
-        //        horizontalAlignment: Text.AlignHCenter
-        //        verticalAlignment: Text.AlignVCenter
-        anchors.centerIn: parent
-    }
+    // 关闭按钮
+    StyleButton {
+        id: closeBtn
+        width: 26
+        height: 26
+        radius: 13
+        normalColor: appTheme.backgroundColor
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: appTheme.tinySpacing
+        text: "×"
+        font.pixelSize: appTheme.titleTextSize
+        textColor: appTheme.mainTextColor
 
-    MouseArea {
-        anchors.fill: parent
+        onClicked: window.close()
     }
 }

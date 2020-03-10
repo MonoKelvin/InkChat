@@ -2,6 +2,7 @@
 
 #include <AppSettings.h>
 #include <InkChatApi.h>
+#include <LanObject.h>
 #include <MessageDatabase.h>
 #include <MessageItem.h>
 #include <Utility.h>
@@ -16,6 +17,12 @@ MessageList::MessageList(QObject* parent)
     const auto error = MessageDatabase::Instance()->initDatabase();
     if (error.type() != QSqlError::NoError) {
         emit failed(tr("消息数据库打开失败，原因：") + error.text());
+    }
+
+    // 检测局域网环境
+    LanObject* lan = LanObject::DetectLanEnvironment();
+    if (nullptr != lan) {
+        lan->setParent(this);
     }
 }
 
@@ -74,31 +81,6 @@ void MessageList::moveMessage(int from, int to)
         endMoveRows();
     }
     emit layoutChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
-
-    /*
-    emit layoutAboutToBeChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
-    QVector<QPair<MessageItem*, int> > list;
-    const int lstCount = mMessages.count();
-    list.reserve(lstCount);
-    for (int i = 0; i < lstCount; ++i)
-        list.append(QPair<MessageItem*, int>(mMessages.at(i), i));
-
-    mMessages.clear();
-    QVector<int> forwarding(lstCount);
-    for (int i = 0; i < lstCount; ++i) {
-        mMessages.append(list.at(i).first);
-        forwarding[list.at(i).second] = i;
-    }
-
-    QModelIndexList oldList = persistentIndexList();
-    QModelIndexList newList;
-    const int numOldIndexes = oldList.count();
-    newList.reserve(numOldIndexes);
-    for (int i = 0; i < numOldIndexes; ++i)
-        newList.append(index(forwarding.at(oldList.at(i).row()), 0));
-    changePersistentIndexList(oldList, newList);
-    emit layoutChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
-    */
 }
 
 void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)

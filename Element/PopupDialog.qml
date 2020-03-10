@@ -19,6 +19,8 @@ Rectangle {
     property var footerItem: null
     // 是否有关闭按钮
     property bool closeButton: true
+    // 是否激活关闭按钮
+    property alias closeButtonActive: closeBtn.enabled
 
     // 取消信号，只有在非模态对话框状态点击屏幕后或者手动关闭对话框才会发出。
     signal cancel

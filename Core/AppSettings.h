@@ -69,6 +69,17 @@ public:
         return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(id);
     }
 
+    // 局域网数据文件夹
+    inline static const QString LanDataDir()
+    {
+        return UserDir() + QStringLiteral("/LANs/");
+    }
+
+    inline static const QString LanSettingsFile(const QString& lanMd5)
+    {
+        return LanDataDir() + lanMd5 + QStringLiteral("/Settings.json");
+    }
+
     // 用户缓存头像文件夹
     inline static const QString AvatarCacheFile(int roleType, unsigned int id)
     {
@@ -102,7 +113,7 @@ public:
     inline void setCurrentUserId(unsigned int id)
     {
         mCurrentUser = id;
-        Instance()->setValue("user/currentUser", id);
+        Instance()->setValue("User/currentUser", id);
     }
 
     inline unsigned int getCurrentUserId()

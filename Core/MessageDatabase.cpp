@@ -2,6 +2,7 @@
 
 #include <AppSettings.h>
 #include <ChatView.h>
+#include <LanObject.h>
 #include <MessageItem.h>
 #include <MessageList.h>
 #include <MyFriend.h>
@@ -12,8 +13,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-const auto SqlQueryMessage = QStringLiteral("select uid,roleType,lastMsg,lastTime,unreadMsgCount,readFlag from message where chat='1'");
-const auto SqlInsertMessage = QStringLiteral("insert into message (uid,chat,roleType,lastMsg,lastTime,unreadMsgCount,readFlag) values (?,?,?,?,?,?,?)");
+const auto SqlQueryMsgItems = QStringLiteral("select uid,roleType,unreadMsgCount,readFlag,time,data from GetMsgItems");
 
 const auto SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
 const auto SqlInsertChatRecord = QStringLiteral("insert into chatrecord (id,uid,type,isMe,time,data) values (null,?,?,?,?,?)");
@@ -47,17 +47,17 @@ QSqlError MessageDatabase::initDatabase()
         return QSqlError();
     }
 
+    // 消息表
     const auto SqlCreateMessageItemTable = QLatin1String(R"(
         create table message(
             uid integer unsigned primary key,
-            chat boolean defult 0,
+            chat boolean defult '0',
             roleType smallint,
-            lastMsg varchar,
-            lastTime datetime,
             unreadMsgCount integer default 1,
             readFlag boolean default 1
         ))");
 
+    // 聊天记录表
     const auto SqlCreateChatRecordTable = QLatin1String(R"(
         create table chatrecord(
             id integer primary key autoincrement,
@@ -68,20 +68,36 @@ QSqlError MessageDatabase::initDatabase()
             data text
         ))");
 
+    // 消息视图
+    const auto SqlCreateViewGetMsgItems = QLatin1String(R"(
+        create view GetMsgItems as
+        select uid,roleType,unreadMsgCount,readFlag,time,data from (
+            select m.uid,roleType,unreadMsgCount,readFlag,time,data,chat
+            from message as m left outer join chatrecord as c
+            on m.uid=c.uid and c.id = (select max(id) from chatrecord where uid=m.uid)
+        ) as x where chat='1')");
+
     QSqlQuery query;
     if (!query.exec(SqlCreateMessageItemTable)) {
+        //qDebug() << query.lastError();
         return query.lastError();
     }
     if (!query.exec(SqlCreateChatRecordTable)) {
+        //qDebug() << query.lastError();
         return query.lastError();
     }
+    if (!query.exec(SqlCreateViewGetMsgItems)) {
+        //qDebug() << query.lastError();
+        return query.lastError();
+    }
+
     return QSqlError();
 }
 
 bool MessageDatabase::loadMessageItems(MessageList* list)
 {
     QSqlQuery query;
-    if (!query.exec(SqlQueryMessage)) {
+    if (!query.exec(SqlQueryMsgItems)) {
         return false;
     }
 
@@ -91,9 +107,13 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         const auto roleType = query.value(1).toInt();
         const auto chatObjId = query.value(0).toUInt();
 
+        // TODO: 添加更多的聊天对象
         switch (roleType & IChatObject::AllUser) {
         case IChatObject::Friend:
             item->setChatObject(User::Instance()->getFriendById(chatObjId));
+            break;
+        case IChatObject::LAN:
+            item->setChatObject(User::Instance()->getLanObjectById(chatObjId));
             break;
         default:
             break;
@@ -105,10 +125,10 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
             return false;
         }
 
-        item->mMessage = query.value(2).toString();
-        item->mTime = GetMessageTime(query.value(3).toDateTime());
-        item->mUnreadMsgCount = query.value(4).toInt();
-        item->mReadFlag = query.value(5).toBool();
+        item->mUnreadMsgCount = query.value(3).toInt();
+        item->mReadFlag = query.value(4).toBool();
+        item->mTime = GetMessageTime(query.value(5).toDateTime());
+        item->mMessage = query.value(6).toString();
 
         list->appendMessage(item);
     }

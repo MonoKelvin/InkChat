@@ -19,8 +19,7 @@ User::User(QObject* parent)
 
 User::~User()
 {
-    mFriends.clear();
-    mLANs.clear();
+    mMyChatObjects.clear();
 
     qDebug() << "User Model Destroyed";
 }
@@ -37,15 +36,7 @@ void User::fromJson(const QJsonObject& json, bool cache)
     for (const auto i : chatObjs) {
         MyFriend* f = new MyFriend(this);
         f->fromJson(i.toObject(), cache);
-        addFriend(f);
-    }
-
-    // 加载局域网聊天群
-    chatObjs = json.value(QLatin1String("lans")).toArray();
-    for (const auto i : chatObjs) {
-        LanObject* lan = new LanObject(this);
-        lan->fromJson(i.toObject(), cache);
-        addLanObject(lan);
+        mMyChatObjects.append(f);
     }
 
     if (cache) {
@@ -75,33 +66,24 @@ QJsonObject User::toJson()
     json.insert(QLatin1String("account"), QJsonValue(mAccount));
     json.insert(QLatin1String("password"), QJsonValue(mPassword));
 
-    // 好友
+    // 写入好友数据
     QJsonArray friends;
-    for (const auto i : mFriends) {
-        friends.append(i->toJson());
+    for (const auto i : mMyChatObjects) {
+        if (i->getRoleType() == Friend) {
+            friends.append(i->toJson());
+        }
     }
     json.insert(QLatin1String("friends"), friends);
-
-    // 局域网
-    QJsonArray lans;
-    for (const auto i : mLANs) {
-        lans.append(i->toJson());
-    }
-    json.insert(QLatin1String("lans"), lans);
 
     return json;
 }
 
-QQmlListProperty<MyFriend> User::getFriends()
-{
-    return QQmlListProperty<MyFriend>(this, this->mFriends);
-}
-
 MyFriend* User::getFriendById(unsigned int id)
 {
-    for (int i = 0; i < mFriends.size(); i++) {
-        if (mFriends.at(i)->getID() == id) {
-            return mFriends[i];
+    for (int i = 0; i < mMyChatObjects.size(); i++) {
+        if (mMyChatObjects.at(i)->getID() == id
+            && mMyChatObjects.at(i)->getRoleType() == Friend) {
+            return static_cast<MyFriend*>(mMyChatObjects[i]);
         }
     }
 
@@ -110,9 +92,10 @@ MyFriend* User::getFriendById(unsigned int id)
 
 LanObject* User::getLanObjectById(unsigned int id)
 {
-    for (int i = 0; i < mLANs.size(); i++) {
-        if (mLANs.at(i)->getID() == id) {
-            return mLANs[i];
+    for (int i = 0; i < mMyChatObjects.size(); i++) {
+        if (mMyChatObjects.at(i)->getID() == id
+            && mMyChatObjects.at(i)->getRoleType() == LAN) {
+            return static_cast<LanObject*>(mMyChatObjects[i]);
         }
     }
 

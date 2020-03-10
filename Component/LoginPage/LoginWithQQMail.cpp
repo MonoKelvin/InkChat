@@ -1,16 +1,10 @@
 ﻿#include "LoginWithQQMail.h"
 
 #include <AppSettings.h>
-#include <FriendPage.h>
 #include <Http/HttpRequest.h>
-#include <MessagePage.h>
 
-#include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
-//#include <QQmlContext>
-
-QPointer<QQmlApplicationEngine> LoginWithQQMail::QmlEngine = nullptr;
 
 LoginWithQQMail::LoginWithQQMail(QObject* parent)
     : ILoginOperation(parent)
@@ -19,14 +13,11 @@ LoginWithQQMail::LoginWithQQMail(QObject* parent)
 
 LoginWithQQMail::~LoginWithQQMail()
 {
-    if (!QmlEngine.isNull()) {
-        QmlEngine.clear();
-    }
 }
 
 void LoginWithQQMail::autoLoginRequest()
 {
-    bool skip = AppSettings::Value(QStringLiteral("login/autoLogin"), false).toBool();
+    bool skip = AppSettings::Value(QStringLiteral("Login/autoLogin"), false).toBool();
     const auto& user = User::Instance();
 
     // 判断是否可以跳过登录
@@ -36,10 +27,16 @@ void LoginWithQQMail::autoLoginRequest()
             return;
         }
 
-        emit autoLogin(user->mAccount, user->mPassword);
+        // 及时释放资源
+        {
+            auto data = QVariantMap();
+            data.insert(QLatin1String("account"), user->getAccount());
+            data.insert(QLatin1String("password"), user->getPassword());
+            emit autoLogin(data);
+        }
 
         // 封装请求数据
-        const auto postData = QStringLiteral("id=%1&account=%2&password=%3").arg(user->mID).arg(user->mAccount).arg(user->mPassword);
+        const auto postData = QStringLiteral("id=%1&account=%2&password=%3").arg(user->getID()).arg(user->getAccount()).arg(user->getPassword());
 
         HttpRequest* request = new HttpRequest;
         request->sendRequest(LoginByIdUrl, HttpRequest::POST, postData);
@@ -53,12 +50,12 @@ void LoginWithQQMail::autoLoginRequest()
 
                     const auto& user = User::Instance();
 
-                    json.insert(QLatin1String("account"), user->mAccount);
-                    json.insert(QLatin1String("password"), user->mPassword);
+                    json.insert(QLatin1String("account"), user->getAccount());
+                    json.insert(QLatin1String("password"), user->getPassword());
 
                     try {
                         user->fromJson(json);
-                        AppSettings::Instance()->setCurrentUserId(user->mID);
+                        AppSettings::Instance()->setCurrentUserId(user->getID());
                         emit verified();
                     } catch (const QString& msg) {
                         emit failed(msg);
@@ -97,7 +94,7 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
                 try {
                     const auto& user = User::Instance();
                     user->fromJson(json);
-                    AppSettings::Instance()->setCurrentUserId(user->mID);
+                    AppSettings::Instance()->setCurrentUserId(user->getID());
                     emit verified();
                 } catch (const QString& msg) {
                     emit failed(msg);
@@ -132,44 +129,4 @@ void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
             EMIT_FAILED_MESSAGE(jsonDoc, failed);
         }
     });
-}
-
-void LoginWithQQMail::redirect(QQmlApplicationEngine* engine, const QUrl& url)
-{
-    Q_UNUSED(engine)
-    Q_ASSERT(QmlEngine != nullptr);
-
-    // 注册C++类型到QML
-    qmlRegisterUncreatableType<IChatObject>("ChatObject", 1, 0, "ChatObject", "Cannot create ChatObject, because it is an interface");
-    qmlRegisterUncreatableType<IChatItem>("ChatItem", 1, 0, "ChatItem", "Cannot create ChatItem, because it is an interface");
-    qmlRegisterSingletonType<User>("UserModel", 1, 0, "UserModel", User::QmlSingletonTypeProvider);
-
-    MESSAGEPAGE_INITIALIZA
-    FRIENDPAGE_INITIALIZA
-
-    connect(
-        QmlEngine, &QQmlApplicationEngine::objectCreated, qApp,
-        [url](QObject* obj, const QUrl& objUrl) {
-            if (!obj && url == objUrl) {
-                QCoreApplication::exit(-1);
-            }
-        },
-        Qt::QueuedConnection);
-
-    QmlEngine->load(url);
-}
-
-void LoginWithQQMail::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QUrl& url)
-{
-    QmlEngine = qmlEngine;
-
-    connect(
-        QmlEngine, &QQmlApplicationEngine::objectCreated, qApp,
-        [url](QObject* obj, const QUrl& objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        },
-        Qt::QueuedConnection);
-
-    QmlEngine->load(url);
 }

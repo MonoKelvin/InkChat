@@ -27,7 +27,8 @@ TextField {
 
     background: Rectangle {
         id: inputRect
-        anchors.fill: parent
+        width: textField.width
+        height: textField.height
         radius: appTheme.stdRadius
         color: appTheme.widgetColor
 

@@ -1,20 +1,22 @@
-﻿import QtQuick 2.0
+﻿import QtQuick 2.14
 import QtQuick.Controls 2.4
 
 Rectangle {
-    property alias contentWidth: contentText.implicitWidth
     property alias text: contentText.text
-    property alias textColor: contentText.color
+    property alias contentText: contentText
 
-    height: appTheme.stdBadgeHeight
-    width: Math.max(contentText.contentWidth + appTheme.stdTextSize, height)
+    height: contentText.implicitHeight
+    width: Math.max(contentText.implicitWidth, height)
     radius: appTheme.stdBadgeHeight / 2
-    color: appTheme.subColor3
+    color: appTheme.subColor2
 
     Text {
         id: contentText
-        font.pixelSize: appTheme.smallTextSize
         anchors.centerIn: parent
-        color: appTheme.primaryColor3
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        font.pixelSize: appTheme.smallTextSize
+        color: appTheme.primaryColor2
+        padding: appTheme.narrowSpacing
     }
 }
