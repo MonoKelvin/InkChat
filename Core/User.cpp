@@ -3,7 +3,6 @@
 #include <AppSettings.h>
 #include <LanObject.h>
 #include <MyFriend.h>
-#include <Utility.h>
 
 #include <QFile>
 #include <QJsonArray>
@@ -20,8 +19,6 @@ User::User(QObject* parent)
 User::~User()
 {
     mMyChatObjects.clear();
-
-    qDebug() << "User Model Destroyed";
 }
 
 void User::fromJson(const QJsonObject& json, bool cache)

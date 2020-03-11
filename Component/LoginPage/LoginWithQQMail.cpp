@@ -2,6 +2,7 @@
 
 #include <AppSettings.h>
 #include <Http/HttpRequest.h>
+#include <InkChatApi.h>
 
 #include <QJsonDocument>
 #include <QJsonObject>

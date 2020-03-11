@@ -2,8 +2,8 @@
 
 #include <AppSettings.h>
 #include <Http/HttpRequest.h>
+#include <InkChatApi.h>
 #include <MessageDatabase.h>
-#include <Utility.h>
 
 #include <QDateTime>
 #include <QDir>
@@ -25,7 +25,6 @@ MessageItem::MessageItem(QObject* parent)
 
 MessageItem::~MessageItem()
 {
-    qDebug() << "消息清除：" << this;
     if (!mChatObject.isNull()) {
         mChatObject.clear();
     }

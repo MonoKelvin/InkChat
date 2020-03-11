@@ -31,6 +31,7 @@ public:
     inline void setAccount(const QString& value) { mAccount = value; }
 
     inline const QString getPassword(void) const { return mPassword; }
+    inline void setPassword(const QString& pwd) { mPassword = pwd; }
 
     /**
      * @brief 添加聊天对象

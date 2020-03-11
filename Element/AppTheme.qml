@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.0
-
+import QtQuick.Window 2.0
+import QtQuick.Controls 2.0
 
 /**
  * - 亮色主题配色表 -
@@ -106,10 +107,17 @@ QtObject {
     property color offlineStateColor: subTextColor
     property color busyStateColor: primaryColor2
 
-    property int stdWidgetHeight: 36
+    property int stdWidgetHeight: 40
     property int stdBadgeHeight: 18
 
     function getDefaultUrl() {
         return "qrc:/AppResource/Icon/default_avatar.png"
+    }
+
+    function getWindowItem() {
+        if(Window.window && Window.window.contentItem)
+            return Window.window.contentItem
+        else if(ApplicationWindow.window && ApplicationWindow.window.contentItem)
+            return ApplicationWindow.window.contentItem
     }
 }

@@ -1,5 +1,6 @@
 ﻿<RCC>
     <qresource prefix="/LoginPage">
         <file>LoginPage.qml</file>
+        <file>SystemLoginDialog.qml</file>
     </qresource>
 </RCC>

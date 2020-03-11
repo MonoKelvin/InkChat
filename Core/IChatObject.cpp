@@ -9,6 +9,7 @@
 
 IChatObject::IChatObject(QObject* parent)
     : QObject(parent)
+    , mID(0)
     , mGender('\0')
     , mRoleType(AllUser)
     , mOnlineState(NoneState)
@@ -17,7 +18,6 @@ IChatObject::IChatObject(QObject* parent)
 
 IChatObject::~IChatObject()
 {
-    qDebug() << "User: " << mNickName << ", ID:" << mID << "Destroyed";
 }
 
 const QString IChatObject::getAvatar() const

@@ -8,7 +8,6 @@ AppSettings::AppSettings(QObject* parent)
 
 AppSettings::~AppSettings()
 {
-    qDebug() << "AppSettings Destroyed";
 }
 
 void AppSettings::LoadAppTheme(const QString& themeFile)

@@ -1,7 +1,6 @@
 ﻿#include "LanObject.h"
 
 #include <AppSettings.h>
-#include <Utility.h>
 
 #include <QDir>
 #include <QJsonObject>
@@ -49,7 +48,6 @@ LanObject* LanObject::DetectLanEnvironment()
         lan->mMD5 = encryptTextByMD5(lan->mHostAddress + lan->mMacAddress);
 
         const auto dirList = QDir(AppSettings::LanDataDir()).entryList(QDir::Dirs);
-        qDebug() << dirList;
 
         // 遍历缓存文件夹，如果有缓存就直接读取，否则新建局域网数据文件
         for (auto name : dirList) {

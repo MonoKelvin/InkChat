@@ -2,12 +2,12 @@
 
 #include <AppSettings.h>
 #include <ChatView.h>
+#include <InkChatApi.h>
 #include <LanObject.h>
 #include <MessageItem.h>
 #include <MessageList.h>
 #include <MyFriend.h>
 #include <User.h>
-#include <Utility.h>
 
 #include <QDateTime>
 #include <QSqlError>
@@ -28,8 +28,6 @@ MessageDatabase::MessageDatabase()
 MessageDatabase::~MessageDatabase()
 {
     close();
-
-    qDebug() << "MessageDatabase Destroyed";
 }
 
 QSqlError MessageDatabase::initDatabase()

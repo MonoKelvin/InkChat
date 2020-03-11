@@ -1,5 +1,5 @@
-﻿#include <AppSettings.h>
-#include <LoginDelegate.h>
+﻿#include <AppLoginOperation.h>
+#include <AppSettings.h>
 
 #include <QFont>
 #include <QGuiApplication>
@@ -16,10 +16,8 @@ int main(int argc, char *argv[])
     app.setFont(font);
 #endif
 
-    LOGINDELEGATE_INITIALIZA
-
     QQmlApplicationEngine engine;
-    LoginDelegate::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
+    AppLoginOperation::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));
 
     return app.exec();
 }

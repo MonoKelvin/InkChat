@@ -4,7 +4,6 @@
 #include <ChatManager.h>
 #include <MyFriend.h>
 #include <User.h>
-#include <Utility.h>
 
 QHash<int, QByteArray> ChatView::mRegistryChatClasses;
 
@@ -18,7 +17,6 @@ ChatView::ChatView(QObject* parent)
 ChatView::~ChatView()
 {
     clear();
-    qDebug() << "Chat View Destroy: " << this;
 }
 
 IChatItem* ChatView::BuildChatItem(int chatType, bool isMe, unsigned int uid)

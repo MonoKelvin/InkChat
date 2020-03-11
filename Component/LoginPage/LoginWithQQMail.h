@@ -13,9 +13,9 @@ public:
     explicit LoginWithQQMail(QObject* parent = nullptr);
     ~LoginWithQQMail() override;
 
-    void autoLoginRequest() override;
-    void loginRequest(const QVariantMap& mapping = QVariantMap()) override;
-    void signupRequest(const QVariantMap& mapping) override;
+    Q_INVOKABLE void autoLoginRequest() override;
+    Q_INVOKABLE void loginRequest(const QVariantMap& mapping = QVariantMap()) override;
+    Q_INVOKABLE void signupRequest(const QVariantMap& mapping) override;
 };
 
 #endif // LOGINWITHQQMAIL_H

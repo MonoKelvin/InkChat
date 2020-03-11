@@ -1,8 +1,9 @@
 ﻿#ifndef APPSETTINGS_H
 #define APPSETTINGS_H
 
-#include <InkChatApi.h>
+#include <Utility.h>
 
+#include <QCoreApplication>
 #include <QSettings>
 
 class AppSettings : public QSettings {
@@ -42,10 +43,7 @@ public:
     // 用户数据文件
     inline static const QString UserDataFile() noexcept
     {
-        QCryptographicHash hash(QCryptographicHash::Md5);
-        hash.addData(QString::number(Instance()->mCurrentUser).toLatin1());
-        auto result = QString(hash.result().toHex());
-        return UserDataDir() + result + QStringLiteral(".udata");
+        return UserDataDir() + QStringLiteral("User.udat");
     }
 
     /**

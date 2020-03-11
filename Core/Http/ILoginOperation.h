@@ -60,13 +60,13 @@ public Q_SLOTS:
 
     /**
      * @brief 重定向方法。主要针对使用QML作为界面的开发
-     * @param engine 传入的QML应用解析引擎
      * @param url 重定向的新页面地址
+     * @param engine 传入的QML应用解析引擎
      * @note 在登录成功（或注册成功）后，虽然@see verified 信号是立刻发生的，但UI页面可能
      * 有自己的事务要处理，所以只有UI页面发出最后的关闭（或其他重定向信号）事件时，该方法才是最
      * 后需要调用的。
      */
-    virtual void redirect(QQmlApplicationEngine*, const QUrl&) {}
+    virtual void redirect(const QUrl& url, QQmlApplicationEngine* engine = nullptr) {}
 
 Q_SIGNALS:
     /**
