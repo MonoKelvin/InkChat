@@ -107,7 +107,7 @@ Menu {
             implicitWidth: menuItemHeight
             implicitHeight: menuItemHeight
 
-            Icon {
+            /*Icon {
                 id: iconImg
                 anchors.centerIn: parent
                 source: {
@@ -125,7 +125,7 @@ Menu {
 
                     return ''
                 }
-            }
+            }*/
 
             Rectangle {
                 width: 14
@@ -147,7 +147,7 @@ Menu {
                     Behavior on scale {
                         NumberAnimation {
                             easing.type: Easing.OutQuart
-                            duration: 120
+                            duration: 180
                         }
                     }
                 }

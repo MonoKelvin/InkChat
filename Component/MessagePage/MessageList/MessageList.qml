@@ -36,10 +36,6 @@ Rectangle {
         InputBox {
             id: searchBox
             placeholderText: qsTr("搜索...")
-            icon: StyleButton {
-                radius: appTheme.stdRadius
-                pressedColor: appTheme.primaryColor1
-            }
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
@@ -47,6 +43,7 @@ Rectangle {
                 leftMargin: appTheme.stdSpacing
                 rightMargin: appTheme.tinySpacing
             }
+            iconSource: "qrc:/icons/lightTheme/24x24/search.png"
         }
 
         StyleButton {

@@ -1,0 +1,9 @@
+﻿<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>icons/lightTheme/index.theme</file>
+        <file>icons/lightTheme/24x24/eye_open.png</file>
+        <file>icons/lightTheme/24x24/eye_off.png</file>
+        <file>icons/lightTheme/24x24/search.png</file>
+    </qresource>
+</RCC>

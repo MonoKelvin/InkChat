@@ -1,17 +1,12 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.0
+import QtLocation 5.14
 
 TextField {
     property color normalBackgroundColor: appTheme.tintColor
     property color focusBackgroundColor: appTheme.tintColor
-    property var icon: null
-
-    enum EIconAlignment {
-        AlignLeft,
-        AlignRight
-    }
-
-    property int iconAlignment: InputBox.AlignLeft
+    property bool eyeVisible: false
+    property url iconSource
 
     id: textField
     height: appTheme.stdWidgetHeight
@@ -32,24 +27,46 @@ TextField {
         radius: appTheme.stdRadius
         color: appTheme.widgetColor
 
-        children: icon
-
         Component.onCompleted: {
-            if (icon) {
-                if (iconAlignment === InputBox.AlignRight) {
-                    icon.anchors.right = right
-                    textField.rightPadding += appTheme.stdSpacing + icon.width
-                    icon.anchors.rightMargin = appTheme.tinySpacing
-                } else {
-                    icon.anchors.left = left
-                    textField.leftPadding += appTheme.stdSpacing + icon.width
-                    icon.anchors.leftMargin = appTheme.tinySpacing
+            if (iconSource != "") {
+                var newObject = Qt.createQmlObject('import QtQuick 2.0; Image{ }', inputRect, "dynamicCreateIcon");
+                if (newObject !== null) {
+                    newObject.x = appTheme.narrowSpacing
+                    newObject.anchors.verticalCenter = verticalCenter
+                    newObject.height = 20
+                    newObject.width = 20
+                    newObject.source = iconSource
+                    textField.leftPadding += 20 + appTheme.narrowSpacing
                 }
-
-                icon.anchors.verticalCenter = verticalCenter
-                icon.height = height - appTheme.narrowSpacing
-                icon.width = icon.height
             }
+        }
+
+        // 添加显隐密码的控件
+        StyleButton {
+            id: eye
+            visible: eyeVisible
+            checkable: true
+            hoverEnabled: false
+            pressedColor: "transparent"
+            icon.name: checked ? "eye_open" : "eye_off"
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: appTheme.narrowSpacing
+
+            onCheckedChanged: {
+                if(checked) echoMode = TextField.Normal
+                else echoMode = TextField.Password
+            }
+        }
+    }
+
+    onEyeVisibleChanged: {
+        if(eyeVisible && echoMode === TextField.Password) {
+            eye.visible = true
+            textField.rightPadding = appTheme.narrowSpacing + eye.implicitWidth
+        } else {
+            eye.visible = false
+            textField.rightPadding = appTheme.narrowSpacing
         }
     }
 }

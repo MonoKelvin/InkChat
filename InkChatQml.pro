@@ -15,8 +15,7 @@ include( $$PWD/Core/Core.pri )
 SOURCES += main.cpp
 
 RESOURCES += \
-    qml.qrc \
-    Resource/Resource.qrc
+    Resource.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

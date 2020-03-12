@@ -107,7 +107,6 @@ Rectangle {
         anchors.margins: appTheme.tinySpacing
         text: "×"
         font.pixelSize: appTheme.titleTextSize
-        textColor: appTheme.mainTextColor
         visible: closeButton
 
         onClicked: closeDialog()

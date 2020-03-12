@@ -3,6 +3,7 @@
 
 #include <QFont>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
     QFont font = AppSettings::Value(QStringLiteral("App/font"), "微软雅黑").toString();
     app.setFont(font);
 #endif
+
+    QIcon::setThemeName(AppSettings::Value(QStringLiteral("App/theme"), "lightTheme").toString());
 
     QQmlApplicationEngine engine;
     AppLoginOperation::InitLoginPage(&engine, QUrl(QStringLiteral("qrc:/LoginPage/LoginPage.qml")));

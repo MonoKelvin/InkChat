@@ -261,6 +261,7 @@ ApplicationWindow {
             InputBox {
                 id: ibPassword
                 width: parent.width
+                eyeVisible: true
                 placeholderText: qsTr("密码")
                 echoMode: TextInput.Password
                 maximumLength: 16
