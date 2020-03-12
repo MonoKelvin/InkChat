@@ -248,6 +248,7 @@ ApplicationWindow {
                 placeholderText: qsTr("昵称（1-16个字符）")
                 maximumLength: 16
                 visible: false
+                iconSource: "qrc:/icons/lightTheme/24x24/person.png"
             }
             InputBox {
                 id: ibAccount
@@ -257,6 +258,7 @@ ApplicationWindow {
                 validator: RegExpValidator {
                     regExp: /[0-9a-zA-Z]{1,13}@qq\.com/
                 }
+                iconSource: "qrc:/icons/lightTheme/24x24/info_card.png"
             }
             InputBox {
                 id: ibPassword
@@ -265,6 +267,7 @@ ApplicationWindow {
                 placeholderText: qsTr("密码")
                 echoMode: TextInput.Password
                 maximumLength: 16
+                iconSource: "qrc:/icons/lightTheme/24x24/lock.png"
             }
             InputBox {
                 id: ibRecheckPwd
@@ -273,6 +276,7 @@ ApplicationWindow {
                 echoMode: TextInput.Password
                 maximumLength: 16
                 visible: false
+                iconSource: "qrc:/icons/lightTheme/24x24/check.png"
             }
 
             Badge {

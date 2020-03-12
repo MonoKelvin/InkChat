@@ -3,65 +3,81 @@ import QtQuick.Controls 2.4
 import "qrc:/Element/"
 
 Rectangle {
-    property int currentIndex: 0
+    property int currentIndex: -1
     property alias userAvatar: avatar.imageSource
     property alias nickName: userName.text
 
     width: 70
     color: appTheme.backgroundColor
-    onCurrentIndexChanged: navigate(currentIndex)
 
     signal navigate(var index)
 
-    Column {
-        id: navigation
-        spacing: 10
-        anchors.verticalCenter: parent.verticalCenter
+    Component.onCompleted: {
+        btnMessage.checked = true
+    }
+
+    onCurrentIndexChanged: {
+        navigate(currentIndex)
+        navBgBlock.y = navigation.y + currentIndex * (40 + navigation.spacing)
+    }
+
+    Rectangle {
+        id: navBgBlock
+        width: 40
+        height: 40
+        color: appTheme.subColor1
+        radius: appTheme.stdRadius
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Component.onCompleted: {
-            btnMessage.checked = true
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuint
+            }
         }
+    }
+
+    Column {
+        id: navigation
+        spacing: appTheme.narrowSpacing
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
 
         StyleButton {
             id: btnMessage
             width: 40
             height: 40
-            radius: appTheme.stdRadius
+            hoverEnabled: false
+            pressedColor: "transparent"
             checkable: true
             autoExclusive: true
-            onCheckedChanged: if (checked)
-                                  currentIndex = 0
+            icon.name: "message"
+            icon.color: checked ? appTheme.primaryColor1 : "transparent"
+            onCheckedChanged: if (checked) currentIndex = 0
         }
         StyleButton {
             id: btnFriend
             width: 40
             height: 40
-            radius: appTheme.stdRadius
+            hoverEnabled: false
+            pressedColor: "transparent"
             checkable: true
             autoExclusive: true
-            onCheckedChanged: if (checked)
-                                  currentIndex = 1
-        }
-        StyleButton {
-            id: btnMine
-            width: 40
-            height: 40
-            radius: appTheme.stdRadius
-            checkable: true
-            autoExclusive: true
-            onCheckedChanged: if (checked)
-                                  currentIndex = 2
+            icon.name: "people"
+            icon.color: checked ? appTheme.primaryColor1 : "transparent"
+            onCheckedChanged: if (checked) currentIndex = 1
         }
         StyleButton {
             id: btnSettings
             width: 40
             height: 40
-            radius: appTheme.stdRadius
+            hoverEnabled: false
+            pressedColor: "transparent"
             checkable: true
             autoExclusive: true
-            onCheckedChanged: if (checked)
-                                  currentIndex = 3
+            icon.name: "settings"
+            icon.color: checked ? appTheme.primaryColor1 : "transparent"
+            onCheckedChanged: if (checked) currentIndex = 2
         }
     }
 

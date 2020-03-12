@@ -5,5 +5,20 @@
         <file>icons/lightTheme/24x24/eye_open.png</file>
         <file>icons/lightTheme/24x24/eye_off.png</file>
         <file>icons/lightTheme/24x24/search.png</file>
+        <file>icons/lightTheme/24x24/down.png</file>
+        <file>icons/lightTheme/24x24/edit.png</file>
+        <file>icons/lightTheme/24x24/lock.png</file>
+        <file>icons/lightTheme/24x24/menu.png</file>
+        <file>icons/lightTheme/24x24/message.png</file>
+        <file>icons/lightTheme/24x24/people.png</file>
+        <file>icons/lightTheme/24x24/person.png</file>
+        <file>icons/lightTheme/24x24/refresh.png</file>
+        <file>icons/lightTheme/24x24/send.png</file>
+        <file>icons/lightTheme/24x24/settings.png</file>
+        <file>icons/lightTheme/24x24/trash.png</file>
+        <file>icons/lightTheme/24x24/up.png</file>
+        <file>icons/lightTheme/24x24/wifi_off.png</file>
+        <file>icons/lightTheme/24x24/info_card.png</file>
+        <file>icons/lightTheme/24x24/check.png</file>
     </qresource>
 </RCC>

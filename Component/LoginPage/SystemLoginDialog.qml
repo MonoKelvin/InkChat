@@ -99,6 +99,7 @@ MouseArea {
                         echoMode: InputBox.Password
                         width: parent.width
                         maximumLength: 16
+                        iconSource: "qrc:/icons/lightTheme/24x24/lock.png"
                     }
 
                     Behavior on x {
@@ -131,6 +132,7 @@ MouseArea {
                         placeholderText: qsTr("*昵称（1-16位字符）")
                         width: parent.width
                         maximumLength: 16
+                        iconSource: "qrc:/icons/lightTheme/24x24/person.png"
                     }
                     InputBox {
                         id: pwdInputer
@@ -139,6 +141,7 @@ MouseArea {
                         echoMode: InputBox.Password
                         width: parent.width
                         maximumLength: 16
+                        iconSource: "qrc:/icons/lightTheme/24x24/lock.png"
                     }
                     Row {
                         spacing: appTheme.narrowSpacing
@@ -199,7 +202,7 @@ MouseArea {
                                 let gender = '-'
 
                                 switch(genderGroup.checkedButton) {
-                                case genderGroup.buttons[0]:
+                                case genderGroup.buttons[2]:
                                     gender = '1'
                                     break
                                 case genderGroup.buttons[1]:

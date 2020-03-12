@@ -58,9 +58,6 @@ Window {
                 pageContains.showPage("qrc:/FriendPage/FriendPage.qml")
                 break
             case 2:
-                console.log("我的主页正在开发中...")
-                break
-            case 2:
                 console.log("系统设置正在开发中...")
                 break
             default:
