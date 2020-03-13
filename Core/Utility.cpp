@@ -7,6 +7,8 @@
 #include <QHostInfo>
 #include <QNetworkInterface>
 
+#include <regex>
+
 bool isDirExists(const QString& fullPath, bool makeIfNull, bool recursion)
 {
     if (QDir(fullPath).exists()) {
@@ -16,8 +18,7 @@ bool isDirExists(const QString& fullPath, bool makeIfNull, bool recursion)
     if (makeIfNull) {
         QDir ndir;
         if (recursion) {
-            ndir.mkpath(fullPath); // 创建多级目录
-            return true;
+            return ndir.mkpath(fullPath); // 创建多级目录
         }
 
         return ndir.mkdir(fullPath); // 只创建一级子目录，即必须保证上级目录存在
@@ -114,4 +115,10 @@ const QString getWirelessAddress(QString* mac, QString* netName)
     }
 
     return QString();
+}
+
+bool hasIllegalCharInFile(const QString& str)
+{
+    std::regex reg("[\\s\\\\/:\\*\\?\\\"<>\\|]");
+    return std::regex_search(str.toStdString(), reg);
 }

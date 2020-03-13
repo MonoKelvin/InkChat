@@ -18,6 +18,8 @@ LoginWithQQMail::~LoginWithQQMail()
 
 void LoginWithQQMail::autoLoginRequest()
 {
+    AppSettings::OfflineUserName.clear();
+
     bool skip = AppSettings::Value(QStringLiteral("Login/autoLogin"), false).toBool();
     const auto& user = User::Instance();
 
@@ -75,6 +77,8 @@ void LoginWithQQMail::autoLoginRequest()
 
 void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 {
+    AppSettings::OfflineUserName.clear();
+
     const auto account = mapping[QStringLiteral("account")].toString();
     const auto password = mapping[QStringLiteral("password")].toString();
     const auto postData = QStringLiteral("account=%1&password=%2").arg(account).arg(password);
@@ -111,12 +115,12 @@ void LoginWithQQMail::loginRequest(const QVariantMap& mapping)
 
 void LoginWithQQMail::signupRequest(const QVariantMap& mapping)
 {
-    HttpRequest* request = new HttpRequest;
+    AppSettings::OfflineUserName.clear();
 
+    HttpRequest* request = new HttpRequest;
     const auto postData = QStringLiteral("nickName=%1&account=%2&password=%3").arg(mapping["nickName"].toString()).arg(mapping["account"].toString()).arg(mapping["password"].toString());
 
     request->sendRequest(SignupUrl, HttpRequest::POST, postData);
-
     connect(request, &HttpRequest::request, [=](bool success, const QByteArray& jsonData) {
         QJsonParseError err;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &err);

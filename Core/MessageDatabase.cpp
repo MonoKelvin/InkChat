@@ -131,6 +131,12 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         list->appendMessage(item);
     }
 
+    // 检测局域网环境
+    LanObject* lan = LanObject::DetectLanEnvironment();
+    if (nullptr != lan) {
+        lan->setParent(this);
+    }
+
     return true;
 }
 

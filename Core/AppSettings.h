@@ -41,7 +41,7 @@ public:
     }
 
     // 用户数据文件
-    inline static const QString UserDataFile() noexcept
+    inline static const QString UserDataFile()
     {
         return UserDataDir() + QStringLiteral("User.udat");
     }
@@ -110,13 +110,13 @@ public:
 
     inline void setCurrentUserId(unsigned int id)
     {
-        mCurrentUser = id;
+        CurrentUserId = id;
         Instance()->setValue("User/currentUser", id);
     }
 
     inline unsigned int getCurrentUserId()
     {
-        return mCurrentUser;
+        return CurrentUserId;
     }
 
     static void LoadAppTheme(const QString& themeFile);
@@ -137,17 +137,27 @@ public:
         return instance;
     }
 
+    // 用户文件夹
+    inline static const QString UserDir()
+    {
+        QString res = AppDataDir() + QString::number(Instance()->CurrentUserId);
+
+        if (!OfflineUserName.isEmpty()) {
+            res += QStringLiteral("/") + OfflineUserName;
+        }
+
+        return res;
+    }
+
+    /** 离线用户名，如果为空则默认是在线用户 */
+    static QString OfflineUserName;
+
 Q_SIGNALS:
     void onAppThemeChanged();
 
 private:
-    // 用户文件夹
-    inline static const QString UserDir()
-    {
-        return AppDataDir() + QString::number(Instance()->mCurrentUser);
-    }
-
-    unsigned int mCurrentUser;
+    /** 当前用户id，离线用户永远是0 */
+    unsigned int CurrentUserId;
 };
 
 #endif // APPSETTINGS_H

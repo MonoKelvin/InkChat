@@ -5,7 +5,7 @@
 #include <LoginWithQQMail.h>
 #include <MessagePage.h>
 
-#include <QFile>
+#include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QQmlApplicationEngine>
@@ -46,10 +46,13 @@ void AppLoginOperation::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QU
 void AppLoginOperation::loginRequest(const QVariantMap& mapping)
 {
     const auto& user = User::Instance();
+    const auto nickName = mapping.value(QStringLiteral("nickNmae")).toString();
+
+    AppSettings::OfflineUserName = nickName;
     const auto fileName = AppSettings::UserDataFile();
 
     if (!isFileExists(fileName)) {
-        emit failed(tr("无法读取离线文件"));
+        emit failed(tr("用户不存在或密码错误"));
         return;
     }
 
@@ -61,7 +64,8 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
         if (!jsonDoc.isNull() && jsonDoc.isObject()) {
             user->fromJson(jsonDoc.object());
 
-            if (user->getPassword() == mapping.value(QStringLiteral("password")).toString()) {
+            if (user->getPassword() == mapping.value(QStringLiteral("password"))
+                && user->getNickName() == nickName) {
                 emit verified();
             } else {
                 emit failed(tr("密码错误"));
@@ -76,17 +80,37 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
 
 void AppLoginOperation::signupRequest(const QVariantMap& mapping)
 {
-    QJsonObject json;
-    for (auto iter = mapping.cbegin(); iter != mapping.cend(); ++iter) {
-        json.insert(iter.key(), iter.value().toJsonValue());
-    }
-
     try {
+        AppSettings::OfflineUserName = mapping.value(QStringLiteral("nickName")).toString();
+        if (hasIllegalCharInFile(AppSettings::OfflineUserName)) {
+            throw tr("数据目录创建失败，用户名可能包含非法字符：\\/\"*?<>|");
+        }
+
+        // 转换为json格式
+        QJsonObject json;
+        for (auto iter = mapping.cbegin(); iter != mapping.cend(); ++iter) {
+            json.insert(iter.key(), iter.value().toJsonValue());
+        }
+
         User::Instance()->fromJson(json);
-        emit verified();
+        emit registered();
     } catch (const QString& msg) {
         emit failed(msg);
     }
+}
+
+bool AppLoginOperation::isUserExists(const QString& userName)
+{
+    AppSettings::OfflineUserName.clear();
+
+    const auto dirs = QDir(AppSettings::UserDir()).entryList(QDir::Dirs);
+    for (int i = 0; i < dirs.size(); i++) {
+        if (dirs.at(i) == userName) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void AppLoginOperation::redirect(const QUrl& url, QQmlApplicationEngine* engine)

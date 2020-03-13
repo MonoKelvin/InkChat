@@ -2,6 +2,7 @@
 #define UTILITY_H
 
 #include <QCryptographicHash>
+#include <QDebug>
 #include <QPixmap>
 
 /**
@@ -20,7 +21,7 @@ typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
  *  当为true时，会创建路径中所有不存在的路径文件夹。
  * @return bool 文件夹（路径）存在则返回true，否则返回false。
  *  当makeIfNull为true、recursion为false时：必须保证上一级路径存在才返回true，否则返回false；
- *  当makeIfNull为true、recursion为true时：总是返回true，并创建新指定的路径。
+ *  当makeIfNull为true、recursion为true时：创建文件夹成功返回true，否则返回false。
  * @note 该方法总是先判断路径是否存在，存在则返回true，之后不做任何事情。
  * @note isFileExists
  */
@@ -35,7 +36,7 @@ bool isDirExists(const QString& fullPath, bool makeIfNull = false, bool recursio
  *  当为true时，会创建路径中所有不存在的路径文件夹。
  * @return bool 文件存在则返回true，否则返回false。
  *  当makeIfNull为true、recursion为false时：必须保证文件所在的文件夹存在才返回true，否则返回false；
- *  当makeIfNull为true、recursion为true时：总是返回true，并创建新指定的文件。
+ *  当makeIfNull为true、recursion为true时：创建文件成功返回true，否则返回false。
  * @note 该方法总是先判断文件是否存在，存在则返回true，之后不做任何事情。
  * @see isDirExists
  */
@@ -101,5 +102,12 @@ quint16 selectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
  * @return 返回连接并激活的无线网IP地址，如果没有连接无线网则返回空字符串
  */
 const QString getWirelessAddress(QString* mac = nullptr, QString* netName = nullptr);
+
+/**
+ * @brief 检测是否含有文件非法字符
+ * @param str 用于检测的字符串
+ * @return 如果存在：\ / \ " * ? < > | 者9个非法字符则返回true，否则返回false
+ */
+bool hasIllegalCharInFile(const QString& str);
 
 #endif // UTILITY_H

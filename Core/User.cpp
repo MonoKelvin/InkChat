@@ -38,7 +38,9 @@ void User::fromJson(const QJsonObject& json, bool cache)
 
     if (cache) {
         const auto fileName = AppSettings::UserDataFile();
-        isFileExists(fileName, true); // 总是返回true
+        if (!isFileExists(fileName, true)) {
+            throw tr("用户文件创建失败");
+        }
 
         QFile file(fileName);
         if (!file.open(QFile::WriteOnly | QFile::Text)) {

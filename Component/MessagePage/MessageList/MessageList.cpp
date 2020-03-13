@@ -2,13 +2,9 @@
 
 #include <AppSettings.h>
 #include <InkChatApi.h>
-#include <LanObject.h>
 #include <MessageDatabase.h>
 #include <MessageItem.h>
-#include <Utility.h>
 
-#include <QDir>
-#include <QMutex>
 #include <QSqlError>
 
 MessageList::MessageList(QObject* parent)
@@ -17,12 +13,6 @@ MessageList::MessageList(QObject* parent)
     const auto error = MessageDatabase::Instance()->initDatabase();
     if (error.type() != QSqlError::NoError) {
         emit failed(tr("消息数据库打开失败，原因：") + error.text());
-    }
-
-    // 检测局域网环境
-    LanObject* lan = LanObject::DetectLanEnvironment();
-    if (nullptr != lan) {
-        lan->setParent(this);
     }
 }
 

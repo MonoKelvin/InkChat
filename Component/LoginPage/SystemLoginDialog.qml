@@ -12,6 +12,18 @@ MouseArea {
     visible: false
     z: 300
 
+    Component.onCompleted: {
+        loginWithOffline.registered.connect(function(){
+            Utility.createToast(qsTr("新建用户成功"), window)
+            nameInputer.text = nickNameInputer.text
+            lockInputer.clear()
+            nickNameInputer.clear()
+            pwdInputer.clear()
+            genderGroup.buttons[0].checked = true
+            newUserBtn.clicked()
+        })
+    }
+
     Rectangle {
         id: offlineModelRect
         visible: parent.visible
@@ -89,8 +101,16 @@ MouseArea {
                         wrapMode: Text.Wrap
                         font.pixelSize: appTheme.smallTextSize
                         color: appTheme.subTextColor
-                        text: qsTr("使用离线模式登录，就无法连接远程数据库、无法创建新的用户，但应用可以连接局域网络并且会保存你的聊天记录和相关配置数据。\n注：若忘记密码或无法读取离线数据，可以删除应用目录“./Data/0/”下的所有文件，同时所有数据也会被清空。")
+                        text: qsTr("使用离线模式登录，就无法连接远程数据库并同步数据，但应用可以工作在局域网环境并且会保存你的聊天记录和相关配置数据。")
                         width: parent.width
+                    }
+
+                    InputBox {
+                        id: nameInputer
+                        placeholderText: qsTr("用户名")
+                        width: parent.width
+                        maximumLength: 16
+                        iconSource: "qrc:/icons/lightTheme/24x24/person.png"
                     }
 
                     InputBox {
@@ -118,21 +138,25 @@ MouseArea {
                     spacing: appTheme.stdSpacing
                     x: loginArea.x + loginArea.width
 
-                    Text {
-                        y: appTheme.stdSpacing
-                        wrapMode: Text.Wrap
-                        font.pixelSize: appTheme.smallTextSize
-                        color: appTheme.subTextColor
-                        text: qsTr("使用离线模式创建新用户，原用户所有数据将会被清空，原因是应用在离线状态下暂不支持多用户的使用。")
-                        width: parent.width
-                    }
-
                     InputBox {
                         id: nickNameInputer
-                        placeholderText: qsTr("*昵称（1-16位字符）")
+                        placeholderText: qsTr("*名称（1-16位字符）")
                         width: parent.width
                         maximumLength: 16
                         iconSource: "qrc:/icons/lightTheme/24x24/person.png"
+
+                        property bool isUserExists: false
+
+                        onTextChanged: {
+                            if(loginWithOffline.isUserExists(text)) {
+                                isUserExists = true
+                                background.border.color = appTheme.primaryColor3
+                                Utility.createToast(qsTr("用户名已经存在，请重新输入昵称"), window)
+                            } else {
+                                isUserExists = false
+                                background.border.color = "transparent"
+                            }
+                        }
                     }
                     InputBox {
                         id: pwdInputer
@@ -195,7 +219,9 @@ MouseArea {
                     onClicked: {
                         if(newUserBtn.isNewUser) {
                             if(nickNameInputer.text.trim() === "")
-                                Utility.createToast(qsTr("昵称不可为空"), window)
+                                Utility.createToast(qsTr("名称不可为空"), window)
+                            else if(nickNameInputer.isUserExists)
+                                Utility.createToast(qsTr("用户名已经存在，请重新输入名称"), window)
                             else if(pwdInputer.text.length < 6 || pwdInputer.text.length > 16)
                                 Utility.createToast(qsTr("请输入6-16位的密码"), window)
                             else {
@@ -222,7 +248,10 @@ MouseArea {
                             if(lockInputer.text === "")
                                 Utility.createToast(qsTr("请输入解锁密码"), window)
                             else
-                                loginWithOffline.loginRequest({"password": lockInputer.text})
+                                loginWithOffline.loginRequest({
+                                                                  "nickNmae": nameInputer.text,
+                                                                  "password": lockInputer.text
+                                                              })
                         }
                     }
                 }
@@ -231,7 +260,7 @@ MouseArea {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     radius: appTheme.stdRadius
-                    text: qsTr("新用户")
+                    text: qsTr("新建用户")
 
                     property bool isNewUser: false
 
@@ -240,12 +269,10 @@ MouseArea {
 
                         if(isNewUser) {
                             loginArea.x = -formArea.width
-                            offlineModelRect.height += 40
-                            text = qsTr("返回")
+                            text = qsTr("返回登录")
                         } else {
                             loginArea.x = 0
-                            offlineModelRect.height -= 40
-                            text = qsTr("新用户")
+                            text = qsTr("新建用户")
                         }
                     }
                 }

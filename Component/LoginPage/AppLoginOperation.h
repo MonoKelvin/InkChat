@@ -33,6 +33,13 @@ public:
      */
     Q_INVOKABLE void signupRequest(const QVariantMap& mapping) override;
 
+    /**
+     * @brief 检查给定用户名的用户是否存在
+     * @param userName 要检查用户的用户名
+     * @return 如果存在则返回true，否则返回false
+     */
+    Q_INVOKABLE bool isUserExists(const QString& userName);
+
 public Q_SLOTS:
     void redirect(const QUrl& url, QQmlApplicationEngine* engine = nullptr) override;
 

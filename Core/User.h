@@ -22,7 +22,7 @@ protected:
 public:
     ~User() override;
 
-    void fromJson(const QJsonObject& json, bool cache = true) override;
+    void fromJson(const QJsonObject& json, bool cache = true) noexcept(false) override;
     QJsonObject toJson() override;
 
     bool hasCache();
