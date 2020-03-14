@@ -1,6 +1,7 @@
 ﻿#ifndef APPSETTINGS_H
 #define APPSETTINGS_H
 
+#include <IChatObject.h>
 #include <Utility.h>
 
 #include <QCoreApplication>
@@ -48,13 +49,10 @@ public:
 
     /**
      * @brief 用户聊天记录文件
-     * @param fileName 文件名，不包含路径和后缀
+     * @param type 角色类型，即聊天对象类型
      * @return 返回文件全称名，包含路径和后缀
      */
-    inline static const QString MessageCacheFile()
-    {
-        return UserDataDir() + QStringLiteral("Message.db");
-    }
+    inline static const QString MessageCacheFile(IChatObject::ERoleType type = IChatObject::Friend);
 
     /**
      * @brief 用户头像地址
@@ -71,11 +69,6 @@ public:
     inline static const QString LanDataDir()
     {
         return UserDir() + QStringLiteral("/LANs/");
-    }
-
-    inline static const QString LanSettingsFile(const QString& lanMd5)
-    {
-        return LanDataDir() + lanMd5 + QStringLiteral("/Settings.json");
     }
 
     // 用户缓存头像文件夹

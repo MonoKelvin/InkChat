@@ -3,6 +3,7 @@
 #include <AppSettings.h>
 #include <FriendPage.h>
 #include <LoginWithQQMail.h>
+#include <MessageDatabase.h>
 #include <MessagePage.h>
 
 #include <QDir>
@@ -92,7 +93,13 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
             json.insert(iter.key(), iter.value().toJsonValue());
         }
 
-        User::Instance()->fromJson(json);
+        const auto& user = User::Instance();
+        auto& msgDb = MessageDatabase::Instance()->getDatabase();
+
+        user->fromJson(json);
+        msgDb.setUserName(user->getNickName());
+        msgDb.setPassword(user->getPassword());
+
         emit registered();
     } catch (const QString& msg) {
         emit failed(msg);

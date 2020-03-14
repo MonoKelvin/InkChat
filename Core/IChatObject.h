@@ -61,6 +61,7 @@ public:
     inline void setID(unsigned int id) { mID = id; }
 
     inline const QString getMD5(void) const { return mMD5; }
+    inline void setMD5(const QString& md5) { mMD5 = md5; }
 
     inline bool getIsTop() const { return mIsTop; }
     inline void setIsTop(bool isTop)

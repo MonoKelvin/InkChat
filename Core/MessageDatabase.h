@@ -9,6 +9,7 @@ class IChatItem;
 class ChatView;
 class MessageItem;
 class MessageList;
+class LanObject;
 
 /**
  * @brief 消息数据库类
@@ -53,7 +54,7 @@ public:
      * @param hostAddress 局域网地址，如果为空则默认加载所有本地保存的局域网消息
      * @return bool 加载成功返回true，否则返回false
      */
-    bool loadLanMessageItems(MessageList* list, const QString& hostAddress = QString());
+    //bool loadLanMessageItems(MessageList* list, const QString& hostAddress = QString());
 
     /**
      * @brief 更新阅读消息标记
@@ -87,10 +88,25 @@ public:
      */
     bool saveAChatRecord(IChatItem* item);
 
+    QSqlDatabase& getDatabase(void) { return mDatabase; }
+
 private:
     Q_DISABLE_COPY_MOVE(MessageDatabase)
     MessageDatabase();
 
+    /**
+     * @brief 检测局域网环境
+     * @param 检测后要添加到的消息列表
+     */
+    LanObject* detectLanEnvironment(MessageList* list);
+
+    /**
+     * @brief 选择数据库文件
+     * @param type 根据角色类型选择文件
+     */
+    void selectDatabaseFile(IChatObject::ERoleType type);
+
+private:
     QSqlDatabase mDatabase;
 };
 

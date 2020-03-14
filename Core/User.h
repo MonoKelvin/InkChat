@@ -56,6 +56,13 @@ public:
      */
     LanObject* getLanObjectById(unsigned int id);
 
+    /**
+     * @brief 通过md5获取我的局域网
+     * @param md5 局域网md5（唯一标识）
+     * @return 如果不存在将返回nullptr，否则返回局域网聊天对象
+     */
+    LanObject* getLanObjectByMd5(const QString& md5);
+
     static QObject* QmlSingletonTypeProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
     {
         Q_UNUSED(engine)

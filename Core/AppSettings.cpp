@@ -12,6 +12,24 @@ AppSettings::~AppSettings()
 {
 }
 
+const QString AppSettings::MessageCacheFile(IChatObject::ERoleType type)
+{
+    QString res;
+
+    switch (type) {
+    case IChatObject::Friend:
+        res = UserDataDir() + QStringLiteral("Message.db");
+        break;
+    case IChatObject::LAN:
+        res = UserDataDir() + QStringLiteral("LanMessage.db");
+        break;
+    default:
+        break;
+    }
+
+    return res;
+}
+
 void AppSettings::LoadAppTheme(const QString& themeFile)
 {
     Q_UNUSED(themeFile)

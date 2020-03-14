@@ -25,6 +25,13 @@ MessageDatabase::MessageDatabase()
 {
 }
 
+void MessageDatabase::selectDatabaseFile(IChatObject::ERoleType type)
+{
+    mDatabase.close();
+    mDatabase.setDatabaseName(AppSettings::MessageCacheFile(type));
+    mDatabase.open(User::Instance()->getNickName(), User::Instance()->getPassword());
+}
+
 MessageDatabase::~MessageDatabase()
 {
     close();
@@ -35,7 +42,7 @@ QSqlError MessageDatabase::initDatabase()
     mDatabase = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"));
     mDatabase.setDatabaseName(AppSettings::MessageCacheFile());
 
-    if (!mDatabase.open()) {
+    if (!mDatabase.open(User::Instance()->getNickName(), User::Instance()->getPassword())) {
         return mDatabase.lastError();
     }
 
@@ -92,6 +99,23 @@ QSqlError MessageDatabase::initDatabase()
     return QSqlError();
 }
 
+LanObject* MessageDatabase::detectLanEnvironment(MessageList* list)
+{
+    QString mac, netName;
+    const auto addr = getWirelessAddress(&mac, &netName);
+
+    if (!addr.isEmpty()) {
+        const auto md5 = encryptTextByMD5(addr + mac);
+
+        // 搜索是否已经存在
+        auto lan = User::Instance()->getLanObjectByMd5(md5);
+        if (nullptr == lan) {
+            lan = new LanObject(this);
+            MessageItem* item = new MessageItem;
+        }
+    }
+}
+
 bool MessageDatabase::loadMessageItems(MessageList* list)
 {
     QSqlQuery query;
@@ -129,12 +153,6 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         item->mMessage = query.value(6).toString();
 
         list->appendMessage(item);
-    }
-
-    // 检测局域网环境
-    LanObject* lan = LanObject::DetectLanEnvironment();
-    if (nullptr != lan) {
-        lan->setParent(this);
     }
 
     return true;

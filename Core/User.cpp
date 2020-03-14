@@ -101,6 +101,18 @@ LanObject* User::getLanObjectById(unsigned int id)
     return nullptr;
 }
 
+LanObject* User::getLanObjectByMd5(const QString& md5)
+{
+    for (int i = 0; i < mMyChatObjects.size(); i++) {
+        if (mMyChatObjects.at(i)->getMD5() == md5
+            && mMyChatObjects.at(i)->getRoleType() == LAN) {
+            return static_cast<LanObject*>(mMyChatObjects[i]);
+        }
+    }
+
+    return nullptr;
+}
+
 bool User::hasCache()
 {
     // 当前登录的用户
