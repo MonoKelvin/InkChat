@@ -22,7 +22,7 @@ class IChatItem : public QObject
     Q_OBJECT
 
     friend class ChatView;
-    friend class ChatManager;
+    friend class MessageManager;
     friend class MessageDatabase;
 
 private:

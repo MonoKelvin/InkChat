@@ -1,4 +1,4 @@
-﻿#include "ChatManager.h"
+﻿#include "MessageManager.h"
 
 #include <ChatView.h>
 #include <InkChatApi.h>
@@ -9,27 +9,27 @@
 #include <QDateTime>
 #include <QUdpSocket>
 
-ChatManager::ChatManager(QObject* parent)
+MessageManager::MessageManager(QObject* parent)
     : QObject(parent)
     , mPort(LAN_UDP_PORT)
 {
     mUdpSocket = new QUdpSocket(this);
 
     if (mUdpSocket->bind(mPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
-        connect(mUdpSocket, &QUdpSocket::readyRead, this, &ChatManager::processPendingDatagrams);
-        connect(this, &ChatManager::received, MessageDatabase::Instance().data(),
+        connect(mUdpSocket, &QUdpSocket::readyRead, this, &MessageManager::processPendingDatagrams);
+        connect(this, &MessageManager::received, MessageDatabase::Instance().data(),
             &MessageDatabase::saveAChatRecord, Qt::QueuedConnection);
     } else {
         mUdpSocket->deleteLater();
     }
 }
 
-ChatManager::~ChatManager()
+MessageManager::~MessageManager()
 {
     qDebug() << "ChatManager Destroyed";
 }
 
-qint64 ChatManager::sendMessage(ChatView* view, IChatObject* chatObj, int type, const QVariant& data)
+qint64 MessageManager::sendMessage(ChatView* view, IChatObject* chatObj, int type, const QVariant& data)
 {
     if (data.isNull() || !data.isValid()) {
         return -1;
@@ -68,12 +68,12 @@ qint64 ChatManager::sendMessage(ChatView* view, IChatObject* chatObj, int type, 
     return result;
 }
 
-void ChatManager::loadChatRecords(ChatView* view, IChatObject* chatObj)
+void MessageManager::loadChatRecords(ChatView* view, IChatObject* chatObj)
 {
-    MessageDatabase::Instance()->loadChatItems(view, chatObj->getID());
+    MessageDatabase::Instance()->loadChatItems(view, chatObj);
 }
 
-void ChatManager::processPendingDatagrams()
+void MessageManager::processPendingDatagrams()
 {
     while (mUdpSocket->hasPendingDatagrams()) {
         QByteArray datagram;

@@ -1,5 +1,5 @@
-﻿#ifndef CHATMANAGER_H
-#define CHATMANAGER_H
+﻿#ifndef MESSAGEMANAGER_H
+#define MESSAGEMANAGER_H
 
 #include <QSharedPointer>
 
@@ -22,18 +22,17 @@ class ChatView;
  * @note 作为发送管理器时：从聊天视图获取的发送消息交由ChatView处理，再由MessageDatabase进
  * 行存储（可能存储失败），最后递交给ChatManager打包发送（可能发送失败）。
  */
-class ChatManager : public QObject
-{
+class MessageManager : public QObject {
     Q_OBJECT
 
-    explicit ChatManager(QObject* parent = nullptr);
+    explicit MessageManager(QObject* parent = nullptr);
 
 public:
-    ~ChatManager(void);
+    ~MessageManager(void);
 
-    static QSharedPointer<ChatManager> Instance()
+    static QSharedPointer<MessageManager> Instance()
     {
-        static auto instance = QSharedPointer<ChatManager>(new ChatManager);
+        static auto instance = QSharedPointer<MessageManager>(new MessageManager);
         return instance;
     }
 
@@ -100,4 +99,4 @@ private:
     Port mPort;
 };
 
-#endif // CHATMANAGER_H
+#endif // MESSAGEMANAGER_H

@@ -4,13 +4,14 @@
 #include <Http/HttpRequest.h>
 #include <QFileInfo>
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QPixmap>
 
 IChatObject::IChatObject(QObject* parent)
     : QObject(parent)
     , mID(0)
-    , mGender('\0')
+    , mGender('-')
     , mRoleType(AllUser)
     , mOnlineState(NoneState)
 {
@@ -53,7 +54,32 @@ void IChatObject::cacheAvatar(EAvatarSize size)
         emit avatarCached(false, QStringLiteral("DATA_CACHE_FAILED: VALUE=avatar"));
     });
 }
+/*
+bool IChatObject::updateJson(const QString& fileName, DecryptFileFunc df)
+{
+    if (!isFileExists(fileName, true)) {
+        return false;
+    }
 
+    QFile file(fileName);
+    const auto& data = df ? df(&file) : QByteArray();
+
+    if (df && data.isEmpty()) {
+        return false;
+    }
+
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        QJsonDocument jsonDoc(toJson());
+        if (file.write(jsonDoc.toJson(QJsonDocument::Compact)) == -1) {
+            file.close();
+            return false;
+        }
+    }
+
+    file.close();
+    return true;
+}
+*/
 void IChatObject::fromJson(const QJsonObject& json, bool cache)
 {
     Q_UNUSED(cache)

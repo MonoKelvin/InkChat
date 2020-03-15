@@ -4,7 +4,7 @@
 #include <LanObject.h>
 #include <MyFriend.h>
 
-#include <QFile>
+#include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -98,19 +98,23 @@ LanObject* User::getLanObjectById(unsigned int id)
         }
     }
 
-    return nullptr;
-}
+    QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
+    QFile file(AppSettings::LanDataDir() + index.value(QString::number(id)).toString());
+    LanObject* lan = nullptr;
 
-LanObject* User::getLanObjectByMd5(const QString& md5)
-{
-    for (int i = 0; i < mMyChatObjects.size(); i++) {
-        if (mMyChatObjects.at(i)->getMD5() == md5
-            && mMyChatObjects.at(i)->getRoleType() == LAN) {
-            return static_cast<LanObject*>(mMyChatObjects[i]);
+    // 动态加载
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QJsonParseError err;
+        const auto& doc = QJsonDocument::fromJson(file.readAll(), &err);
+        if (err.error != QJsonParseError::NoError && doc.isObject()) {
+            lan = new LanObject(this);
+            lan->fromJson(doc.object());
+            mMyChatObjects.append(lan);
         }
     }
+    file.close();
 
-    return nullptr;
+    return lan;
 }
 
 bool User::hasCache()

@@ -21,7 +21,7 @@ const QString AppSettings::MessageCacheFile(IChatObject::ERoleType type)
         res = UserDataDir() + QStringLiteral("Message.db");
         break;
     case IChatObject::LAN:
-        res = UserDataDir() + QStringLiteral("LanMessage.db");
+        res = LanDataDir() + QStringLiteral("Message.db");
         break;
     default:
         break;

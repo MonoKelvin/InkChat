@@ -1,7 +1,7 @@
 ﻿#include "ChatView.h"
 
 #include <AppSettings.h>
-#include <ChatManager.h>
+#include <MessageManager.h>
 #include <MyFriend.h>
 #include <User.h>
 
@@ -10,7 +10,7 @@ QHash<int, QByteArray> ChatView::mRegistryChatClasses;
 ChatView::ChatView(QObject* parent)
     : QAbstractListModel(parent)
 {
-    connect(ChatManager::Instance().data(), &ChatManager::received, this, &ChatView::appendChat);
+    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatView::appendChat);
     // connect(ChatManager::Instance().data(), SIGNAL(received), this, SLOT(sendChat));
 }
 
@@ -71,7 +71,7 @@ IChatItem* ChatView::BuildChatItem(int chatType, unsigned int uid, const QDateTi
 void ChatView::load(IChatObject* chatObj)
 {
     isFileExists(AppSettings::MessageCacheFile(), true);
-    ChatManager::Instance()->loadChatRecords(this, chatObj);
+    MessageManager::Instance()->loadChatRecords(this, chatObj);
 }
 
 void ChatView::clearChatRecord()
@@ -134,7 +134,7 @@ int ChatView::rowCount(const QModelIndex& parent) const
 
 void ChatView::sendChat(IChatObject* chatObj, int chatType, const QVariant& data)
 {
-    ChatManager::Instance()->sendMessage(this, chatObj, chatType, data);
+    MessageManager::Instance()->sendMessage(this, chatObj, chatType, data);
 }
 
 QVariant ChatView::data(const QModelIndex& index, int role) const

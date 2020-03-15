@@ -51,10 +51,9 @@ public:
     /**
      * @brief 加载的局域网消息到列表中
      * @param list 消息列表 @see MessageList
-     * @param hostAddress 局域网地址，如果为空则默认加载所有本地保存的局域网消息
      * @return bool 加载成功返回true，否则返回false
      */
-    //bool loadLanMessageItems(MessageList* list, const QString& hostAddress = QString());
+    bool loadLanMessageItems(MessageList* list);
 
     /**
      * @brief 更新阅读消息标记
@@ -73,12 +72,12 @@ public:
     /**
      * @brief 加载聊天消息到聊天视图中
      * @param chatView 聊天视图 @see ChatView
-     * @param uid 聊天对象ID
+     * @param chatObj 聊天对象
      * @return 加载成功返回true，否则返回false
      * @note 每次加载指定数量的聊天消息，最大为 @see CHAT_MESSAGE_FECTH_COUNT。加载时不
      * 会覆盖已加载的消息。
      */
-    bool loadChatItems(ChatView* chatView, unsigned int uid);
+    bool loadChatItems(ChatView* chatView, IChatObject* chatObj);
 
     //public Q_SLOTS:
     /**
@@ -95,10 +94,10 @@ private:
     MessageDatabase();
 
     /**
-     * @brief 检测局域网环境
-     * @param 检测后要添加到的消息列表
+     * @brief 加载局域网环境
+     * @param 加载后要添加到的消息列表
      */
-    LanObject* detectLanEnvironment(MessageList* list);
+    //LanObject* loadLanEnvironment(MessageList* list);
 
     /**
      * @brief 选择数据库文件

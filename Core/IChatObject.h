@@ -134,6 +134,11 @@ public:
      */
     virtual QJsonObject toJson(/*bool fetchIfNull = true*/);
 
+    // 加密文件方法
+    //typedef bool (*EncryptFileFunc)(class QFile*);
+    // 解密文件方法
+    //typedef const QByteArray (*DecryptFileFunc)(QFile*);
+
 protected Q_SLOTS:
     /**
      * @brief 从数据库中获取对象的头像并缓存
@@ -142,6 +147,15 @@ protected Q_SLOTS:
      * @note 默认保存在/data/${user_id}/cache/avatar/下
      */
     virtual void cacheAvatar(EAvatarSize size = AvatarSizeThumb);
+
+    /**
+     * @brief 更新json文件
+     * @param fileName json文件名，包括路径和后缀
+     * @param df 解密函数
+     * @return 更新失败返回true，否则返回false
+     * TODO：提供加解密方法指针
+     */
+    //virtual bool updateJson(const QString& fileName, DecryptFileFunc df = nullptr);
 
 Q_SIGNALS:
     /** 信号：任何操作失败时发射的信号 */
@@ -152,6 +166,9 @@ Q_SIGNALS:
      * @param 一些消息或日志
      */
     void avatarCached(bool ok, const QString& msg);
+
+    /** 信号：数据需要更新时触发，会调用 @see updateJson方法 */
+    //void needToUpdate();
 
     void isTopChanged();
     void nickNameChanged();

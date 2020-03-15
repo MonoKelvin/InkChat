@@ -13,13 +13,18 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-const auto SqlQueryMsgItems = QStringLiteral("select uid,roleType,unreadMsgCount,readFlag,time,data from GetMsgItems");
-
-const auto SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
-const auto SqlInsertChatRecord = QStringLiteral("insert into chatrecord (id,uid,type,isMe,time,data) values (null,?,?,?,?,?)");
-
-const auto SqlUpdateReadFlag = QStringLiteral("update message set readFlag=%1 where uid=%2");
-const auto SqlUpdateUnreadMsgCount = QStringLiteral("update message set unreadMsgCount=%1 where uid=%2");
+// 查询消息
+const QString SqlQueryMsgItems = QStringLiteral("select uid,roleType,unreadMsgCount,readFlag,time,data from GetMsgItems");
+// 查询与用户id的聊天记录
+const QString SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
+// 插入一条通知消息
+const QString SqlInsertMessageItem = QStringLiteral("insert into message values(?,?,?,?,?,?)");
+// 插入一条聊天记录
+const QString SqlInsertChatRecord = QStringLiteral("insert into chatrecord (uid,type,isMe,time,data) values (?,?,?,?,?)");
+// 更新阅读标志
+const QString SqlUpdateReadFlag = QStringLiteral("update message set readFlag=%1 where uid=%2");
+// 更新未读消息数目
+const QString SqlUpdateUnreadMsgCount = QStringLiteral("update message set unreadMsgCount=%1 where uid=%2");
 
 MessageDatabase::MessageDatabase()
 {
@@ -27,9 +32,12 @@ MessageDatabase::MessageDatabase()
 
 void MessageDatabase::selectDatabaseFile(IChatObject::ERoleType type)
 {
-    mDatabase.close();
-    mDatabase.setDatabaseName(AppSettings::MessageCacheFile(type));
-    mDatabase.open(User::Instance()->getNickName(), User::Instance()->getPassword());
+    const auto dbFile = AppSettings::MessageCacheFile(type);
+    if (dbFile != mDatabase.databaseName()) {
+        mDatabase.close();
+        mDatabase.setDatabaseName(dbFile);
+        mDatabase.open(User::Instance()->getNickName(), User::Instance()->getPassword());
+    }
 }
 
 MessageDatabase::~MessageDatabase()
@@ -99,25 +107,10 @@ QSqlError MessageDatabase::initDatabase()
     return QSqlError();
 }
 
-LanObject* MessageDatabase::detectLanEnvironment(MessageList* list)
-{
-    QString mac, netName;
-    const auto addr = getWirelessAddress(&mac, &netName);
-
-    if (!addr.isEmpty()) {
-        const auto md5 = encryptTextByMD5(addr + mac);
-
-        // 搜索是否已经存在
-        auto lan = User::Instance()->getLanObjectByMd5(md5);
-        if (nullptr == lan) {
-            lan = new LanObject(this);
-            MessageItem* item = new MessageItem;
-        }
-    }
-}
-
 bool MessageDatabase::loadMessageItems(MessageList* list)
 {
+    selectDatabaseFile(IChatObject::Friend);
+
     QSqlQuery query;
     if (!query.exec(SqlQueryMsgItems)) {
         return false;
@@ -134,9 +127,6 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         case IChatObject::Friend:
             item->setChatObject(User::Instance()->getFriendById(chatObjId));
             break;
-        case IChatObject::LAN:
-            item->setChatObject(User::Instance()->getLanObjectById(chatObjId));
-            break;
         default:
             break;
         }
@@ -147,10 +137,85 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
             return false;
         }
 
-        item->mUnreadMsgCount = query.value(3).toInt();
-        item->mReadFlag = query.value(4).toBool();
-        item->mTime = GetMessageTime(query.value(5).toDateTime());
-        item->mMessage = query.value(6).toString();
+        item->mUnreadMsgCount = query.value(2).toInt();
+        item->mReadFlag = query.value(3).toBool();
+        item->mTime = GetMessageTime(query.value(4).toDateTime());
+        item->mMessage = query.value(5).toString();
+
+        list->appendMessage(item);
+    }
+
+    return true;
+}
+
+bool MessageDatabase::loadLanMessageItems(MessageList* list)
+{
+    selectDatabaseFile(IChatObject::LAN);
+
+    QSqlQuery query;
+    LanObject* lan = LanObject::DetectLanEnvironment();
+
+    // 加载实时连接的局域网
+    if (nullptr != lan) {
+        MessageItem* item = nullptr;
+
+        // 如果有检测到局域网并且未被缓存，即没有分配id，则分配一个id，再保存到数据库
+        if (lan->getID() == 0) {
+            const QString SqlGetMaxId = QStringLiteral("select max(uid) from message");
+            if (!query.exec(SqlGetMaxId)) {
+                emit list->failed(tr("无法加载局域网消息"));
+                delete lan;
+                lan = nullptr;
+                return false;
+            }
+            lan->setID(query.value(0).toUInt() + 1);
+
+            // 设置索引文件
+            {
+                QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
+                index.setValue(QString::number(lan->getID()), encryptTextByMD5(lan->getHostAddress() + lan->getMacAddress()));
+            }
+
+            if (query.prepare(SqlInsertMessageItem)) {
+                query.addBindValue(lan->getID());
+                query.addBindValue(IChatObject::LAN);
+                query.addBindValue(0);
+                query.addBindValue(1);
+                query.addBindValue("");
+                query.addBindValue("");
+                query.exec();
+            } else {
+                emit list->failed(tr("通知消息未能成功保存到数据库，VALUE=") + QString::number(lan->getID()));
+            }
+        }
+
+        User::Instance()->addChatObject(lan);
+
+        item = new MessageItem;
+        item->setChatObject(lan);
+        list->appendMessage(item);
+    }
+
+    // 加载缓存的局域网对象
+    if (!query.exec(SqlQueryMsgItems)) {
+        return false;
+    }
+    while (query.next()) {
+        MessageItem* item = new MessageItem;
+
+        const auto lanId = query.value(0).toUInt();
+
+        item->setChatObject(User::Instance()->getLanObjectById(lanId));
+        if (item->mChatObject.isNull()) {
+            delete item;
+            item = nullptr;
+            return false;
+        }
+
+        item->mUnreadMsgCount = query.value(2).toInt();
+        item->mReadFlag = query.value(3).toBool();
+        item->mTime = GetMessageTime(query.value(4).toDateTime());
+        item->mMessage = query.value(5).toString();
 
         list->appendMessage(item);
     }
@@ -160,6 +225,8 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
 
 bool MessageDatabase::updateReadFlag(MessageItem* item)
 {
+    selectDatabaseFile(item->mChatObject->getRoleType());
+
     QSqlQuery q;
     if (q.exec(SqlUpdateReadFlag.arg(item->mReadFlag).arg(item->mChatObject->getID()))) {
         return true;
@@ -171,6 +238,8 @@ bool MessageDatabase::updateReadFlag(MessageItem* item)
 
 bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
 {
+    selectDatabaseFile(item->mChatObject->getRoleType());
+
     QSqlQuery q;
     if (q.exec(SqlUpdateReadFlag.arg(item->mUnreadMsgCount).arg(item->mChatObject->getID()))) {
         return true;
@@ -180,10 +249,12 @@ bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
     return false;
 }
 
-bool MessageDatabase::loadChatItems(ChatView* chatView, unsigned int uid)
+bool MessageDatabase::loadChatItems(ChatView* chatView, IChatObject* chatObj)
 {
+    selectDatabaseFile(chatObj->getRoleType());
+
     QSqlQuery q;
-    if (!q.exec(SqlQueryChatById.arg(uid).arg(chatView->mChats.size()).arg(CHAT_RECORD_FECTH_COUNT))) {
+    if (!q.exec(SqlQueryChatById.arg(chatObj->getID()).arg(chatView->mChats.size()).arg(CHAT_RECORD_FECTH_COUNT))) {
         qDebug() << q.lastError();
         return false;
     }
@@ -193,7 +264,7 @@ bool MessageDatabase::loadChatItems(ChatView* chatView, unsigned int uid)
         // 聊天类型
         type = q.value(1).toInt();
 
-        IChatItem* item = chatView->BuildChatItem(type, q.value(2).toBool(), uid);
+        IChatItem* item = chatView->BuildChatItem(type, q.value(2).toBool(), chatObj->getID());
         if (nullptr == item) {
             return false;
         }

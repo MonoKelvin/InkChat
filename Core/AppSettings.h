@@ -41,6 +41,18 @@ public:
         return UserDir() + QStringLiteral("/User/");
     }
 
+    // 局域网数据文件夹
+    inline static const QString LanDataDir()
+    {
+        return UserDir() + QStringLiteral("/LANs/");
+    }
+
+    // 局域网配置索引文件
+    inline static const QString LanIndexFile()
+    {
+        return LanDataDir() + QStringLiteral("index.ini");
+    }
+
     // 用户数据文件
     inline static const QString UserDataFile()
     {
@@ -52,7 +64,7 @@ public:
      * @param type 角色类型，即聊天对象类型
      * @return 返回文件全称名，包含路径和后缀
      */
-    inline static const QString MessageCacheFile(IChatObject::ERoleType type = IChatObject::Friend);
+    static const QString MessageCacheFile(IChatObject::ERoleType type = IChatObject::Friend);
 
     /**
      * @brief 用户头像地址
@@ -63,12 +75,6 @@ public:
     inline static const QString UserAvatarUrl(unsigned int id, int size = 45)
     {
         return QString("http://inkchat.com/api/image.php?user=user&size=%1&id=%2").arg(size).arg(id);
-    }
-
-    // 局域网数据文件夹
-    inline static const QString LanDataDir()
-    {
-        return UserDir() + QStringLiteral("/LANs/");
     }
 
     // 用户缓存头像文件夹

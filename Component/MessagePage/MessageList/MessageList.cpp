@@ -184,7 +184,8 @@ void MessageList::load(void)
 {
     isFileExists(AppSettings::MessageCacheFile(), true);
 
-    if (MessageDatabase::Instance()->loadMessageItems(this)) {
+    if (MessageDatabase::Instance()->loadMessageItems(this)
+        || MessageDatabase::Instance()->loadLanMessageItems(this)) {
         int pos = 0;
         for (int i = 0; i < mMessages.size(); i++) {
             if (mMessages.at(i)->mChatObject->getIsTop()) {

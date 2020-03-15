@@ -8,11 +8,11 @@ HEADERS += \
     $$PWD/IChatObject.h \
         $$PWD/InkChatApi.h \
     $$PWD/LanObject.h \
+    $$PWD/MessageManager.h \
         $$PWD/User.h \
         $$PWD/Utility.h \
     $$PWD/MyFriend.h \
-    $$PWD/MessageDatabase.h\
-    $$PWD/ChatManager.h
+    $$PWD/MessageDatabase.h
 
 SOURCES += \
     $$PWD/AppSettings.cpp \
@@ -20,8 +20,8 @@ SOURCES += \
         $$PWD/Http/ILoginOperation.cpp \
     $$PWD/IChatObject.cpp \
     $$PWD/LanObject.cpp \
+    $$PWD/MessageManager.cpp \
         $$PWD/User.cpp \
         $$PWD/Utility.cpp \
     $$PWD/MyFriend.cpp \
-    $$PWD/MessageDatabase.cpp\
-    $$PWD/ChatManager.cpp
+    $$PWD/MessageDatabase.cpp
