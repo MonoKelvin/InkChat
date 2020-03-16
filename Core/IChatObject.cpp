@@ -90,6 +90,7 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
     mGender = json.value(QLatin1String("gender")).toString(QStringLiteral("-")).front().toLatin1();
     mNickName = json.value(QLatin1String("nickName")).toString();
     mSignature = json.value(QLatin1String("signature")).toString();
+    mHostAddress = json.value(QLatin1String("hostAddress")).toString();
 }
 
 QJsonObject IChatObject::toJson(void)
@@ -101,5 +102,6 @@ QJsonObject IChatObject::toJson(void)
     json.insert(QLatin1String("gender"), QString(mGender));
     json.insert(QLatin1String("nickName"), mNickName);
     json.insert(QLatin1String("signature"), mSignature);
+    json.insert(QLatin1String("hostAddress"), mHostAddress);
     return json;
 }

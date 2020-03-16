@@ -10,6 +10,7 @@
 #include <User.h>
 
 #include <QDateTime>
+#include <QFile>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -49,6 +50,8 @@ QSqlError MessageDatabase::initDatabase()
 {
     mDatabase = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"));
     mDatabase.setDatabaseName(AppSettings::MessageCacheFile());
+    mDatabase.setUserName(User::Instance()->getNickName());
+    mDatabase.setPassword(User::Instance()->getPassword());
 
     if (!mDatabase.open(User::Instance()->getNickName(), User::Instance()->getPassword())) {
         return mDatabase.lastError();
@@ -92,17 +95,20 @@ QSqlError MessageDatabase::initDatabase()
 
     QSqlQuery query;
     if (!query.exec(SqlCreateMessageItemTable)) {
-        //qDebug() << query.lastError();
+        qDebug() << query.lastError();
         return query.lastError();
     }
     if (!query.exec(SqlCreateChatRecordTable)) {
-        //qDebug() << query.lastError();
+        qDebug() << query.lastError();
         return query.lastError();
     }
     if (!query.exec(SqlCreateViewGetMsgItems)) {
-        //qDebug() << query.lastError();
+        qDebug() << query.lastError();
         return query.lastError();
     }
+
+    const auto lanDbFile = AppSettings::MessageCacheFile(IChatObject::LAN);
+    copyFile(mDatabase.databaseName(), lanDbFile);
 
     return QSqlError();
 }
@@ -154,6 +160,7 @@ bool MessageDatabase::loadLanMessageItems(MessageList* list)
 
     QSqlQuery query;
     LanObject* lan = LanObject::DetectLanEnvironment();
+    //qDebug() << lan->getHostAddress() << lan->getMacAddress();
 
     // 加载实时连接的局域网
     if (nullptr != lan) {
@@ -163,9 +170,9 @@ bool MessageDatabase::loadLanMessageItems(MessageList* list)
         if (lan->getID() == 0) {
             const QString SqlGetMaxId = QStringLiteral("select max(uid) from message");
             if (!query.exec(SqlGetMaxId)) {
-                emit list->failed(tr("无法加载局域网消息"));
                 delete lan;
                 lan = nullptr;
+                emit list->failed(tr("无法加载局域网消息"));
                 return false;
             }
             lan->setID(query.value(0).toUInt() + 1);
@@ -180,7 +187,7 @@ bool MessageDatabase::loadLanMessageItems(MessageList* list)
                 query.addBindValue(lan->getID());
                 query.addBindValue(IChatObject::LAN);
                 query.addBindValue(0);
-                query.addBindValue(1);
+                query.addBindValue(true);
                 query.addBindValue("");
                 query.addBindValue("");
                 query.exec();

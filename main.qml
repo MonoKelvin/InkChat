@@ -18,11 +18,6 @@ Window {
     minimumWidth: 720
     minimumHeight: 460
 
-    // 处理所有失败消息槽函数
-    function slotFailed(msg) {
-        Utility.createToast(msg, window)
-    }
-
     NumberAnimation {
         id: opacityAnimation
         target: window
@@ -38,8 +33,6 @@ Window {
     Component.onCompleted: {
         opacityAnimation.start()
         pageContains.showPage("qrc:/MessagePage/MessagePage.qml")
-
-        UserModel.failed.connect(slotFailed)
     }
 
     Navigation {

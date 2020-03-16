@@ -88,7 +88,6 @@ LanObject* LanObject::DetectLanEnvironment()
 
     QJsonObject json;
     json.insert(QLatin1String("md5"), md5);
-    json.insert(QLatin1String("remark"), addr);
     json.insert(QLatin1String("hostAddress"), addr);
     json.insert(QLatin1String("mac"), mac);
     json.insert(QLatin1String("top"), false);

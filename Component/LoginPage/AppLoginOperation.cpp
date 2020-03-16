@@ -47,10 +47,10 @@ void AppLoginOperation::InitLoginPage(QQmlApplicationEngine* qmlEngine, const QU
 void AppLoginOperation::loginRequest(const QVariantMap& mapping)
 {
     const auto& user = User::Instance();
-    const auto nickName = mapping.value(QStringLiteral("nickNmae")).toString();
+    const auto nickName = mapping.value(QStringLiteral("nickName")).toString();
 
     AppSettings::OfflineUserName = nickName;
-    const auto fileName = AppSettings::UserDataFile();
+    const auto fileName = AppSettings::AppDataDir() + QStringLiteral("0/%1/User/User.udat").arg(nickName);
 
     if (!isFileExists(fileName)) {
         emit failed(tr("用户不存在或密码错误"));
@@ -64,9 +64,9 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
         auto jsonDoc = QJsonDocument::fromJson(file.readAll());
         if (!jsonDoc.isNull() && jsonDoc.isObject()) {
             user->fromJson(jsonDoc.object());
-
             if (user->getPassword() == mapping.value(QStringLiteral("password"))
                 && user->getNickName() == nickName) {
+                AppSettings::Instance()->CurrentUserId = 0;
                 emit verified();
             } else {
                 emit failed(tr("密码错误"));
@@ -81,36 +81,30 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
 
 void AppLoginOperation::signupRequest(const QVariantMap& mapping)
 {
-    try {
-        AppSettings::OfflineUserName = mapping.value(QStringLiteral("nickName")).toString();
-        if (hasIllegalCharInFile(AppSettings::OfflineUserName)) {
-            throw tr("数据目录创建失败，用户名可能包含非法字符：\\/\"*?<>|");
-        }
+    AppSettings::OfflineUserName = mapping.value(QStringLiteral("nickName")).toString();
 
-        // 转换为json格式
-        QJsonObject json;
-        for (auto iter = mapping.cbegin(); iter != mapping.cend(); ++iter) {
-            json.insert(iter.key(), iter.value().toJsonValue());
-        }
-
-        const auto& user = User::Instance();
-        auto& msgDb = MessageDatabase::Instance()->getDatabase();
-
-        user->fromJson(json);
-        msgDb.setUserName(user->getNickName());
-        msgDb.setPassword(user->getPassword());
-
-        emit registered();
-    } catch (const QString& msg) {
-        emit failed(msg);
+    if (hasIllegalCharInFile(AppSettings::OfflineUserName)) {
+        emit failed(tr("数据目录创建失败，用户名可能包含非法字符：\\/\"*?<>|"));
+        return;
     }
+
+    // 转换为json格式
+    QJsonObject json;
+    for (auto iter = mapping.cbegin(); iter != mapping.cend(); ++iter) {
+        json.insert(iter.key(), iter.value().toJsonValue());
+    }
+
+    AppSettings::Instance()->CurrentUserId = 0;
+    User::Instance()->fromJson(json);
+    emit registered();
 }
 
 bool AppLoginOperation::isUserExists(const QString& userName)
 {
-    AppSettings::OfflineUserName.clear();
+    AppSettings::OfflineUserName = userName;
 
-    const auto dirs = QDir(AppSettings::UserDir()).entryList(QDir::Dirs);
+    const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("0/")).entryList(QDir::Dirs);
+
     for (int i = 0; i < dirs.size(); i++) {
         if (dirs.at(i) == userName) {
             return true;

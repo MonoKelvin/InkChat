@@ -16,46 +16,6 @@ Rectangle {
         listModel.load()
     }
 
-    Text {
-        id: title
-        text: qsTr("消息列表")
-        width: parent.width
-        height: 45
-        anchors.top: parent.top
-        padding: appTheme.wideSpacing
-        horizontalAlignment: Text.AlignHCenter
-        color: appTheme.mainTextColor
-    }
-
-    Item {
-        id: toolBar
-        width: parent.width
-        anchors.top: title.bottom
-        height: searchBox.height + 2 * appTheme.stdSpacing
-
-        InputBox {
-            id: searchBox
-            placeholderText: qsTr("搜索...")
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                right: toolBtn.left
-                leftMargin: appTheme.stdSpacing
-                rightMargin: appTheme.tinySpacing
-            }
-            iconSource: "qrc:/icons/lightTheme/24x24/search.png"
-        }
-
-        StyleButton {
-            id: toolBtn
-            anchors.right: parent.right
-            anchors.rightMargin: appTheme.stdSpacing
-            anchors.verticalCenter: parent.verticalCenter
-            width: appTheme.stdWidgetHeight
-            height: appTheme.stdWidgetHeight
-        }
-    }
-
     AdvancedList {
         id: msgListView
         width: parent.width
@@ -75,11 +35,14 @@ Rectangle {
 
             // 当要显示时（未完全打开）
             onAboutToShow: {
-                // 如果没选中当前项就激活
-                if (listModel.getRow(msgItem) === msgListView.currentIndex)
+                // 如果选中当前项
+                if (listModel.getRow(msgItem) === msgListView.currentIndex){
                     readFlagAction.enabled = false
-                else
+                    deselectAction.enabled = true
+                } else {
                     readFlagAction.enabled = true
+                    deselectAction.enabled = false
+                }
 
                 readFlagAction.text = msgItem.readFlag ? qsTr("标为未读") : qsTr(
                                                              "标为已读")
@@ -99,6 +62,15 @@ Rectangle {
                     // 设置是否置顶
                     listModel.setMessageTop(itemMenu.msgItem,
                                             !itemMenu.msgItem.chatObject.isTop)
+                }
+            }
+            Action {
+                id: deselectAction
+                text: qsTr("取消选择")
+                onTriggered: {
+                    msgListView.currentIndex = -1
+                    listModel.setCurrentSelectedIndex(null)
+                    itemClicked(null)
                 }
             }
         }
@@ -188,6 +160,9 @@ Rectangle {
                         if (msgItem.chatObject.roleType === ChatObject.Friend
                                 && msgItem.chatObject.remark !== '')
                             return msgItem.chatObject.remark
+                        else if (msgItem.chatObject.roleType === ChatObject.LAN
+                                 && msgItem.chatObject.nickName === '')
+                            return msgItem.chatObject.hostAddress
                         return msgItem.chatObject.nickName
                     }
                 }
@@ -224,9 +199,8 @@ Rectangle {
                     id: msgBadge
                     y: messageText.y
                     anchors.right: parent.right
-                    width: contentWidth + 14
                     text: (msgItem.unreadMsgCount > 99) ? "99+" : msgItem.unreadMsgCount
-                    visible: msgItem.readFlag ? false : true
+                    visible: !msgItem.readFlag
                 }
             }
 
@@ -266,6 +240,47 @@ Rectangle {
         }
     }
 
+    Text {
+        id: title
+        text: qsTr("消息列表")
+        width: parent.width
+        height: 45
+        anchors.top: parent.top
+        padding: appTheme.wideSpacing
+        horizontalAlignment: Text.AlignHCenter
+        color: appTheme.mainTextColor
+        z: 30
+    }
+
+    Item {
+        id: toolBar
+        width: parent.width
+        anchors.top: title.bottom
+        height: searchBox.height + 2 * appTheme.stdSpacing
+        z: 31
+
+        InputBox {
+            id: searchBox
+            placeholderText: qsTr("搜索...")
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                right: toolBtn.left
+                leftMargin: appTheme.stdSpacing
+                rightMargin: appTheme.tinySpacing
+            }
+            iconSource: "qrc:/icons/lightTheme/24x24/search.png"
+        }
+
+        StyleButton {
+            id: toolBtn
+            anchors.right: parent.right
+            anchors.rightMargin: appTheme.stdSpacing
+            anchors.verticalCenter: parent.verticalCenter
+            width: appTheme.stdWidgetHeight
+            height: appTheme.stdWidgetHeight
+        }
+    }
 
     /*StyleButton {
         id: backToTop

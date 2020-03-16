@@ -43,6 +43,16 @@ bool isDirExists(const QString& fullPath, bool makeIfNull = false, bool recursio
 bool isFileExists(const QString& fileName, bool makeIfNull = false, bool recursion = true);
 
 /**
+ * @brief 复制一个文件
+ * @param source 源文件。包括路径名称
+ * @param newFile 新文件。包括路径名称
+ * @param isOverWrite 是否覆盖已经存在的文件
+ * @return 复制成功返回true，否则返回false
+ * @note 复制文件时会递归创建文件路径
+ */
+bool copyFile(const QString& source, const QString& newFile, bool isOverWrite = true);
+
+/**
  * @brief 从网络获取图片
  * @param callBack 回调函数，当获取图片或失败后做的事
  * @see DealWithPixmapFunc

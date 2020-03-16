@@ -137,11 +137,9 @@ QHash<int, QByteArray> MessageList::roleNames() const
 
 void MessageList::setCurrentSelectedIndex(int index)
 {
-    if (index < 0 || index >= mMessages.size()) {
-        return;
+    if (index >= 0 && index < mMessages.size()) {
+        mCurrentSelectedItem = mMessages.at(index);
     }
-
-    mCurrentSelectedItem = mMessages.at(index);
 }
 
 int MessageList::getCurrentSelectedIndex()
@@ -184,15 +182,13 @@ void MessageList::load(void)
 {
     isFileExists(AppSettings::MessageCacheFile(), true);
 
-    if (MessageDatabase::Instance()->loadMessageItems(this)
-        || MessageDatabase::Instance()->loadLanMessageItems(this)) {
-        int pos = 0;
-        for (int i = 0; i < mMessages.size(); i++) {
-            if (mMessages.at(i)->mChatObject->getIsTop()) {
-                mMessages.move(i, pos++);
-            }
+    MessageDatabase::Instance()->loadMessageItems(this);
+    MessageDatabase::Instance()->loadLanMessageItems(this);
+
+    int pos = 0;
+    for (int i = 0; i < mMessages.size(); i++) {
+        if (mMessages.at(i)->mChatObject->getIsTop()) {
+            mMessages.move(i, pos++);
         }
-    } else {
-        emit failed(tr("消息加载失败，请重新刷新"));
     }
 }

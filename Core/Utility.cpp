@@ -122,3 +122,25 @@ bool hasIllegalCharInFile(const QString& str)
     std::regex reg("[\\s\\\\/:\\*\\?\\\"<>\\|]");
     return std::regex_search(str.toStdString(), reg);
 }
+
+bool copyFile(const QString& source, const QString& newFile, bool isOverWrite)
+{
+    QFile file(source);
+    if (!file.exists()) {
+        return false;
+    }
+
+    if (isOverWrite) {
+        QFile nf(newFile);
+        if (nf.exists(newFile)) {
+            nf.remove(newFile);
+        } else {
+            QDir().mkpath(QFileInfo(nf).path());
+        }
+        file.copy(newFile);
+    } else {
+        return file.copy(newFile);
+    }
+
+    return true;
+}

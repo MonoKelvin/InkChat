@@ -158,9 +158,6 @@ protected Q_SLOTS:
     //virtual bool updateJson(const QString& fileName, DecryptFileFunc df = nullptr);
 
 Q_SIGNALS:
-    /** 信号：任何操作失败时发射的信号 */
-    void failed(const QString&);
-
     /** 信号：当头像缓存（可能缓存失败）后发送的信号
      * @param 缓存成功ok = true，否则为false
      * @param 一些消息或日志

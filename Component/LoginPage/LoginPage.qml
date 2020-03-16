@@ -282,8 +282,12 @@ ApplicationWindow {
             Badge {
                 id: lanModelBadge
                 anchors.right: parent.right
+                color: appTheme.subColor2
+                contentText.color: appTheme.primaryColor2
                 contentText.topPadding: appTheme.tinySpacing
                 contentText.bottomPadding: appTheme.tinySpacing
+                contentText.leftPadding: appTheme.narrowSpacing
+                contentText.rightPadding: appTheme.narrowSpacing
                 radius: appTheme.stdRadius
                 text: qsTr("离线模式")
                 layer.enabled: false

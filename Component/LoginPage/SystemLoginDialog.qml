@@ -61,9 +61,9 @@ MouseArea {
         }
 
         onVisibleChanged: {
-            if(visible) {
+            if(visible)
                 scaleTrans.xScale = 1.0
-            } else
+            else
                 scaleTrans.xScale = 0.0
         }
 
@@ -249,7 +249,7 @@ MouseArea {
                                 Utility.createToast(qsTr("请输入解锁密码"), window)
                             else
                                 loginWithOffline.loginRequest({
-                                                                  "nickNmae": nameInputer.text,
+                                                                  "nickName": nameInputer.text,
                                                                   "password": lockInputer.text
                                                               })
                         }

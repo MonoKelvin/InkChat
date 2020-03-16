@@ -44,7 +44,7 @@ public:
     // 局域网数据文件夹
     inline static const QString LanDataDir()
     {
-        return UserDir() + QStringLiteral("/LANs/");
+        return UserDataDir() + QStringLiteral("/LANs/");
     }
 
     // 局域网配置索引文件
@@ -110,7 +110,7 @@ public:
     inline void setCurrentUserId(unsigned int id)
     {
         CurrentUserId = id;
-        Instance()->setValue("User/currentUser", id);
+        Instance()->setValue(QStringLiteral("User/currentUser"), id);
     }
 
     inline unsigned int getCurrentUserId()
@@ -151,12 +151,11 @@ public:
     /** 离线用户名，如果为空则默认是在线用户 */
     static QString OfflineUserName;
 
-Q_SIGNALS:
-    void onAppThemeChanged();
-
-private:
     /** 当前用户id，离线用户永远是0 */
     unsigned int CurrentUserId;
+
+Q_SIGNALS:
+    void onAppThemeChanged();
 };
 
 #endif // APPSETTINGS_H
