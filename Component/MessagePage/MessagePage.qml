@@ -23,14 +23,16 @@ Item {
             property var chatObject
 
             onTriggered: {
+                // 取消其他页面的可见性
+                for (var key in chatContains.chatPages)
+                    chatContains.chatPages[key].page.visible = false
+
                 if (chatObject === null)
                     return
 
-                // 如果该页面时没有打开过的动态加载一份
+                // 如果该页面时没有打开过，就动态加载一份
                 if (!(chatObject in chatContains.chatPages)) {
-                    var component = Qt.createComponent(
-                                "qrc:/MessagePage/ChatPage/ChatPage.qml")
-
+                    var component = Qt.createComponent("qrc:/MessagePage/ChatPage/ChatPage.qml")
                     if (component.status === Component.Ready) {
                         var page = component.createObject(chatContains)
                         page.anchors.fill = chatContains
@@ -42,11 +44,6 @@ Item {
 
                         page.loadChatRecord(chatObject)
                     }
-                }
-
-                // 取消其他页面的可见性
-                for (var key in chatContains.chatPages) {
-                    chatContains.chatPages[key].page.visible = false
                 }
 
                 // 更新最近使用时间

@@ -21,7 +21,7 @@ Rectangle {
         width: parent.width
         anchors.top: toolBar.bottom
         anchors.bottom: parent.bottom
-        //clip: true
+        clip: true
         focus: true
         currentIndex: -1
         releaseString: qsTr("释放刷新")
@@ -69,7 +69,7 @@ Rectangle {
                 text: qsTr("取消选择")
                 onTriggered: {
                     msgListView.currentIndex = -1
-                    listModel.setCurrentSelectedIndex(null)
+                    listModel.setCurrentSelectedIndex(-1)
                     itemClicked(null)
                 }
             }
@@ -96,6 +96,7 @@ Rectangle {
             property bool isTop: model.msgObject.chatObject.isTop
 
             id: msgItemRect
+            clip: true
             height: 70
             width: msgListView.width
             z: isCurrentItem ? 10 : 1
@@ -108,8 +109,16 @@ Rectangle {
             }
             onIsTopChanged: {
                 msgListView.currentIndex = listModel.getCurrentSelectedIndex()
+            }
 
-                color = isTop ? appTheme.widgetColor : appTheme.backgroundColor
+            Rectangle {
+                width: 10
+                height: 20
+                rotation: 45
+                x: -4
+                y: -8
+                color: appTheme.primaryColor1
+                visible: parent.isTop
             }
 
             Avatar {
@@ -210,10 +219,9 @@ Rectangle {
                 hoverEnabled: true
 
                 onPressed: parent.color = appTheme.widgetColor
-                onExited: if (!msgItem.chatObject.isTop)
-                              parent.color = appTheme.backgroundColor
-                onReleased: if (!msgItem.chatObject.isTop)
-                                parent.color = appTheme.backgroundColor
+                onEntered: parent.color = Qt.lighter(appTheme.widgetColor, 1.2)
+                onExited: parent.color = appTheme.backgroundColor
+                onReleased: parent.color = appTheme.backgroundColor
 
                 onClicked: {
                     if (mouse.button === Qt.LeftButton) {
@@ -230,9 +238,7 @@ Rectangle {
 
                 // 支持长按弹出菜单
                 onPressAndHold: {
-                    if (!msgItem.chatObject.isTop)
-                        parent.color = appTheme.backgroundColor
-
+                    parent.color = appTheme.backgroundColor
                     itemMenu.msgItem = msgItem
                     itemMenu.popup()
                 }
@@ -249,7 +255,7 @@ Rectangle {
         padding: appTheme.wideSpacing
         horizontalAlignment: Text.AlignHCenter
         color: appTheme.mainTextColor
-        z: 30
+        //z: 30
     }
 
     Item {
@@ -257,7 +263,7 @@ Rectangle {
         width: parent.width
         anchors.top: title.bottom
         height: searchBox.height + 2 * appTheme.stdSpacing
-        z: 31
+        //z: 31
 
         InputBox {
             id: searchBox

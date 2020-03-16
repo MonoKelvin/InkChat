@@ -142,11 +142,12 @@ public Q_SLOTS:
     /**
      * @brief 直接在尾部追加一条消息，不会改变数据库的内容
      * @param chat 要追加的聊天消息
-     * @note 该方法通常作为接收消息使用
+     * @note 该方法通常作为接收消息使用，每调用一次就发射 @see chatAdded 信号
      */
     inline void appendChat(IChatItem* chat)
     {
         insertChat(mChats.size(), chat);
+        emit chatAdded(chat->mChatObject->getRoleType() == IChatObject::Me);
     }
 
 protected:
@@ -167,6 +168,12 @@ Q_SIGNALS:
      * @param item 聊天信息
      */
     //void userMissed(IChatItem* item);
+
+    /** 
+     * @brief 信号：当聊天消息增加时
+     * @param 是否是我发出的消息
+     */
+    void chatAdded(bool isMe);
 
 public Q_SLOTS:
     /**

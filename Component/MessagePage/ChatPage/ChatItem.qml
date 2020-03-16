@@ -14,6 +14,9 @@ Item {
     // C++中对应的IChatItem对象
     readonly property var chatItem: model.chatItem
 
+    // 是否显示名称。虽然是数值类型，但尽量只用0和1表示显示或隐藏
+    property alias showNickName: nameText.opacity
+
     // 内容的最大宽度
     property int contentMaxWidth
 
@@ -88,15 +91,8 @@ Item {
         contentContainer.children.push(content)
         sendStateIcon.anchors.verticalCenter = content.verticalCenter
 
-        var type = chatItem.sender.roleType
-
-        // 只有群聊中才显示用户名称
-        if (type === ChatObject.LAN || type === ChatObject.Group) {
-            nameText.opacity = 1
-        }
-
         // 如果是“我”就显示在右边，否则显示在左边
-        if (type === ChatObject.Me) {
+        if (chatItem.sender.roleType === ChatObject.Me) {
             mainLayout.layoutDirection = Qt.RightToLeft
             columnLayout.anchors.right = layoutContainer.right
             nameText.horizontalAlignment = Text.AlignRight

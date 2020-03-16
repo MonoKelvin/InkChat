@@ -39,6 +39,8 @@ public:
         Stranger = 0x0004,
         LAN = 0x0008,
         Group = 0x0010,
+        SinglePerson = Me | Friend | Stranger,
+        MultiPerson = LAN | Group,
         // BlackList,
         AllUser = Me | Friend | Stranger | LAN | Group,
     };

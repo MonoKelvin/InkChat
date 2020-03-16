@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.12
 import QtGraphicalEffects 1.0
+import ChatObject 1.0
 import ChatListModel 1.0
 import ChatItem 1.0
 import "qrc:/Element/"
@@ -50,12 +51,28 @@ Rectangle {
             onFailed: {
                 Utility.createToast(msg, window)
             }
+
+            onChatAdded: {
+                // 如果用户试图将列表滚动到上方，则接收消息但不滚动到底部，除非是我发送的
+                if(!isMe && chatListView.contentY < chatListView.contentHeight
+                   - chatListView.height) {
+                    return
+                }
+
+                // 滚动到底部
+                chatListView.positionViewAtEnd()
+            }
         }
 
         // 消息代理
         delegate: Loader {
             width: chatListView.width
             source: model.chatItem.qmlFile()
+            Component.onCompleted: {
+                // 只有多人聊天才显示名称
+                if(_chatObj.roleType & ChatObject.MultiPerson)
+                    item.showNickName = 1
+            }
         }
 
         // 输入框
@@ -70,9 +87,6 @@ Rectangle {
                 target: inputer.item
                 onSendChat: {
                     chatListModel.sendChat(_chatObj, content)
-
-                    // 滚动到底部
-                    chatListView.positionViewAtEnd()
                 }
             }
 
@@ -119,7 +133,7 @@ Rectangle {
             id: blurEffect
             target: titleBar
             background: chatListView
-            blurRadius: 64
+            blurRadius: 72
         }
 
         Text {

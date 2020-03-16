@@ -139,6 +139,8 @@ void MessageList::setCurrentSelectedIndex(int index)
 {
     if (index >= 0 && index < mMessages.size()) {
         mCurrentSelectedItem = mMessages.at(index);
+    } else {
+        mCurrentSelectedItem.clear();
     }
 }
 

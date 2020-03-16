@@ -11,7 +11,6 @@ ChatView::ChatView(QObject* parent)
     : QAbstractListModel(parent)
 {
     connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatView::appendChat);
-    // connect(ChatManager::Instance().data(), SIGNAL(received), this, SLOT(sendChat));
 }
 
 ChatView::~ChatView()
@@ -92,8 +91,7 @@ void ChatView::clear()
 IChatItem* ChatView::getChatItem(int index) const
 {
     if (index >= 0 && index < mChats.size()) {
-        const auto msg = mChats.at(index);
-        return msg;
+        return mChats.at(index);
     }
     return nullptr;
 }

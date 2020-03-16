@@ -51,8 +51,7 @@ qint64 MessageManager::sendMessage(ChatView* view, IChatObject* chatObj, int typ
 
     // 发送数据
     qint64 result = -1;
-    if (chatObj->getRoleType() == IChatObject::LAN
-        || chatObj->getRoleType() == IChatObject::Group) {
+    if (chatObj->getRoleType() & IChatObject::MultiPerson) {
         result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, mPort);
     } else {
         result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), mPort);
@@ -78,6 +77,7 @@ void MessageManager::processPendingDatagrams()
     while (mUdpSocket->hasPendingDatagrams()) {
         QByteArray datagram;
 
+        // 读数据
         const int dataSize = int(mUdpSocket->pendingDatagramSize());
         if (dataSize <= 0) {
             continue;
@@ -85,6 +85,7 @@ void MessageManager::processPendingDatagrams()
         datagram.resize(dataSize);
         mUdpSocket->readDatagram(datagram.data(), datagram.size());
 
+        // 处理数据
         QDataStream in(&datagram, QIODevice::ReadOnly);
         unsigned int senderId = 0;
         QString addr;
@@ -94,17 +95,18 @@ void MessageManager::processPendingDatagrams()
         QDateTime time;
         in >> senderId >> addr >> name >> type >> data >> time;
 
+        // 构建到视图
         IChatItem* item = ChatView::BuildChatItem(type, senderId, time, data);
-        if (nullptr == item) {
+        if (nullptr == item) { // 接收到无效信息
             continue;
-        } else if (item->mChatObject == nullptr) {
+        } else if (item->mChatObject == nullptr) { // 如果不是我或者我的好友
             // TODO：加载头像
             item->mChatObject = new IChatObject(item);
             item->mChatObject->setNickName(name);
             item->mChatObject->setRoleType(IChatObject::Stranger);
-        } else {
-            item->mChatObject->setHostAddress(addr);
         }
+
+        item->mChatObject->setHostAddress(addr);
 
         // TODO: 使用消息队列来完成
         emit received(item);
