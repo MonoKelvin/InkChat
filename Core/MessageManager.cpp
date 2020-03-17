@@ -17,8 +17,13 @@ MessageManager::MessageManager(QObject* parent)
 
     if (mUdpSocket->bind(mPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
         connect(mUdpSocket, &QUdpSocket::readyRead, this, &MessageManager::processPendingDatagrams);
-        connect(this, &MessageManager::received, MessageDatabase::Instance().data(),
-            &MessageDatabase::saveAChatRecord, Qt::QueuedConnection);
+        connect(
+            this, &MessageManager::received, this, [](IChatItem* item, IChatObject::ERoleType rt) {
+                item->mChatObject->getMD5();
+                MessageDatabase::Instance()
+                    ->saveAChatRecord(item, obj);
+            },
+            Qt::QueuedConnection);
     } else {
         mUdpSocket->deleteLater();
     }
@@ -53,6 +58,7 @@ qint64 MessageManager::sendMessage(ChatView* view, IChatObject* chatObj, int typ
     // 发送数据
     qint64 result = -1;
     if (chatObj->getRoleType() & IChatObject::MultiPerson) {
+        out << chatObj->getMD5();
         result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, mPort);
     } else {
         result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), mPort);
@@ -61,7 +67,7 @@ qint64 MessageManager::sendMessage(ChatView* view, IChatObject* chatObj, int typ
     // 显示到视图中并保存到本地数据库
     if (item) {
         view->appendChat(item);
-        MessageDatabase::Instance()->saveAChatRecord(chatObj->getRoleType(), item);
+        MessageDatabase::Instance()->saveAChatRecord(item, chatObj);
         item->setSendState(IChatItem::Succeed);
     }
 
@@ -110,7 +116,13 @@ void MessageManager::processPendingDatagrams()
 
         item->mChatObject->setHostAddress(addr);
 
+        if (roleType & IChatObject::MultiPerson) {
+            QString md5;
+            in >> md5;
+            item->mChatObject->setMD5(md5);
+        }
+
         // TODO: 使用消息队列来完成
-        emit received(roleType, item);
+        emit received(item, roleType);
     }
 }

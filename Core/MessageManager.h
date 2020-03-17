@@ -77,12 +77,20 @@ Q_SIGNALS:
 
     /**
      * @brief 信号：接收到数据
+     * @param IChatItem* 接收到数据并封装好的聊天项，可能为nullptr
      * @param IChatObject::ERoleType 来自与聊天对象的实例的角色类型
+     * @note 通常该信号会关联多个槽函数，即分发消息。在视图中接收到信号后判断该聊天消息是否
+     * 为自己需要的，如果需要则接收处理，否则可以抛弃。
+     */
+    void received(IChatItem*, IChatObject::ERoleType);
+
+    /**
+     * @brief 信号：接收到数据
      * @param IChatItem* 接收到数据并封装好的聊天项，可能为nullptr
      * @note 通常该信号会关联多个槽函数，即分发消息。在视图中接收到信号后判断该聊天消息是否
      * 为自己需要的，如果需要则接收处理，否则可以抛弃。
      */
-    void received(IChatObject::ERoleType, IChatItem*);
+    void receivedFromMPC(IChatItem*, const QString&);
 
 private:
     /** 

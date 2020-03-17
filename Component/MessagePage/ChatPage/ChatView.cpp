@@ -10,10 +10,7 @@ QHash<int, QByteArray> ChatView::mRegistryChatClasses;
 ChatView::ChatView(QObject* parent)
     : QAbstractListModel(parent)
 {
-    connect(MessageManager::Instance().data(), &MessageManager::received,
-        [this](IChatObject::ERoleType, IChatItem* item) {
-            appendChat(item);
-        });
+    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatView::appendChat);
 }
 
 ChatView::~ChatView()

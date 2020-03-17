@@ -142,10 +142,13 @@ public Q_SLOTS:
     /**
      * @brief 直接在尾部追加一条消息，不会改变数据库的内容
      * @param chat 要追加的聊天消息
+     * @param roleType 聊天对象角色类型，通常该值不会使用到，默认IChatObject::Me
      * @note 该方法通常作为接收消息使用，每调用一次就发射 @see chatAdded 信号
      */
-    inline void appendChat(IChatItem* chat)
+    inline void appendChat(IChatItem* chat, IChatObject::ERoleType roleType = IChatObject::Me)
     {
+        Q_UNUSED(roleType)
+
         insertChat(mChats.size(), chat);
         emit chatAdded(chat->mChatObject->getRoleType() == IChatObject::Me);
     }

@@ -130,17 +130,12 @@ bool copyFile(const QString& source, const QString& newFile, bool isOverWrite)
         return false;
     }
 
+    QFileInfo fileInfo(newFile);
+    QDir().mkpath(fileInfo.path());
+
     if (isOverWrite) {
-        QFile nf(newFile);
-        if (nf.exists(newFile)) {
-            nf.remove(newFile);
-        } else {
-            QDir().mkpath(QFileInfo(nf).path());
-        }
-        file.copy(newFile);
-    } else {
-        return file.copy(newFile);
+        QFile(newFile).remove(newFile);
     }
 
-    return true;
+    return file.copy(newFile);
 }

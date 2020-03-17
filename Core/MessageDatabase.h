@@ -82,11 +82,11 @@ public:
     //public Q_SLOTS:
     /**
      * @brief 保存一条聊天记录
-     * @param roleType 聊天对象的实例的角色类型
      * @param item 消息
+     * @param chatObj 聊天对象的实例
      * @return 保存成功返回true，并且将成功后的消息id保存到item中，保存失败返回false
      */
-    bool saveAChatRecord(IChatObject::ERoleType roleType, IChatItem* item);
+    bool saveAChatRecord(IChatItem* item, IChatObject* chatObj);
 
     QSqlDatabase& getDatabase(void) { return mDatabase; }
 
