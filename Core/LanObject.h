@@ -15,6 +15,7 @@ public:
 
     void fromJson(const QJsonObject& json, bool cache = true) override;
     QJsonObject toJson() override;
+    bool updateLocalData() override;
 
     /**
      * @brief 检测局域网环境

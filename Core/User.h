@@ -39,6 +39,8 @@ public:
      */
     inline void addChatObject(IChatObject* chatObj)
     {
+        assert(nullptr != chatObj);
+
         if (chatObj->parent() != this) {
             chatObj->setParent(this);
         }
@@ -61,6 +63,15 @@ public:
      * 置文件，如果依旧没有搜索到才会返回nullptr
      */
     LanObject* getLanObjectById(unsigned int id);
+
+    /**
+     * @brief 通过md5获取我的局域网
+     * @param md5 局域网md5
+     * @return 如果md5不存在将返回nullptr，否则返回局域网聊天对象
+     * @note 该方法是动态加载局域网对象，即如果内存中不存在则会到局域网缓存文件夹搜索对应的配
+     * 置文件，如果依旧没有搜索到才会返回nullptr
+     */
+    LanObject* getLanObjectByMd5(const QString& md5);
 
     static QObject* QmlSingletonTypeProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
     {

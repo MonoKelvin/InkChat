@@ -73,6 +73,17 @@ void MessageList::moveMessage(int from, int to)
     emit layoutChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
 }
 
+bool MessageList::isChatObjectExists(IChatObject* chatObj)
+{
+    for (int i = 0; i < mMessages.size(); i++) {
+        if (mMessages.at(i)->mChatObject == chatObj) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
 {
     const int sourceIndex = getRow(message);
@@ -176,14 +187,15 @@ void MessageList::ariseMessage(MessageItem* message)
     moveMessage(sourceIndex, targetIndex);
 }
 
-void MessageList::fetchMore(const QModelIndex&)
+void MessageList::fetchMore(const QModelIndex& index)
 {
+    Q_UNUSED(index)
+
+    MessageDatabase::Instance()->detectLanEnvironment(this);
 }
 
 void MessageList::load(void)
 {
-    isFileExists(AppSettings::MessageCacheFile(), true);
-
     MessageDatabase::Instance()->loadMessageItems(this);
     MessageDatabase::Instance()->loadLanMessageItems(this);
 

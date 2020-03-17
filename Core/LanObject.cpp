@@ -1,6 +1,7 @@
 ﻿#include "LanObject.h"
 
 #include <AppSettings.h>
+#include <User.h>
 
 #include <QDir>
 #include <QJsonDocument>
@@ -18,7 +19,7 @@ void LanObject::fromJson(const QJsonObject& json, bool cache) noexcept(false)
 
     mMacAddress = json.value(QLatin1String("mac")).toString();
 
-    if (!cache) {
+    if (cache) {
         const auto fileName = AppSettings::LanDataDir() + mMD5;
         if (!isFileExists(fileName, true)) {
             throw tr("局域网数据文件创建失败");
@@ -47,6 +48,27 @@ QJsonObject LanObject::toJson()
     return json;
 }
 
+bool LanObject::updateLocalData()
+{
+    const auto fileName = AppSettings::LanDataDir() + mMD5;
+
+    if (!isFileExists(fileName, true)) {
+        return false;
+    }
+
+    QFile file(fileName);
+    if (file.open(QFile::WriteOnly | QFile::Text)) {
+        QJsonDocument jsonDoc(toJson());
+        if (file.write(jsonDoc.toJson(QJsonDocument::Compact)) == -1) {
+            file.close();
+            return false;
+        }
+    }
+
+    file.close();
+    return true;
+}
+
 LanObject* LanObject::DetectLanEnvironment()
 {
     QString mac, netName;
@@ -58,40 +80,22 @@ LanObject* LanObject::DetectLanEnvironment()
     }
 
     const auto& md5 = encryptTextByMD5(addr + mac);
-    const auto& fileNames = QDir(AppSettings::LanDataDir()).entryList(QDir::Files);
 
-    // 检测到局域网并检查是否有缓存，有则加载缓存数据
-    for (auto i : fileNames) {
-        if (i == md5) {
-            QFile file(AppSettings::LanDataDir() + i);
-            // 文件打开失败
-            if (!file.open(QFile::ReadOnly | QFile::Text)) {
-                break;
-            }
+    // 先从缓存中获取
+    LanObject* lan = User::Instance()->getLanObjectByMd5(md5);
 
-            // 文件解析失败
-            QJsonParseError jsonErr;
-            const auto jsonDoc = QJsonDocument::fromJson(file.readAll(), &jsonErr);
-            if (jsonErr.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
-                break;
-            }
+    // 检测到一个新的局域网
+    if (nullptr == lan) {
+        lan = new LanObject;
 
-            LanObject* lan = new LanObject;
-            lan->fromJson(jsonDoc.object());
+        // WARINING: 必须加到用户列表，否则刷新消息视图将出现重复对象
+        User::Instance()->addChatObject(lan);
 
-            return lan;
-        }
+        lan->mMD5 = md5;
+        lan->mHostAddress = addr;
+        lan->mMacAddress = mac;
+        lan->updateLocalData();
     }
 
-    // 有局域网但缓存不存在，则新建一个
-    LanObject* lan = new LanObject;
-
-    QJsonObject json;
-    json.insert(QLatin1String("md5"), md5);
-    json.insert(QLatin1String("hostAddress"), addr);
-    json.insert(QLatin1String("mac"), mac);
-    json.insert(QLatin1String("top"), false);
-
-    lan->fromJson(json);
     return lan;
 }

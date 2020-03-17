@@ -13,7 +13,7 @@ class TextChatItem : public IChatItem
     Q_OBJECT
     Q_PROPERTY(QString text READ getText CONSTANT)
 
-    CHATITEM_CLASS(TextChatItem)
+    CHATITEM_OBJECT(TextChatItem)
 
 public:
     inline const QString getText() const { return mText; }
@@ -27,7 +27,7 @@ public:
         return ChatType;
     }
 
-    Q_INVOKABLE inline const QString qmlFile() override
+    inline const QString qmlFile() override
     {
         return QStringLiteral("TextChatItem.qml");
     }

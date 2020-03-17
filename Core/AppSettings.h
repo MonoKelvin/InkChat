@@ -44,7 +44,7 @@ public:
     // 局域网数据文件夹
     inline static const QString LanDataDir()
     {
-        return UserDataDir() + QStringLiteral("/LANs/");
+        return UserDataDir() + QStringLiteral("LANs/");
     }
 
     // 局域网配置索引文件

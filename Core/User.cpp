@@ -117,6 +117,33 @@ LanObject* User::getLanObjectById(unsigned int id)
     return lan;
 }
 
+LanObject* User::getLanObjectByMd5(const QString& md5)
+{
+    for (int i = 0; i < mMyChatObjects.size(); i++) {
+        if (mMyChatObjects.at(i)->getRoleType() == LAN
+            && mMyChatObjects.at(i)->getMD5() == md5) {
+            return static_cast<LanObject*>(mMyChatObjects[i]);
+        }
+    }
+
+    QFile file(AppSettings::LanDataDir() + md5);
+    LanObject* lan = nullptr;
+
+    // 动态加载
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QJsonParseError err;
+        const auto& doc = QJsonDocument::fromJson(file.readAll(), &err);
+        if (err.error == QJsonParseError::NoError && doc.isObject()) {
+            lan = new LanObject(this);
+            lan->fromJson(doc.object());
+            mMyChatObjects.append(lan);
+        }
+    }
+    file.close();
+
+    return lan;
+}
+
 bool User::hasCache()
 {
     // 当前登录的用户

@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.14
 import QtQuick.Controls 2.3
+import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.0
 import MessageListModel 1.0
 import ChatObject 1.0
@@ -76,9 +77,7 @@ Rectangle {
         }
 
         onLoading: {
-            var i = 0
-            while (i++ < 100000000)
-                i++
+            listModel.fetchMore()
 
             loadState = AdvancedList.Loaded
         }
@@ -181,7 +180,7 @@ Rectangle {
                     font.pixelSize: appTheme.smallTextSize
                     color: appTheme.subTextColor
                     elide: Text.ElideRight
-                    text: msgItem.message
+                    text: msgItem.message === '' ? qsTr("[暂无最近消息]") : msgItem.message
                 }
             }
 
@@ -258,34 +257,30 @@ Rectangle {
         //z: 30
     }
 
-    Item {
+    RowLayout {
         id: toolBar
         width: parent.width
         anchors.top: title.bottom
         height: searchBox.height + 2 * appTheme.stdSpacing
-        //z: 31
 
         InputBox {
             id: searchBox
             placeholderText: qsTr("搜索...")
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                right: toolBtn.left
-                leftMargin: appTheme.stdSpacing
-                rightMargin: appTheme.tinySpacing
-            }
             iconSource: "qrc:/icons/lightTheme/24x24/search.png"
+            Layout.fillWidth: true
+            Layout.minimumHeight: appTheme.stdWidgetHeight
+            Layout.margins: appTheme.stdSpacing
+            Layout.alignment: Qt.AlignVCenter
         }
 
-        StyleButton {
+        /*StyleButton {
             id: toolBtn
             anchors.right: parent.right
             anchors.rightMargin: appTheme.stdSpacing
             anchors.verticalCenter: parent.verticalCenter
             width: appTheme.stdWidgetHeight
             height: appTheme.stdWidgetHeight
-        }
+        }*/
     }
 
     /*StyleButton {

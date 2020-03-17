@@ -23,6 +23,31 @@ public:
     explicit IChatObject(QObject* parent = nullptr);
     virtual ~IChatObject();
 
+    /**
+     * @brief 更新标志，用于区分哪些数据需要进行更新
+     */
+    /*enum EUpdateFlag {
+        UF_MD5 = 0x00000001,
+        UF_Gender = 0x00000002,
+        UF_IsTop = 0x00000004,
+        UF_RoleType = 0x00000008,
+        UF_NickName = 0x00000010,
+        UF_Signature = 0x00000020,
+        UF_OnlineState = 0x00000040,
+        UF_HostAddress = 0x00000080,
+        UF_CustomFlag1 = 0x00000100,
+        UF_CustomFlag2 = 0x00000200,
+        UF_CustomFlag3 = 0x00000400,
+        UF_CustomFlag4 = 0x00000800,
+        UF_CustomFlag5 = 0x00001000,
+        UF_CustomFlag6 = 0x00002000,
+        UF_CustomFlag7 = 0x00004000,
+        UF_CustomFlag8 = 0x00008000,
+        UF_CustomFlag9 = 0x00010000,
+        UF_CustomFlag10 = 0x00020000,
+    };
+    Q_ENUM(EUpdateFlag)*/
+
     enum EOnlineState {
         Online,
         Offline,
@@ -136,10 +161,16 @@ public:
      */
     virtual QJsonObject toJson(/*bool fetchIfNull = true*/);
 
-    // 加密文件方法
+    // TODO: 加密文件方法
     //typedef bool (*EncryptFileFunc)(class QFile*);
-    // 解密文件方法
+    // TODO: 解密文件方法
     //typedef const QByteArray (*DecryptFileFunc)(QFile*);
+
+    /**
+     * @brief 更新本地数据
+     * @return 更新成功返回true，否则返回false。默认返回true
+     */
+    virtual bool updateLocalData() { return true; }
 
 protected Q_SLOTS:
     /**
@@ -149,15 +180,6 @@ protected Q_SLOTS:
      * @note 默认保存在/data/${user_id}/cache/avatar/下
      */
     virtual void cacheAvatar(EAvatarSize size = AvatarSizeThumb);
-
-    /**
-     * @brief 更新json文件
-     * @param fileName json文件名，包括路径和后缀
-     * @param df 解密函数
-     * @return 更新失败返回true，否则返回false
-     * TODO：提供加解密方法指针
-     */
-    //virtual bool updateJson(const QString& fileName, DecryptFileFunc df = nullptr);
 
 Q_SIGNALS:
     /** 信号：当头像缓存（可能缓存失败）后发送的信号

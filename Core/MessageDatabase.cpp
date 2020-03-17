@@ -19,7 +19,7 @@ const QString SqlQueryMsgItems = QStringLiteral("select uid,roleType,unreadMsgCo
 // 查询与用户id的聊天记录
 const QString SqlQueryChatById = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
 // 插入一条通知消息
-const QString SqlInsertMessageItem = QStringLiteral("insert into message values(?,?,?,?,?,?)");
+const QString SqlInsertMessageItem = QStringLiteral("insert into message values(?,?,?,?,?)");
 // 插入一条聊天记录
 const QString SqlInsertChatRecord = QStringLiteral("insert into chatrecord (uid,type,isMe,time,data) values (?,?,?,?,?)");
 // 更新阅读标志
@@ -129,7 +129,7 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         const auto chatObjId = query.value(0).toUInt();
 
         // TODO: 添加更多的聊天对象
-        switch (roleType & IChatObject::AllUser) {
+        switch (roleType) {
         case IChatObject::Friend:
             item->setChatObject(User::Instance()->getFriendById(chatObjId));
             break;
@@ -154,58 +154,14 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
     return true;
 }
 
-bool MessageDatabase::loadLanMessageItems(MessageList* list)
+void MessageDatabase::loadLanMessageItems(MessageList* list)
 {
     selectDatabaseFile(IChatObject::LAN);
 
     QSqlQuery query;
-    LanObject* lan = LanObject::DetectLanEnvironment();
-    //qDebug() << lan->getHostAddress() << lan->getMacAddress();
-
-    // 加载实时连接的局域网
-    if (nullptr != lan) {
-        MessageItem* item = nullptr;
-
-        // 如果有检测到局域网并且未被缓存，即没有分配id，则分配一个id，再保存到数据库
-        if (lan->getID() == 0) {
-            const QString SqlGetMaxId = QStringLiteral("select max(uid) from message");
-            if (!query.exec(SqlGetMaxId)) {
-                delete lan;
-                lan = nullptr;
-                emit list->failed(tr("无法加载局域网消息"));
-                return false;
-            }
-            lan->setID(query.value(0).toUInt() + 1);
-
-            // 设置索引文件
-            {
-                QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
-                index.setValue(QString::number(lan->getID()), encryptTextByMD5(lan->getHostAddress() + lan->getMacAddress()));
-            }
-
-            if (query.prepare(SqlInsertMessageItem)) {
-                query.addBindValue(lan->getID());
-                query.addBindValue(IChatObject::LAN);
-                query.addBindValue(0);
-                query.addBindValue(true);
-                query.addBindValue("");
-                query.addBindValue("");
-                query.exec();
-            } else {
-                emit list->failed(tr("通知消息未能成功保存到数据库，VALUE=") + QString::number(lan->getID()));
-            }
-        }
-
-        User::Instance()->addChatObject(lan);
-
-        item = new MessageItem;
-        item->setChatObject(lan);
-        list->appendMessage(item);
-    }
-
-    // 加载缓存的局域网对象
     if (!query.exec(SqlQueryMsgItems)) {
-        return false;
+        emit list->failed(query.lastError().text());
+        return;
     }
     while (query.next()) {
         MessageItem* item = new MessageItem;
@@ -216,7 +172,7 @@ bool MessageDatabase::loadLanMessageItems(MessageList* list)
         if (item->mChatObject.isNull()) {
             delete item;
             item = nullptr;
-            return false;
+            continue;
         }
 
         item->mUnreadMsgCount = query.value(2).toInt();
@@ -227,7 +183,8 @@ bool MessageDatabase::loadLanMessageItems(MessageList* list)
         list->appendMessage(item);
     }
 
-    return true;
+    // WARNING: 必须在加载完所有缓存数据后才能调用
+    detectLanEnvironment(list);
 }
 
 bool MessageDatabase::updateReadFlag(MessageItem* item)
@@ -248,7 +205,7 @@ bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
     selectDatabaseFile(item->mChatObject->getRoleType());
 
     QSqlQuery q;
-    if (q.exec(SqlUpdateReadFlag.arg(item->mUnreadMsgCount).arg(item->mChatObject->getID()))) {
+    if (q.exec(SqlUpdateUnreadMsgCount.arg(item->mUnreadMsgCount).arg(item->mChatObject->getID()))) {
         return true;
     }
 
@@ -286,8 +243,10 @@ bool MessageDatabase::loadChatItems(ChatView* chatView, IChatObject* chatObj)
     return true;
 }
 
-bool MessageDatabase::saveAChatRecord(IChatItem* item)
+bool MessageDatabase::saveAChatRecord(IChatObject::ERoleType roleType, IChatItem* item)
 {
+    selectDatabaseFile(roleType);
+
     QSqlQuery query;
     if (!query.prepare(SqlInsertChatRecord)) {
         return false;
@@ -305,4 +264,56 @@ bool MessageDatabase::saveAChatRecord(IChatItem* item)
 
     item->mChatId = query.lastInsertId().toInt();
     return true;
+}
+
+void MessageDatabase::detectLanEnvironment(MessageList* list)
+{
+    LanObject* lan = LanObject::DetectLanEnvironment();
+
+    // 加载实时连接的局域网
+    if (nullptr != lan) {
+        // 如果该局域网对象已经在聊天列表中就直接返回
+        if (list->isChatObjectExists(lan)) {
+            return;
+        }
+
+        // 如果有检测到局域网并且未被缓存，即没有分配id，则分配一个id，再保存到数据库
+        if (lan->getID() == 0) {
+            selectDatabaseFile(IChatObject::LAN);
+
+            QSqlQuery query;
+            if (query.exec(QStringLiteral("select max(uid) from message"))) {
+                lan->setID(query.value(0).toUInt() + 1);
+            } else {
+                // 释放内存
+                delete lan;
+                lan = nullptr;
+
+                emit list->failed(tr("无法存储新的局域网数据，请尝试清理缓存！"));
+                return;
+            }
+
+            // 添加索引
+            {
+                QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
+                index.setValue(QString::number(lan->getID()), encryptTextByMD5(lan->getHostAddress() + lan->getMacAddress()));
+            }
+
+            query.prepare(SqlInsertMessageItem);
+            query.addBindValue(lan->getID());
+            query.addBindValue(true);
+            query.addBindValue(IChatObject::LAN);
+            query.addBindValue(0);
+            query.addBindValue(true);
+            if (!query.exec()) {
+                qDebug() << query.lastError();
+                emit list->failed(tr("数据库未能成功建立局域网记录，IP=") + lan->getHostAddress());
+            }
+        }
+
+        MessageItem* item = new MessageItem;
+        item->setChatObject(lan);
+
+        list->appendMessage(item);
+    }
 }

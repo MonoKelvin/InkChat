@@ -12,6 +12,7 @@ IChatObject::IChatObject(QObject* parent)
     : QObject(parent)
     , mID(0)
     , mGender('-')
+    , mIsTop(false)
     , mRoleType(AllUser)
     , mOnlineState(NoneState)
 {
@@ -54,42 +55,17 @@ void IChatObject::cacheAvatar(EAvatarSize size)
         emit avatarCached(false, QStringLiteral("DATA_CACHE_FAILED: VALUE=avatar"));
     });
 }
-/*
-bool IChatObject::updateJson(const QString& fileName, DecryptFileFunc df)
-{
-    if (!isFileExists(fileName, true)) {
-        return false;
-    }
 
-    QFile file(fileName);
-    const auto& data = df ? df(&file) : QByteArray();
-
-    if (df && data.isEmpty()) {
-        return false;
-    }
-
-    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QJsonDocument jsonDoc(toJson());
-        if (file.write(jsonDoc.toJson(QJsonDocument::Compact)) == -1) {
-            file.close();
-            return false;
-        }
-    }
-
-    file.close();
-    return true;
-}
-*/
 void IChatObject::fromJson(const QJsonObject& json, bool cache)
 {
     Q_UNUSED(cache)
 
     mID = json.value(QLatin1String("id")).toString().toUInt();
     mMD5 = json.value(QLatin1String("md5")).toString();
-    mIsTop = json.value(QLatin1String("top")).toString().toInt();
+    mIsTop = json.value(QLatin1String("top")).toBool(false);
     mGender = json.value(QLatin1String("gender")).toString(QStringLiteral("-")).front().toLatin1();
     mNickName = json.value(QLatin1String("nickName")).toString();
-    mSignature = json.value(QLatin1String("signature")).toString();
+    mSignature = json.value(QLatin1String("signature")).toString(tr("还没有任何简介"));
     mHostAddress = json.value(QLatin1String("hostAddress")).toString();
 }
 

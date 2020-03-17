@@ -51,9 +51,9 @@ public:
     /**
      * @brief 加载的局域网消息到列表中
      * @param list 消息列表 @see MessageList
-     * @return bool 加载成功返回true，否则返回false
+     * @note 任何错误将通过list的failed信号发出
      */
-    bool loadLanMessageItems(MessageList* list);
+    void loadLanMessageItems(MessageList* list);
 
     /**
      * @brief 更新阅读消息标记
@@ -82,22 +82,27 @@ public:
     //public Q_SLOTS:
     /**
      * @brief 保存一条聊天记录
+     * @param roleType 聊天对象的实例的角色类型
      * @param item 消息
      * @return 保存成功返回true，并且将成功后的消息id保存到item中，保存失败返回false
      */
-    bool saveAChatRecord(IChatItem* item);
+    bool saveAChatRecord(IChatObject::ERoleType roleType, IChatItem* item);
 
     QSqlDatabase& getDatabase(void) { return mDatabase; }
+
+public Q_SLOTS:
+    /**
+     * @brief 检测局域网环境
+     * @param list 检测到局域网后就添加到的消息列表
+     * @note 如果缓存中已经有被检测到的局域网，则加载缓存数据（如果列表中已经加载则什么也不做）。
+     * 否则保存到数据库中并添加到消息列表中，同时在局域网数据目录下添加该新局域网的索引。
+     * @note 任何错误信息通过list的failed信号发出
+     */
+    void detectLanEnvironment(MessageList* list);
 
 private:
     Q_DISABLE_COPY_MOVE(MessageDatabase)
     MessageDatabase();
-
-    /**
-     * @brief 加载局域网环境
-     * @param 加载后要添加到的消息列表
-     */
-    //LanObject* loadLanEnvironment(MessageList* list);
 
     /**
      * @brief 选择数据库文件

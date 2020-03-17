@@ -6,13 +6,13 @@
 #include <QDateTime>
 #include <QPointer>
 
-/** 继承自IChatItem的子类必须使用该宏 */
-#define CHATITEM_CLASS(_ClassName_) \
-private:                            \
-    friend class ChatView;          \
-                                    \
-public:                             \
-    Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr);
+/** 继承自IChatItem的子类必须使用该宏，否则无法注册到聊天视图中 */
+#define CHATITEM_OBJECT(_ClassName_)                             \
+public:                                                          \
+    Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr); \
+                                                                 \
+private:                                                         \
+    friend class ChatView;
 
 /**
  * @brief 聊天消息基类，可以实现自定义聊天内容。比如消息气泡，文件、图片、视频等聊天内容
@@ -33,7 +33,7 @@ private:
 
 public:
     explicit IChatItem(QObject* parent = nullptr);
-    explicit IChatItem(const IChatItem& item);
+    IChatItem(const IChatItem& item);
     virtual ~IChatItem();
 
     /**
@@ -105,7 +105,7 @@ public:
      * @return 返回qml组件文件。
      * @note 该组件文件必须包含在qrc文件中
      */
-    virtual const QString qmlFile() = 0;
+    Q_INVOKABLE virtual const QString qmlFile() = 0;
 
     /**
      * @brief 接收数据抽象方法，旨在从网络信道接收数据，解析后给成员赋值。

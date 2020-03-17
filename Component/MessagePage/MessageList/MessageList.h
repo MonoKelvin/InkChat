@@ -102,6 +102,13 @@ public:
     }
 
     /**
+     * @brief 是否存在与指定聊天对象的消息项
+     * @param chatObj 聊天对象实例
+     * @return 如果存在与指定聊天对象的消息项则返回true，否则返回false
+     */
+    bool isChatObjectExists(IChatObject* chatObj);
+
+    /**
      * @brief 设置消息项的是否置顶
      * @param message 消息项
      * @param isTop 是否置顶，true时置顶，否则为取消置顶
@@ -138,7 +145,7 @@ Q_SIGNALS:
     void failed(const QString&);
 
 public Q_SLOTS:
-    void fetchMore(const QModelIndex&) override;
+    void fetchMore(const QModelIndex& index = QModelIndex()) override;
 
     /**
      * @brief 加载缓存的聊天数据

@@ -42,6 +42,7 @@ qint64 MessageManager::sendMessage(ChatView* view, IChatObject* chatObj, int typ
     QDataStream out(&outData, QIODevice::WriteOnly);
 
     // 填充数据
+    out << chatObj->getRoleType();
     out << User::Instance()->getID();
     out << User::Instance()->getHostAddress();
     out << User::Instance()->getNickName();
@@ -60,7 +61,7 @@ qint64 MessageManager::sendMessage(ChatView* view, IChatObject* chatObj, int typ
     // 显示到视图中并保存到本地数据库
     if (item) {
         view->appendChat(item);
-        MessageDatabase::Instance()->saveAChatRecord(item);
+        MessageDatabase::Instance()->saveAChatRecord(chatObj->getRoleType(), item);
         item->setSendState(IChatItem::Succeed);
     }
 
@@ -87,13 +88,14 @@ void MessageManager::processPendingDatagrams()
 
         // 处理数据
         QDataStream in(&datagram, QIODevice::ReadOnly);
+        IChatObject::ERoleType roleType;
         unsigned int senderId = 0;
         QString addr;
         QString name;
         int type;
         QVariant data;
         QDateTime time;
-        in >> senderId >> addr >> name >> type >> data >> time;
+        in >> roleType >> senderId >> addr >> name >> type >> data >> time;
 
         // 构建到视图
         IChatItem* item = ChatView::BuildChatItem(type, senderId, time, data);
@@ -109,6 +111,6 @@ void MessageManager::processPendingDatagrams()
         item->mChatObject->setHostAddress(addr);
 
         // TODO: 使用消息队列来完成
-        emit received(item);
+        emit received(roleType, item);
     }
 }

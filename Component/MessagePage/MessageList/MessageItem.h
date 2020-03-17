@@ -29,7 +29,6 @@ public:
      * @brief 设置聊天对象
      * @param chatObject 聊天对象类，内容不可为空
      * @see void setChatObject(IChatObject* chatObject)
-     * @warning 该方法只可使用一次。即之后不能够再设置聊天对象类
      */
     void setChatObject(QSharedPointer<IChatObject> chatObject);
 
@@ -37,7 +36,6 @@ public:
      * @brief 设置聊天对象
      * @param chatObject 聊天对象类，内容不可为空
      * @see void setChatObject(QSharedPointer<IChatObject> chatObject)
-     * @warning 该方法只可使用一次。即之后不能够再设置聊天对象类
      */
     inline void setChatObject(IChatObject* chatObject)
     {

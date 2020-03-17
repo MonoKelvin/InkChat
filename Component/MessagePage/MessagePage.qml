@@ -105,7 +105,7 @@ Item {
 
     MessageList {
         id: messageList
-        width: 300
+        width: 280
         height: parent.height
         anchors.left: parent.left
 
