@@ -92,6 +92,7 @@ LanObject* LanObject::DetectLanEnvironment()
         User::Instance()->addChatObject(lan);
 
         lan->mMD5 = md5;
+        lan->mNickName = addr;
         lan->mHostAddress = addr;
         lan->mMacAddress = mac;
         lan->updateLocalData();

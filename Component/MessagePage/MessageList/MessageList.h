@@ -14,6 +14,7 @@ class MessageList : public QAbstractListModel {
     Q_DISABLE_COPY_MOVE(MessageList)
 
     friend class MessageDatabase;
+    friend class MessageManager;
 
 public:
     explicit MessageList(QObject* parent = nullptr);
@@ -139,6 +140,8 @@ public:
 
     MessageItem* getCurrentSelectedItem(void) const;
 
+    static QSharedPointer<IChatObject> GetCurrentChatObject(void);
+
 Q_SIGNALS:
     void saved();
     void loaded();
@@ -197,7 +200,7 @@ private:
      * @brief 当前被选中的item
      * @note 方便更新列表时也更新item索引，同时判断当前打开的聊天视图，在收发数据时数据有用
      */
-    QPointer<MessageItem> mCurrentSelectedItem;
+    static QPointer<MessageItem> mCurrentSelectedItem;
 };
 
 #endif // MESSAGELIST_H

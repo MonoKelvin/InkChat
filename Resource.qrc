@@ -20,5 +20,9 @@
         <file>icons/lightTheme/24x24/wifi_off.png</file>
         <file>icons/lightTheme/24x24/info_card.png</file>
         <file>icons/lightTheme/24x24/check.png</file>
+        <file>icons/lightTheme/24x24/read.png</file>
+        <file>icons/lightTheme/24x24/unread.png</file>
+        <file>icons/lightTheme/24x24/top.png</file>
+        <file>icons/lightTheme/24x24/untop.png</file>
     </qresource>
 </RCC>

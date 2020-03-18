@@ -77,7 +77,7 @@ ApplicationWindow {
             lanModelBadge.visible = false
 
             ibAccount.placeholderText = qsTr("账号（只支持QQ邮箱）")
-            ibPassword.placeholderText = qsTr("密码（6-16位数字或字母）")
+            ibPassword.placeholderText = qsTr("密码（6-16个字符）")
             break
         default:
             window.close()
@@ -248,7 +248,7 @@ ApplicationWindow {
                 placeholderText: qsTr("昵称（1-16个字符）")
                 maximumLength: 16
                 visible: false
-                iconSource: "qrc:/icons/lightTheme/24x24/person.png"
+                iconSource: appTheme.icon("person")
             }
             InputBox {
                 id: ibAccount
@@ -258,7 +258,7 @@ ApplicationWindow {
                 validator: RegExpValidator {
                     regExp: /[0-9a-zA-Z]{1,13}@qq\.com/
                 }
-                iconSource: "qrc:/icons/lightTheme/24x24/info_card.png"
+                iconSource: appTheme.icon("info_card")
             }
             InputBox {
                 id: ibPassword
@@ -267,7 +267,7 @@ ApplicationWindow {
                 placeholderText: qsTr("密码")
                 echoMode: TextInput.Password
                 maximumLength: 16
-                iconSource: "qrc:/icons/lightTheme/24x24/lock.png"
+                iconSource: appTheme.icon("lock")
             }
             InputBox {
                 id: ibRecheckPwd
@@ -276,7 +276,7 @@ ApplicationWindow {
                 echoMode: TextInput.Password
                 maximumLength: 16
                 visible: false
-                iconSource: "qrc:/icons/lightTheme/24x24/check.png"
+                iconSource: appTheme.icon("check")
             }
 
             Badge {

@@ -40,19 +40,24 @@ public:
     /**
      * @brief 发送消息
      * @param view 聊天视图。消息将被发送到UI界面呈现
-     * @param chatObj 聊天对象
      * @param type 消息类型
      * @param data 要发送的消息数据
      * @return qint64 返回发送成功的字节数，如果失败则返回-1
      */
-    qint64 sendMessage(ChatView* view, IChatObject* chatObj, int type, const QVariant& data);
+    qint64 sendMessage(ChatView* view, int type, const QVariant& data);
 
     /**
-     * @brief 加载聊天记录
+     * @brief 加载聊天记录到指定视图
      * @param view 聊天视图
-     * @param chatObj 聊天对象
      */
-    void loadChatRecords(ChatView* view, IChatObject* chatObj);
+    void loadChatRecords(ChatView* view);
+
+    /**
+     * @brief 保存一条聊天记录到指定视图
+     * @param view 聊天视图
+     * @param item 聊天记录
+     */
+    void saveAChatRecord(ChatView* view, IChatItem* item) const;
 
 private Q_SLOTS:
     /**
@@ -74,23 +79,16 @@ private Q_SLOTS:
     //void update(unsigned int chatObjId);
 
 Q_SIGNALS:
-
     /**
-     * @brief 信号：接收到数据
+     * @brief 信号：接收到聊天的数据
      * @param IChatItem* 接收到数据并封装好的聊天项，可能为nullptr
-     * @param IChatObject::ERoleType 来自与聊天对象的实例的角色类型
+     * @param const QVariantMap& 发送方的来源信息。用于消息分发使用。可以根据内容筛选是
+     * 否为聊天视图所接收的消息
      * @note 通常该信号会关联多个槽函数，即分发消息。在视图中接收到信号后判断该聊天消息是否
      * 为自己需要的，如果需要则接收处理，否则可以抛弃。
+     * @see SourceInfoMap
      */
-    void received(IChatItem*, IChatObject::ERoleType);
-
-    /**
-     * @brief 信号：接收到数据
-     * @param IChatItem* 接收到数据并封装好的聊天项，可能为nullptr
-     * @note 通常该信号会关联多个槽函数，即分发消息。在视图中接收到信号后判断该聊天消息是否
-     * 为自己需要的，如果需要则接收处理，否则可以抛弃。
-     */
-    void receivedFromMPC(IChatItem*, const QString&);
+    void received(IChatItem*, const QVariantMap&);
 
 private:
     /** 

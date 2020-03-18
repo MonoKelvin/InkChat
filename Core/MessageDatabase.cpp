@@ -15,11 +15,9 @@
 #include <QSqlQuery>
 
 // 查询消息
-const QString SqlQueryMsgItems = QStringLiteral("select * from GetMsgItems");
-// 查询与单用户的聊天记录
-const QString SqlQueryChatsForSinglePerson = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 order by id desc limit %2,%3");
-// 查询多人聊天的聊天记录
-const QString SqlQueryChatsForMultiPerson = QStringLiteral("select id,type,isMe,time,data from chatrecord where uid=%1 and msgId=%2 order by id desc limit %3,%4");
+const QString SqlQueryMsgItems = QStringLiteral("select * from getmessageitems");
+// 查询用户的聊天记录
+const QString SqlQueryChatRecord = QStringLiteral("select id,type,isMe,time,data from chatrecord where msgId=%1 order by id desc limit %2,%3");
 // 插入一条通知消息
 const QString SqlInsertMessageItem = QStringLiteral("insert into message values (?,?,?,?,?)");
 // 插入一条聊天记录
@@ -68,7 +66,7 @@ QSqlError MessageDatabase::initDatabase()
     // 消息表
     const auto SqlCreateMessageItemTable = QLatin1String(R"(
         create table message(
-            uid int unsigned primary key,
+            uid integer unsigned primary key,
             chat boolean defult '0',
             roleType smallint,
             unreadMsgCount int default 1,
@@ -78,23 +76,24 @@ QSqlError MessageDatabase::initDatabase()
     // 聊天记录表
     const auto SqlCreateChatRecordTable = QLatin1String(R"(
         create table chatrecord(
-            id int primary key autoincrement,
-            msgid int unsigned,
-            uid int unsigned,
+            id integer primary key autoincrement,
+            msgId integer unsigned,
+            uid integer unsigned,
             type int default 1,
             isMe boolean,
             time datetime,
-            data text
+            data text,
+            foreign key (msgid) references message (uid) on delete cascade
         ))");
 
     // 消息视图
     const auto SqlCreateViewGetMsgItems = QLatin1String(R"(
-        create view GetMsgItems as
-        select uid,roleType,unreadMsgCount,readFlag,time,data from (
-            select m.uid,roleType,unreadMsgCount,readFlag,time,data,chat
+            create view getmessageitems as select * from (
+            select m.uid,roleType,unreadMsgCount,readFlag,time,`data`
             from message as m left outer join chatrecord as c
-            on m.uid=c.uid and c.id = (select max(id) from chatrecord where uid=m.uid)
-        ) as x where chat='1')");
+            on m.uid=c.msgId and m.chat='1'
+            and c.id=(select max(id) from chatrecord where msgId=m.uid)) as x
+        )");
 
     QSqlQuery query;
     if (!query.exec(SqlCreateMessageItemTable)) {
@@ -216,22 +215,15 @@ bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
     return false;
 }
 
-bool MessageDatabase::loadChatItems(ChatView* chatView, IChatObject* chatObj)
+bool MessageDatabase::loadChatItems(ChatView* chatView)
 {
+    const auto& chatObj = chatView->getChatObject();
     selectDatabaseFile(chatObj->getRoleType());
 
     QSqlQuery query;
 
-    {
-        QString sql = SqlQueryChatsForSinglePerson.arg(chatObj->getID());
-        if (chatObj->getRoleType() & IChatObject::MultiPerson) {
-            sql = sql.arg(chatObj->getID());
-        } else {
-            sql = sql.arg(chatView->mChats.size()).arg(CHAT_RECORD_FECTH_COUNT);
-        }
-        if (!query.exec(sql)) {
-            return false;
-        }
+    if (!query.exec(SqlQueryChatRecord.arg(chatObj->getID()).arg(chatView->mChats.size()).arg(CHAT_RECORD_FECTH_COUNT))) {
+        return false;
     }
 
     int type = 0;

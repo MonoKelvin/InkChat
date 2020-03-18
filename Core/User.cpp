@@ -98,7 +98,7 @@ LanObject* User::getLanObjectById(unsigned int id)
         }
     }
 
-    QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
+    const QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
     QFile file(AppSettings::LanDataDir() + index.value(QString::number(id)).toString());
     LanObject* lan = nullptr;
 

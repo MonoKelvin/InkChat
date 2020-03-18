@@ -28,7 +28,6 @@ MessageItem::~MessageItem()
     if (!mChatObject.isNull()) {
         mChatObject.clear();
     }
-
     qDebug() << "MessageItem Destroyed" << this;
 }
 

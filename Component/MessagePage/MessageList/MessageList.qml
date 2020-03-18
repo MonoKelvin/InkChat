@@ -45,10 +45,16 @@ Rectangle {
                     deselectAction.enabled = false
                 }
 
-                readFlagAction.text = msgItem.readFlag ? qsTr("标为未读") : qsTr(
-                                                             "标为已读")
-                topAction.text = msgItem.chatObject.isTop ? qsTr("取消置顶") : qsTr(
-                                                                "置顶")
+                readFlagAction.text = msgItem.readFlag ? qsTr("标为未读") : qsTr("标为已读")
+                readFlagAction.icon.source = appTheme.icon(msgItem.readFlag ? "unread" : "read")
+
+                if(msgItem.chatObject.isTop){
+                    topAction.text = qsTr("取消置顶")
+                    topAction.icon.source = appTheme.icon("untop")
+                } else  {
+                    topAction.text = qsTr("置顶")
+                    topAction.icon.source = appTheme.icon("top")
+                }
             }
             Action {
                 id: readFlagAction
@@ -61,8 +67,7 @@ Rectangle {
                     listModel.setCurrentSelectedIndex(msgListView.currentIndex)
 
                     // 设置是否置顶
-                    listModel.setMessageTop(itemMenu.msgItem,
-                                            !itemMenu.msgItem.chatObject.isTop)
+                    listModel.setMessageTop(itemMenu.msgItem, !itemMenu.msgItem.chatObject.isTop)
                 }
             }
             Action {
@@ -168,9 +173,6 @@ Rectangle {
                         if (msgItem.chatObject.roleType === ChatObject.Friend
                                 && msgItem.chatObject.remark !== '')
                             return msgItem.chatObject.remark
-                        else if (msgItem.chatObject.roleType === ChatObject.LAN
-                                 && msgItem.chatObject.nickName === '')
-                            return msgItem.chatObject.hostAddress
                         return msgItem.chatObject.nickName
                     }
                 }
@@ -266,7 +268,7 @@ Rectangle {
         InputBox {
             id: searchBox
             placeholderText: qsTr("搜索...")
-            iconSource: "qrc:/icons/lightTheme/24x24/search.png"
+            iconSource: appTheme.icon("search")
             Layout.fillWidth: true
             Layout.minimumHeight: appTheme.stdWidgetHeight
             Layout.margins: appTheme.stdSpacing

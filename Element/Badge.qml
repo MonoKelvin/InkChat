@@ -5,8 +5,8 @@ Rectangle {
     property alias text: content.text
     property alias contentText: content
 
-    height: content.implicitHeight + 2
-    width: Math.max(content.implicitWidth, height)
+    implicitHeight: content.implicitHeight + 2
+    implicitWidth: Math.max(content.implicitWidth, implicitHeight)
     radius: appTheme.stdBadgeHeight / 2
     color: appTheme.primaryColor1
 

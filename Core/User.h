@@ -83,7 +83,7 @@ public:
 
     static QPointer<User> Instance()
     {
-        static QPointer<User> instance(new User);
+        static QPointer<User> instance = QPointer<User>(new User);
         return instance;
     }
 

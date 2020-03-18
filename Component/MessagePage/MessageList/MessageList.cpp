@@ -7,6 +7,8 @@
 
 #include <QSqlError>
 
+QPointer<MessageItem> MessageList::mCurrentSelectedItem;
+
 MessageList::MessageList(QObject* parent)
     : QAbstractListModel(parent)
 {
@@ -100,6 +102,11 @@ void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
 MessageItem* MessageList::getCurrentSelectedItem() const
 {
     return mCurrentSelectedItem.data();
+}
+
+QSharedPointer<IChatObject> MessageList::GetCurrentChatObject()
+{
+    return mCurrentSelectedItem->mChatObject;
 }
 
 MessageItem* MessageList::getMessage(int index) const

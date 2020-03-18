@@ -13,13 +13,14 @@ IChatObject::IChatObject(QObject* parent)
     , mID(0)
     , mGender('-')
     , mIsTop(false)
-    , mRoleType(AllUser)
+    , mRoleType(Stranger)
     , mOnlineState(NoneState)
 {
 }
 
 IChatObject::~IChatObject()
 {
+    qDebug() << "ChatObject Destroyed: " << this;
 }
 
 const QString IChatObject::getAvatar() const

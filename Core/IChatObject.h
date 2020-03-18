@@ -62,12 +62,12 @@ public:
         Me = 0x0001,
         Friend = 0x0002,
         Stranger = 0x0004,
+        // BlackList,
         LAN = 0x0008,
         Group = 0x0010,
         SinglePerson = Me | Friend | Stranger,
         MultiPerson = LAN | Group,
-        // BlackList,
-        AllUser = Me | Friend | Stranger | LAN | Group,
+        AllUser = SinglePerson | MultiPerson,
     };
     Q_ENUM(ERoleType)
 

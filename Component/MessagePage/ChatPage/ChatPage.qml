@@ -7,19 +7,22 @@ import "qrc:/Element/"
 import "qrc:/js/js/Utility.js" as Utility
 
 Rectangle {
-    property alias titleName: titleNameText.text
-
     color: appTheme.backgroundColor
-
-    // 私有：当前聊天对象
-    property var _chatObj
 
     // 加载聊天视图，参数为聊天对象
     function loadChatRecord(chatObject) {
-        _chatObj = chatObject
+        titleNameText.text = chatObject.nickName
 
-        titleName = _chatObj.nickName
-        chatListModel.load(_chatObj)
+        switch(chatObject.roleType) {
+        case ChatObject.LAN:
+            flagBadge.text = qsTr("局域网")
+            break
+        case ChatObject.Friend:
+            flagBadge.text = qsTr("好友")
+            break
+        }
+
+        chatListModel.initLoad(chatObject)
 
         // 加载完立刻滚动到底部
         chatListView.positionViewAtEnd()
@@ -35,7 +38,7 @@ Rectangle {
 
         onLoading: {
             _oldCount = count
-            chatListModel.load(_chatObj)
+            chatListModel.fetchMore()
             loadState = AdvancedList.Loaded
         }
 
@@ -70,7 +73,7 @@ Rectangle {
             source: model.chatItem.qmlFile()
             Component.onCompleted: {
                 // 只有多人聊天才显示名称
-                if(_chatObj.roleType & ChatObject.MultiPerson)
+                if(chatListModel.chatObject.roleType & ChatObject.MultiPerson)
                     item.showNickName = 1
             }
         }
@@ -86,7 +89,7 @@ Rectangle {
             Connections {
                 target: inputer.item
                 onSendChat: {
-                    chatListModel.sendChat(_chatObj, content)
+                    chatListModel.sendChat(content)
                 }
             }
 
@@ -145,11 +148,25 @@ Rectangle {
             font.pixelSize: appTheme.titleTextSize
         }
 
+        Badge {
+            id: flagBadge
+            color: appTheme.subColor2
+            contentText.color: appTheme.primaryColor2
+            contentText.leftPadding: appTheme.tinySpacing
+            contentText.rightPadding: appTheme.tinySpacing
+            radius: appTheme.stdRadius
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: titleNameText.right
+            anchors.leftMargin: appTheme.narrowSpacing
+            height: implicitHeight + 4
+        }
+
         StyleButton {
             id: menuIconBtn
             anchors.right: parent.right
             anchors.rightMargin: appTheme.stdSpacing
             anchors.verticalCenter: parent.verticalCenter
+            icon.name: "menu"
         }
     }
 }

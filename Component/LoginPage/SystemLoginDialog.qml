@@ -110,7 +110,7 @@ MouseArea {
                         placeholderText: qsTr("用户名")
                         width: parent.width
                         maximumLength: 16
-                        iconSource: "qrc:/icons/lightTheme/24x24/person.png"
+                        iconSource: appTheme.icon("person")
                     }
 
                     InputBox {
@@ -119,7 +119,7 @@ MouseArea {
                         echoMode: InputBox.Password
                         width: parent.width
                         maximumLength: 16
-                        iconSource: "qrc:/icons/lightTheme/24x24/lock.png"
+                        iconSource: appTheme.icon("lock")
                     }
 
                     Behavior on x {
@@ -143,7 +143,7 @@ MouseArea {
                         placeholderText: qsTr("*名称（1-16位字符）")
                         width: parent.width
                         maximumLength: 16
-                        iconSource: "qrc:/icons/lightTheme/24x24/person.png"
+                        iconSource: appTheme.icon("person")
 
                         property bool isUserExists: false
 
@@ -165,7 +165,7 @@ MouseArea {
                         echoMode: InputBox.Password
                         width: parent.width
                         maximumLength: 16
-                        iconSource: "qrc:/icons/lightTheme/24x24/lock.png"
+                        iconSource: appTheme.icon("lock")
                     }
                     Row {
                         spacing: appTheme.narrowSpacing

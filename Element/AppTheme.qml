@@ -57,6 +57,8 @@ import QtQuick.Controls 2.0
  *
  */
 QtObject {
+    property string themeStyle: "lightTheme"
+
     property color primaryColor1: "#4D7CFE"
     readonly property color primaryActiveColor1: Qt.darker(primaryColor1, 1.1)
     readonly property color subColor1: Qt.lighter(primaryColor1, 1.6)
@@ -112,6 +114,10 @@ QtObject {
 
     function getDefaultUrl() {
         return "qrc:/AppResource/Icon/default_avatar.png"
+    }
+
+    function icon(iconName) {
+        return "qrc:/icons/" + themeStyle + "/24x24/" + iconName + ".png"
     }
 
     function getWindowItem() {

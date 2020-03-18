@@ -10,6 +10,9 @@ class ChatView : public QAbstractListModel {
     Q_DISABLE_COPY_MOVE(ChatView)
 
     friend class MessageDatabase;
+    friend class MessageManager;
+
+    Q_PROPERTY(IChatObject* chatObject READ getChatObject CONSTANT)
 
 public:
     explicit ChatView(QObject* parent = nullptr);
@@ -120,35 +123,41 @@ public:
 
     /**
      * @brief 发送一条文本聊天消息，会改变数据库的内容
-     * @param chatObj 聊天对象
      * @param msg 普通文本消息
      * @note 该方法是最常用来发送普通消息或富文本
      */
-    Q_INVOKABLE inline void sendChat(IChatObject* chatObj, const QString& msg)
+    Q_INVOKABLE inline void sendChat(const QString& msg)
     {
-        sendChat(chatObj, IChatItem::Text, msg);
+        sendChat(IChatItem::Text, msg);
     }
 
     /**
      * @brief 发送一条聊天消息，会改变数据库的内容
-     * @param chatObj 聊天对象
      * @param type 消息类型
      * @param data 消息数据
      * @note 该方法为通用方法，可以发送普通文本、富文本、图片和文件等控件
      */
-    Q_INVOKABLE void sendChat(IChatObject* chatObj, int chatType, const QVariant& data);
+    Q_INVOKABLE void sendChat(int chatType, const QVariant& data);
 
-public Q_SLOTS:
+    /**
+     * @brief 获取当前聊天视图的聊天对象
+     * @return IChatObject* 返回聊天对象的指针
+     * @note 如果不使用void load(IChatObject* chatObj);方法加载视图，则返回结果为空。即
+     * 设置聊天对象方法应当使用load替代，那么一旦设置后无法更改了。
+     * @see load()
+     */
+    inline IChatObject* getChatObject(void) const
+    {
+        return mChatObject.data();
+    }
+
     /**
      * @brief 直接在尾部追加一条消息，不会改变数据库的内容
      * @param chat 要追加的聊天消息
-     * @param roleType 聊天对象角色类型，通常该值不会使用到，默认IChatObject::Me
      * @note 该方法通常作为接收消息使用，每调用一次就发射 @see chatAdded 信号
      */
-    inline void appendChat(IChatItem* chat, IChatObject::ERoleType roleType = IChatObject::Me)
+    inline void appendChat(IChatItem* chat)
     {
-        Q_UNUSED(roleType)
-
         insertChat(mChats.size(), chat);
         emit chatAdded(chat->mChatObject->getRoleType() == IChatObject::Me);
     }
@@ -178,16 +187,33 @@ Q_SIGNALS:
      */
     void chatAdded(bool isMe);
 
-public Q_SLOTS:
+protected Q_SLOTS:
     /**
-     * @brief 加载与给定用户id的聊天消息
-     * @param chatObj 聊天对象
+     * @brief 加载更多
+     * @param parent 可以忽视该参数
      */
-    void load(IChatObject* chatObj);
+    void fetchMore(const QModelIndex& parent = QModelIndex()) override;
+
+    /**
+     * @brief 接收一条消息，并会将正确接收下的聊天消息保存到数据库中
+     * @param item 需要接收的消息项，由于sourceData的参数选择，可能会将该item抛弃
+     * @param sourceData 发送来的可用数据。可用作筛选参数作为使用
+     */
+    void onReceived(IChatItem* item, const QVariantMap& sourceData);
+
+    /**
+     * @brief c初始化加载与给定用户的聊天消息
+     * @param chatObj 聊天对象
+     * @note 一般来说只用一次
+     */
+    void initLoad(IChatObject* chatObj);
 
 private:
     /** 所有的聊天消息容器 */
     QList<QPointer<IChatItem>> mChats;
+
+    /** 指向当前聊天对象的指针 */
+    QPointer<IChatObject> mChatObject;
 
     /**
      * @brief 注册的聊天类容器

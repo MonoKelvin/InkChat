@@ -72,19 +72,17 @@ public:
     /**
      * @brief 加载聊天消息到聊天视图中
      * @param chatView 聊天视图 @see ChatView
-     * @param chatObj 聊天对象
      * @return 加载成功返回true，否则返回false
      * @note 每次加载指定数量的聊天消息，最大为 @see CHAT_MESSAGE_FECTH_COUNT。加载时不
      * 会覆盖已加载的消息。
      */
-    bool loadChatItems(ChatView* chatView, IChatObject* chatObj);
+    bool loadChatItems(ChatView* chatView);
 
-    //public Q_SLOTS:
     /**
      * @brief 保存一条聊天记录
      * @param item 消息
      * @param chatObj 聊天对象的实例
-     * @return 保存成功返回true，并且将成功后的消息id保存到item中，保存失败返回false
+     * @return 保存成功返回true，并且将成功后的消息(chatId)保存到item中，保存失败返回false
      */
     bool saveAChatRecord(IChatItem* item, IChatObject* chatObj);
 

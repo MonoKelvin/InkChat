@@ -10,12 +10,18 @@ QHash<int, QByteArray> ChatView::mRegistryChatClasses;
 ChatView::ChatView(QObject* parent)
     : QAbstractListModel(parent)
 {
-    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatView::appendChat);
+    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatView::onReceived);
 }
 
 ChatView::~ChatView()
 {
+    if (mChatObject) {
+        mChatObject.clear();
+    }
+
     clear();
+
+    qDebug() << "ChatView Destroyed: " << this;
 }
 
 IChatItem* ChatView::BuildChatItem(int chatType, bool isMe, unsigned int uid)
@@ -67,27 +73,6 @@ IChatItem* ChatView::BuildChatItem(int chatType, unsigned int uid, const QDateTi
     return item;
 }
 
-void ChatView::load(IChatObject* chatObj)
-{
-    isFileExists(AppSettings::MessageCacheFile(), true);
-    MessageManager::Instance()->loadChatRecords(this, chatObj);
-}
-
-void ChatView::clearChatRecord()
-{
-    clear();
-
-    // todo: 删除数据库中对应的记录
-}
-
-void ChatView::clear()
-{
-    beginResetModel();
-    qDeleteAll(mChats.begin(), mChats.end());
-    mChats.clear();
-    endResetModel();
-}
-
 IChatItem* ChatView::getChatItem(int index) const
 {
     if (index >= 0 && index < mChats.size()) {
@@ -130,9 +115,71 @@ int ChatView::rowCount(const QModelIndex& parent) const
     return mChats.size();
 }
 
-void ChatView::sendChat(IChatObject* chatObj, int chatType, const QVariant& data)
+void ChatView::sendChat(int chatType, const QVariant& data)
 {
-    MessageManager::Instance()->sendMessage(this, chatObj, chatType, data);
+    MessageManager::Instance()->sendMessage(this, chatType, data);
+}
+
+void ChatView::initLoad(IChatObject* chatObj)
+{
+    if (mChatObject) {
+        return;
+    } else {
+        mChatObject = chatObj;
+    }
+
+    fetchMore();
+}
+
+void ChatView::clearChatRecord()
+{
+    clear();
+
+    // TODO: 删除数据库中对应的记录
+}
+
+void ChatView::clear()
+{
+    beginResetModel();
+    qDeleteAll(mChats.begin(), mChats.end());
+    mChats.clear();
+    endResetModel();
+}
+
+void ChatView::fetchMore(const QModelIndex& parent)
+{
+    Q_UNUSED(parent)
+
+    isFileExists(AppSettings::MessageCacheFile(mChatObject->getRoleType()), true);
+    MessageManager::Instance()->loadChatRecords(this);
+}
+
+void ChatView::onReceived(IChatItem* item, const QVariantMap& sourceData)
+{
+    bool receive = false;
+    int roleType = sourceData.value(QStringLiteral("roleType")).toInt();
+
+    if (roleType & IChatObject::MultiPerson) {
+        const QString md5 = sourceData.value(QStringLiteral("md5")).toString();
+
+        // 如果数据中的MD5和该聊天对象匹配就接收数据
+        if (md5 == mChatObject->getMD5()) {
+            receive = true;
+        }
+    } else if (roleType & IChatObject::SinglePerson) {
+
+        // 如果数据中的单用户id和该聊天对象的用户id匹配就接收数据
+        if (item->mChatObject->getID() == mChatObject->getID()) {
+            receive = true;
+        }
+    }
+
+    if (!receive) {
+        return;
+    }
+
+    appendChat(item);
+    MessageManager::Instance()->saveAChatRecord(this, item);
 }
 
 QVariant ChatView::data(const QModelIndex& index, int role) const

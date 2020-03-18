@@ -107,7 +107,7 @@ Menu {
             implicitWidth: menuItemHeight
             implicitHeight: menuItemHeight
 
-            /*Icon {
+            Icon {
                 id: iconImg
                 anchors.centerIn: parent
                 source: {
@@ -125,7 +125,7 @@ Menu {
 
                     return ''
                 }
-            }*/
+            }
 
             Rectangle {
                 width: 14
@@ -161,7 +161,7 @@ Menu {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: appTheme.stdTextSize
             elide: Text.ElideRight
-            leftPadding: menuItem.indicator.implicitWidth
+            leftPadding: menuItem.indicator.implicitWidth - 5
             rightPadding: menuItem.arrow.implicitWidth
             text: menuItem.text
             color: normalTextColor
