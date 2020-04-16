@@ -1,7 +1,42 @@
-<RCC>
-    <qresource prefix="/App">
-        <file>Icons/default_avatar.png</file>
-        <file>Icons/loading_200x.png</file>
-        <file>Icons/loading_15x.gif</file>
+﻿<RCC>
+    <qresource prefix="/">
+        <file>icons/index.theme</file>
+        <file>icons/24x24/add_friend.png</file>
+        <file>icons/24x24/advise.png</file>
+        <file>icons/24x24/alert.png</file>
+        <file>icons/24x24/audio.png</file>
+        <file>icons/24x24/check.png</file>
+        <file>icons/24x24/delete_friend.png</file>
+        <file>icons/24x24/down.png</file>
+        <file>icons/24x24/download.png</file>
+        <file>icons/24x24/edit.png</file>
+        <file>icons/24x24/eye_off.png</file>
+        <file>icons/24x24/eye_open.png</file>
+        <file>icons/24x24/file.png</file>
+        <file>icons/24x24/image.png</file>
+        <file>icons/24x24/info_card.png</file>
+        <file>icons/24x24/layout.png</file>
+        <file>icons/24x24/lock.png</file>
+        <file>icons/24x24/mail.png</file>
+        <file>icons/24x24/menu.png</file>
+        <file>icons/24x24/message.png</file>
+        <file>icons/24x24/night.png</file>
+        <file>icons/24x24/notify.png</file>
+        <file>icons/24x24/people.png</file>
+        <file>icons/24x24/person.png</file>
+        <file>icons/24x24/play.png</file>
+        <file>icons/24x24/read.png</file>
+        <file>icons/24x24/refresh.png</file>
+        <file>icons/24x24/search.png</file>
+        <file>icons/24x24/send.png</file>
+        <file>icons/24x24/settings.png</file>
+        <file>icons/24x24/sort.png</file>
+        <file>icons/24x24/top.png</file>
+        <file>icons/24x24/trash.png</file>
+        <file>icons/24x24/unread.png</file>
+        <file>icons/24x24/untop.png</file>
+        <file>icons/24x24/up.png</file>
+        <file>icons/24x24/video.png</file>
+        <file>icons/24x24/wifi_off.png</file>
     </qresource>
 </RCC>

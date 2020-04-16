@@ -1,5 +1,4 @@
-QT  += core gui
-QT  += network
+QT  += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,53 +15,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+include( $$PWD/Core/Core.pri )
+include( $$PWD/Component/Component.pri )
+include( $$PWD/Widget/Widget.pri )
+
+HEADERS += \
+    MainWindow.h
+
 SOURCES += \
-    Core/User.cpp \
-    Core/Utility.cpp \
-    Core/Http/LoginWithQQMail.cpp \
-    Core/Http/HttpRequest.cpp \
-    Core/Widget/ChatInputBox.cpp \
-    Core/Widget/FriendInfoCard.cpp \
-    Core/Widget/Navigation.cpp \
-    Core/Widget/Avatar.cpp \
-    Core/Widget/Badge.cpp \
-    Core/Widget/ChatItem.cpp \
-    Core/Widget/ChatListView.cpp \
-    Core/Widget/IChatWidget.cpp \
-    Core/Widget/MessageItem.cpp \
-    Core/Widget/MessageList.cpp \
-    Core/Widget/PromptWidget.cpp \
-    Core/Widget/SearchableList.cpp \
-    LoginDialog.cpp \
     main.cpp \
     MainWindow.cpp
 
-HEADERS += \
-    Core/User.h \
-    Core/Configuation.h \
-    Core/InkChatApi.h \
-    Core/Utility.h \
-    Core/Http/LoginWithQQMail.h \
-    Core/Http/HttpRequest.h \
-    Core/Http/ILoginOperation.h \
-    Core/Widget/ChatInputBox.h \
-    Core/Widget/FriendInfoCard.h \
-    Core/Widget/Navigation.h \
-    Core/Widget/Avatar.h \
-    Core/Widget/Badge.h \
-    Core/Widget/ChatItem.h \
-    Core/Widget/ChatListView.h \
-    Core/Widget/IChatWidget.h \
-    Core/Widget/MessageItem.h \
-    Core/Widget/MessageList.h \
-    Core/Widget/PromptWidget.h \
-    Core/Widget/SearchableList.h \
-    LoginDialog.h \
-    MainWindow.h
-
-FORMS += \
-    UI/LoginDialog.ui \
-    UI/mainwindow.ui
+FORMS += mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

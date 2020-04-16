@@ -2,26 +2,25 @@
 #define INKCHATAPI_H
 
 /** 基本Url地址 */
-#define BaseUrl         QLatin1String("http://api.inkchat.com")
+#define ApiBaseUrl QStringLiteral("http://inkchat.com/api")
 //#define BaseUrl       "http://localhost:8080";
 
-/** 用户信息Url地址 */
-#define UserUrl     QString(BaseUrl + "/user")
-
-/** 用户验证登录（自动登录）Url地址，post请求方式 */
-#define UserVerifyUrl   QString(UserUrl+"/login.php?type=verify")
+/** 用户账号密码登录地址，post请求方式 */
+#define LoginByPasswordUrl QString(ApiBaseUrl + "/user/login.php?verify_method=password")
 
 /** 用户账号密码登录地址，post请求方式 */
-#define UserLoginUrl    QString(UserUrl+"/login.php?type=login")
+#define LoginByIdUrl QString(ApiBaseUrl + "/user/login.php?verify_method=id")
 
 /** 用户登出Url地址，post请求方式 */
-#define UserLogOutUrl  QString(UserUrl+"/logout.php")
+#define LogOutUrl QString(ApiBaseUrl + "/user/logout.php")
 
 /** 用户注册Url地址，post请求方式 */
-#define UserSignupUrl       QString(UserUrl + "/signup.php")
+#define SignupUrl QString(ApiBaseUrl + "/user/signup.php")
 
-#define CHAT_MAJOR_VERSION  1
-#define CHAT_MINOR_VERSION  0
-#define CHAT_REVERSION      0
+/** 获取好友信息 */
+#define MyFriendsUrl QString(ApiBaseUrl + "/user/friend.php")
+
+/** 更新好友信息地址 */
+#define UpdateFriendUrl QString(ApiBaseUrl + "/user/update_friend.php?")
 
 #endif // INKCHATAPI_H

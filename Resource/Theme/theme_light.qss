@@ -2,16 +2,16 @@
 /**
  * - 亮色主题配色表 -
  * 背景色：#ffffff
- * 主蓝色：#4D7BF5
+ * 主蓝色：#4D7CFE
  * 次蓝色：#D9E8FF
- * 主橘色：#FDAA2A
+ * 主橘色：#FFAB2E
  * 次橘色：#FFEDD5
- * 主红色：#FE2A52
+ * 主红色：#FE2B52
  * 次红色：#FFD6DE
  * 主字色：#3B4151
  * 次字色：#A7ADBD
  * 浅蓝色：#F5F6FA
- * 主绿色：#2AFE75
+ * 主绿色：#2BFF75
  *
  * - 字体 -
  * 字体： 微软雅黑
@@ -58,6 +58,7 @@
     font: 14px 'Microsoft YaHei';
     background-color: white;
     outline: none;
+    /* border: 1px solid red; */
     border: none;
 }
 
@@ -98,7 +99,7 @@ QLineEdit {
     background-color: #f5f6fa;
     border-radius: 6px;
     padding: 0 10px;
-    min-height: 36px;
+    min-height: 40px;
 }
 
 /** Label */
@@ -164,7 +165,8 @@ QScrollBar::sub-line:horizontal {
 
 #title {
     padding: 15px;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: bold;
     color: #a7adbd;
 }
 
@@ -186,33 +188,27 @@ LoginDialog #lbAppName {
 #lbDeveloper {
     color: #a7adbd;
 }
-LoginDialog #lbAppLogo {
+#lbAppLogo {
     image: url(:/Icons/AppIcons/BookStudy.png);
 }
-LoginDialog #lbLogin {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px;
-    color: #a7adbd;
-}
-LoginDialog #btnLogin,
-#btnEntryNoLogin {
+#btnLogin,
+#btnSignup {
     color: #ffffff;
-    min-height: 36px;
-    border-radius: 10px;
+    min-height: 40px;
+    border-radius: 6px;
     background-color: #4d7bf5;
 }
-LoginDialog #btnLogin:pressed,
-#btnEntryNoLogin:pressed {
+#btnLogin:hover,
+#btnSignup:hover {
+    background-color: #4261e6;
+}
+#btnLogin:pressed,
+#btnSignup:pressed {
     background-color: #4771e6;
 }
-#lbForgetPwd,
-#btnSignUp {
-    color: #4d7bf5;
-}
-#lbForgetPwd:pressed,
-#btnSignUp:pressed {
-    color: #4065ca;
+#btnLogin:disabled,
+#btnSignup:disabled {
+    background-color: #A7ADBD;
 }
 
 /** Navigation */
@@ -352,11 +348,11 @@ Badge {
 
 /** Prompt Widget */
 PromptWidget {
-    color: #ffffff;
     border-radius: 4px;
-}
-#promptPrompt {
     background-color: #4d7bf6;
+}
+PromptWidget QLabel {
+    color: #ffffff;
 }
 #promptAlert {
     background-color: #fe2a52;

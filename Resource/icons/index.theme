@@ -1,0 +1,9 @@
+﻿[Icon Theme]
+Name=light
+Comment=The light icon theme for the Application
+
+Directories=24x24
+
+[24x24]
+Size=24
+Type=Fixed

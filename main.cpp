@@ -1,6 +1,7 @@
 ﻿#include "MainWindow.h"
 
-#include "LoginDialog.h"
+#include <AppSettings.h>
+#include <LoginDialog.h>
 
 #include <QApplication>
 #include <QFile>
@@ -8,8 +9,11 @@
 
 int main(int argc, char *argv[])
 {
-    //    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     QApplication a(argc, argv);
+
+    AppSettings::SetIconTheme(QStringLiteral("light"));
 
     {
         // 登录页面
@@ -21,16 +25,12 @@ int main(int argc, char *argv[])
         QPushButton btn("重新加载样式表", &loginPage);
         btn.show();
         btn.resize(200, 100);
-        QObject::connect(&btn,
-                         &QPushButton::clicked,
-                         [&]
-                         {
-                             QFile f("../InkChat/Resource/Theme/theme_light.qss");
-                             if (f.open(QFile::ReadOnly))
-                             {
-                                 a.setStyleSheet(f.readAll());
-                             }
-                         });
+        QObject::connect(&btn, &QPushButton::clicked, [&] {
+            QFile f("../InkChat/Resource/Theme/theme_light.qss");
+            if (f.open(QFile::ReadOnly)) {
+                a.setStyleSheet(f.readAll());
+            }
+        });
         btn.click();
         //////////////////////////////////////////////////////////
 
@@ -44,13 +44,8 @@ int main(int argc, char *argv[])
     } // 及时释放资源
 
     // 主页面
-    MainWindow *w = new MainWindow();
-    w->show();
+    MainWindow w;
+    w.show();
 
-    a.exec();
-
-    delete w;
-    w = nullptr;
-
-    return 0;
+    return a.exec();
 }
