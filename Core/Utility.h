@@ -74,6 +74,20 @@ inline const QString getElidedText(const QString &text,
     return QFontMetrics(font).elidedText(text, mode, maxWidth);
 }
 
+inline int getFontPixelWidth(const QFont& font, const QString& text)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+    return QFontMetrics(font).horizontalAdvance(text);
+#else
+    return QFontMetrics(font).width(text);
+#endif
+}
+
+inline int getFontPixelHeight(const QFont& font)
+{
+    return QFontMetrics(font).height();
+}
+
 /**
  * @brief 获取超出给定最大宽度的省略字符串
  * @param label 给定的QLabel控件

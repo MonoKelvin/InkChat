@@ -24,9 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     mMessageListModel = new MessageList(this);
     ui->messageList->setModel(mMessageListModel);
+    ui->messageList->setIndexWidget(QModelIndex())
 
-    // 检测局域网
-    MessageDatabase::Instance()->detectLanEnvironment(mMessageListModel);
+        // 检测局域网
+        MessageDatabase::Instance()
+            ->detectLanEnvironment(mMessageListModel);
 
     // 当聊天视图滚动到最底端时，又展开输入框后，会使得视图布局不更新，导致无法看到最后几条消息。
     // connect(ui->chatInputer, &ChatInputBox::onFoldup, [=] {

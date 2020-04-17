@@ -2,8 +2,8 @@
 #define MESSAGEITEM_H
 
 #include <IChatObject.h>
+#include <QAbstractItemDelegate>
 #include <QJsonObject>
-#include <QPointer>
 
 class QFileInfo;
 
@@ -12,16 +12,11 @@ class MessageItem : public QObject {
 
     friend class MessageList;
     friend class MessageDatabase;
-
-    Q_PROPERTY(bool readFlag READ getReadFlag WRITE setReadFlag NOTIFY readFlagChanged)
-    Q_PROPERTY(QString time READ getTime CONSTANT)
-    Q_PROPERTY(QString message READ getMessage CONSTANT)
-    Q_PROPERTY(int unreadMsgCount READ getUnreadMsgCount WRITE setUnreadMsgCount NOTIFY unreadMsgCountChanged)
-    Q_PROPERTY(IChatObject* chatObject READ getChatObject CONSTANT)
+    friend class MessageItemDelegate;
 
 public:
     explicit MessageItem(QObject* parent = nullptr);
-    ~MessageItem();
+    ~MessageItem() override;
 
     IChatObject* getChatObject() const { return mChatObject.get(); }
 
@@ -88,6 +83,19 @@ private:
 
     /** 聊天对象，可以是单用户，也可以是局域网 */
     QSharedPointer<IChatObject> mChatObject;
+};
+
+class MessageItemDelegate : QAbstractItemDelegate {
+    Q_OBJECT
+
+public:
+    explicit MessageItemDelegate(QObject* parent = nullptr);
+    ~MessageItemDelegate() override;
+
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+
+protected:
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
 
 #endif // MESSAGEITEM_H

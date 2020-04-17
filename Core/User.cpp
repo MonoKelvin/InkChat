@@ -66,13 +66,13 @@ QJsonObject User::toJson()
     json.insert(QLatin1String("password"), QJsonValue(mPassword));
 
     // 写入好友数据
-    // QJsonArray friends;
-    // for (const auto i : mMyChatObjects) {
-    //     if (i->getRoleType() == Friend) {
-    //         friends.append(i->toJson());
-    //     }
-    // }
-    // json.insert(QLatin1String("friends"), friends);
+    QJsonArray friends;
+    for (const auto i : mMyChatObjects) {
+        if (i->getRoleType() == Friend) {
+            friends.append(i->toJson());
+        }
+    }
+    json.insert(QLatin1String("friends"), friends);
 
     return json;
 }
