@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>810</width>
-    <height>525</height>
+    <width>801</width>
+    <height>527</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,10 +54,10 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <property name="spacing">
-          <number>15</number>
+          <number>0</number>
          </property>
          <property name="topMargin">
-          <number>15</number>
+          <number>0</number>
          </property>
          <item>
           <widget class="QLabel" name="msgTitle">
@@ -83,12 +83,34 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="autoScrollMargin">
+            <number>10</number>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="verticalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <property name="horizontalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <property name="resizeMode">
+            <enum>QListView::Adjust</enum>
+           </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QListView" name="chatView"/>
+        <widget class="ChatViewWidget" name="chatView" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -96,12 +118,20 @@
     </widget>
    </item>
   </layout>
+  <zorder>stackedWidget</zorder>
+  <zorder>navigation</zorder>
  </widget>
  <customwidgets>
   <customwidget>
    <class>Navigation</class>
    <extends>QWidget</extends>
    <header location="global">Navigation.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChatViewWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">ChatViewWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

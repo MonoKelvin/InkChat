@@ -44,6 +44,8 @@ enum class EBorderStyle
 /** 每次刷新时获取聊天消息的最大数量 */
 #define CHAT_RECORD_FECTH_COUNT 30
 
+// TODO: 以下数据全部放在类：AppTheme 中
+
 /** 头像大小 */
 #define AVATAR_SIZE 46
 

@@ -1,11 +1,12 @@
 ﻿#include "MessageDatabase.h"
 
 #include <AppSettings.h>
-#include <ChatView.h>
+#include <ChatList.h>
 #include <Configuation.h>
 #include <LanObject.h>
 #include <MessageItem.h>
 #include <MessageList.h>
+#include <MyFriend.h>
 #include <User.h>
 
 #include <QDateTime>
@@ -121,6 +122,7 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
 
     QSqlQuery query;
     if (!query.exec(SqlQueryMsgItems)) {
+        emit list->failed(query.lastError().text());
         return false;
     }
 
@@ -133,7 +135,7 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
         // TODO: 添加更多的聊天对象
         switch (roleType) {
         case IChatObject::Friend:
-            //item->setChatObject(User::Instance()->getFriendById(chatObjId));
+            item->setChatObject(User::Instance()->getFriendById(chatObjId));
             break;
         default:
             break;
@@ -166,27 +168,83 @@ void MessageDatabase::loadLanMessageItems(MessageList* list)
         return;
     }
     while (query.next()) {
-        MessageItem* item = new MessageItem;
-
         const auto lanId = query.value(0).toUInt();
+        const auto& lanObj = User::Instance()->getLanObjectById(lanId);
 
-        item->setChatObject(User::Instance()->getLanObjectById(lanId));
-        if (item->mChatObject.isNull()) {
-            delete item;
-            item = nullptr;
+        // 获取局域网数据失败，一般是数据库中有记录，但缓存文件被删除或损坏
+        if (nullptr == lanObj) {
             continue;
         }
 
+        MessageItem* item = new MessageItem;
+
+        item->setChatObject(lanObj);
         item->mUnreadMsgCount = query.value(2).toInt();
         item->mReadFlag = query.value(3).toBool();
         item->mTime = GetMessageTime(query.value(4).toDateTime());
         item->mMessage = query.value(5).toString();
+        if (item->mMessage.isEmpty()) {
+            item->mMessage = tr("【暂无最近消息】");
+        }
 
         list->appendMessage(item);
     }
 
     // WARNING: 必须在加载完所有缓存数据后才能调用
     detectLanEnvironment(list);
+}
+
+void MessageDatabase::detectLanEnvironment(MessageList* list)
+{
+    LanObject* lan = LanObject::DetectLanEnvironment();
+
+    // 加载实时连接的局域网
+    if (nullptr != lan) {
+        // 如果该局域网对象已经在聊天列表中就直接返回
+        if (list->isChatObjectExists(lan)) {
+            return;
+        }
+
+        // 如果有检测到局域网并且未被缓存，即没有分配id，则分配一个id，再保存到数据库
+        if (lan->getID() == 0) {
+            selectDatabaseFile(IChatObject::LAN);
+
+            QSqlQuery query;
+            if (query.exec(QStringLiteral("select max(uid) from message"))) {
+                query.next();
+                lan->setID(query.value(0).toUInt() + 1);
+            } else {
+                // 释放内存
+                delete lan;
+                lan = nullptr;
+
+                emit list->failed(tr("无法存储新的局域网数据，请尝试清理缓存！"));
+                return;
+            }
+
+            // 添加索引并更新本地数据
+            {
+                QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
+                index.setValue(QString::number(lan->getID()), encryptTextByMD5(lan->getHostAddress() + lan->getMacAddress()));
+                lan->updateLocalData();
+            }
+
+            query.prepare(SqlInsertMessageItem);
+            query.addBindValue(lan->getID());
+            query.addBindValue(true);
+            query.addBindValue(IChatObject::LAN);
+            query.addBindValue(0);
+            query.addBindValue(true);
+            if (!query.exec()) {
+                emit list->failed(tr("数据库未能成功建立局域网记录，IP=") + lan->getHostAddress());
+            }
+        }
+
+        MessageItem* item = new MessageItem;
+        item->setChatObject(lan);
+
+        list->appendMessage(item);
+    }
 }
 
 bool MessageDatabase::updateReadFlag(MessageItem* item)
@@ -215,7 +273,7 @@ bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
     return false;
 }
 
-bool MessageDatabase::loadChatItems(ChatView* chatView)
+bool MessageDatabase::loadChatItems(ChatList* chatView)
 {
     const auto& chatObj = chatView->getChatObject();
     selectDatabaseFile(chatObj->getRoleType());
@@ -269,56 +327,4 @@ bool MessageDatabase::saveAChatRecord(IChatItem* item, IChatObject* chatObj)
     }
 
     return false;
-}
-
-void MessageDatabase::detectLanEnvironment(MessageList* list)
-{
-    LanObject* lan = LanObject::DetectLanEnvironment();
-
-    // 加载实时连接的局域网
-    if (nullptr != lan) {
-        // 如果该局域网对象已经在聊天列表中就直接返回
-        if (list->isChatObjectExists(lan)) {
-            return;
-        }
-
-        // 如果有检测到局域网并且未被缓存，即没有分配id，则分配一个id，再保存到数据库
-        if (lan->getID() == 0) {
-            selectDatabaseFile(IChatObject::LAN);
-
-            QSqlQuery query;
-            if (query.exec(QStringLiteral("select max(uid) from message"))) {
-                query.next();
-                lan->setID(query.value(0).toUInt() + 1);
-            } else {
-                // 释放内存
-                delete lan;
-                lan = nullptr;
-
-                emit list->failed(tr("无法存储新的局域网数据，请尝试清理缓存！"));
-                return;
-            }
-
-            // 添加索引
-            {
-                QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
-                index.setValue(QString::number(lan->getID()), encryptTextByMD5(lan->getHostAddress() + lan->getMacAddress()));
-            }
-
-            query.prepare(SqlInsertMessageItem);
-            query.addBindValue(lan->getID());
-            query.addBindValue(true);
-            query.addBindValue(IChatObject::LAN);
-            query.addBindValue(0);
-            query.addBindValue(true);
-            if (!query.exec()) {
-                emit list->failed(tr("数据库未能成功建立局域网记录，IP=") + lan->getHostAddress());
-            }
-        }
-
-        MessageItem* item = new MessageItem;
-        item->setChatObject(lan);
-
-        list->appendMessage(item);
-    }
 }

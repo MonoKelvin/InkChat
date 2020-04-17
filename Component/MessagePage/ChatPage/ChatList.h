@@ -1,13 +1,13 @@
-﻿#ifndef CHATVIEW_H
-#define CHATVIEW_H
+﻿#ifndef CHATLIST_H
+#define CHATLIST_H
 
 #include <IChatItem.h>
 
 #include <QAbstractListModel>
 
-class ChatView : public QAbstractListModel {
+class ChatList : public QAbstractListModel {
     Q_OBJECT
-    Q_DISABLE_COPY_MOVE(ChatView)
+    Q_DISABLE_COPY_MOVE(ChatList)
 
     friend class MessageDatabase;
     friend class MessageManager;
@@ -15,8 +15,8 @@ class ChatView : public QAbstractListModel {
     Q_PROPERTY(IChatObject* chatObject READ getChatObject CONSTANT)
 
 public:
-    explicit ChatView(QObject* parent = nullptr);
-    ~ChatView() override;
+    explicit ChatList(QObject* parent = nullptr);
+    ~ChatList() override;
 
     /**
      * @brief 在指定位置插入一条聊天项
@@ -223,4 +223,4 @@ private:
     static QHash<int, QByteArray> mRegistryChatClasses;
 };
 
-#endif // CHATVIEW_H
+#endif // CHATLIST_H

@@ -1,6 +1,6 @@
 ﻿#include "MessageManager.h"
 
-#include <ChatView.h>
+#include <ChatList.h>
 #include <InkChatApi.h>
 #include <MessageDatabase.h>
 #include <User.h>
@@ -27,14 +27,14 @@ MessageManager::~MessageManager()
     qDebug() << "ChatManager Destroyed";
 }
 
-qint64 MessageManager::sendMessage(ChatView* view, int type, const QVariant& data)
+qint64 MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 {
     if (data.isNull() || !data.isValid()) {
         return -1;
     }
 
     auto time = QDateTime::currentDateTime();
-    auto item = ChatView::BuildChatItem(type, time, data);
+    auto item = ChatList::BuildChatItem(type, time, data);
 
     QByteArray outData;
     QDataStream out(&outData, QIODevice::WriteOnly);
@@ -69,12 +69,12 @@ qint64 MessageManager::sendMessage(ChatView* view, int type, const QVariant& dat
     return result;
 }
 
-void MessageManager::loadChatRecords(ChatView* view)
+void MessageManager::loadChatRecords(ChatList* view)
 {
     MessageDatabase::Instance()->loadChatItems(view);
 }
 
-void MessageManager::saveAChatRecord(ChatView* view, IChatItem* item) const
+void MessageManager::saveAChatRecord(ChatList* view, IChatItem* item) const
 {
     MessageDatabase::Instance()->saveAChatRecord(item, view->mChatObject.data());
 }
@@ -111,7 +111,7 @@ void MessageManager::processPendingDatagrams()
         in >> addr >> name >> type >> data >> time;
 
         // 构建到视图
-        IChatItem* item = ChatView::BuildChatItem(type, senderId, time, data);
+        IChatItem* item = ChatList::BuildChatItem(type, senderId, time, data);
         if (nullptr == item) { // 接收到无效信息
             continue;
         } else if (item->mChatObject == nullptr) { // 如果不是我或者我的好友，那就是陌生人

@@ -38,7 +38,10 @@ Q_SIGNALS:
     void subgroupChanged();
 
 private:
+    // 备注名
     QString mRemark;
+
+    // 分组名
     QString mSubgroup;
 };
 

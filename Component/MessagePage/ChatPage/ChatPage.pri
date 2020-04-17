@@ -2,13 +2,18 @@ INCLUDEPATH *= \
     $$PWD/
 
 HEADERS += \
-    $$PWD/ChatView.h \
+    $$PWD/ChatList.h \
     $$PWD/IChatItem.h \
     $$PWD/TextChatItem.h \
-    $$PWD/UI/ChatViewUI.h
+    $$PWD/UI/ChatInputBox.h \
+    $$PWD/UI/ChatViewWidget.h
 
 SOURCES += \
-    $$PWD/ChatView.cpp \
+    $$PWD/ChatList.cpp \
     $$PWD/IChatItem.cpp \
     $$PWD/TextChatItem.cpp \
-    $$PWD/UI/ChatViewUI.cpp
+    $$PWD/UI/ChatInputBox.cpp \
+    $$PWD/UI/ChatViewWidget.cpp
+
+FORMS += \
+    $$PWD/UI/chatviewwidget.ui

@@ -2,8 +2,9 @@
 #define MESSAGEITEM_H
 
 #include <IChatObject.h>
+
 #include <QAbstractItemDelegate>
-#include <QJsonObject>
+#include <QPointer>
 
 class QFileInfo;
 
@@ -85,16 +86,20 @@ private:
     QSharedPointer<IChatObject> mChatObject;
 };
 
-class MessageItemDelegate : QAbstractItemDelegate {
-    Q_OBJECT
-
+class MessageItemDelegate : public QAbstractItemDelegate {
 public:
-    explicit MessageItemDelegate(QObject* parent = nullptr);
-    ~MessageItemDelegate() override;
+    explicit MessageItemDelegate(QObject* parent = nullptr)
+        : QAbstractItemDelegate(parent)
+    {
+    }
+    ~MessageItemDelegate() override = default;
+
+    enum {
+        MessageItemRole = Qt::UserRole + 100
+    };
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-protected:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
 

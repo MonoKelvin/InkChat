@@ -6,7 +6,7 @@
 #include <QSqlDatabase>
 
 class IChatItem;
-class ChatView;
+class ChatList;
 class MessageItem;
 class MessageList;
 class LanObject;
@@ -76,7 +76,7 @@ public:
      * @note 每次加载指定数量的聊天消息，最大为 @see CHAT_MESSAGE_FECTH_COUNT。加载时不
      * 会覆盖已加载的消息。
      */
-    bool loadChatItems(ChatView* chatView);
+    bool loadChatItems(ChatList* chatView);
 
     /**
      * @brief 保存一条聊天记录

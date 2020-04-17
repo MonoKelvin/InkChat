@@ -95,7 +95,7 @@ LanObject* LanObject::DetectLanEnvironment()
         lan->mNickName = addr;
         lan->mHostAddress = addr;
         lan->mMacAddress = mac;
-        lan->updateLocalData();
+        // lan->updateLocalData();
     }
 
     return lan;

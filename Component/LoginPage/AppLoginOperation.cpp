@@ -40,10 +40,9 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
             user->fromJson(jsonDoc.object());
             if (user->getPassword() == mapping.value(QStringLiteral("password"))
                 && user->getNickName() == nickName) {
-                AppSettings::Instance()->CurrentUserId = 0;
                 emit verified();
             } else {
-                emit failed(tr("密码错误"));
+                emit failed(tr("用户名或密码错误"));
             }
         } else {
             emit failed(tr("用户数据解析出错"));
@@ -62,13 +61,13 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
     AppSettings::OfflineUserName = name;
 
     if (hasIllegalCharInFile(name)) {
-        emit failed(tr("数据目录创建失败，用户名可能包含非法字符：\\/\"*?<>|"));
+        emit failed(tr("数据目录创建失败，用户名可能包含以下非法字符：\\/\"*?<>|"));
     } else if (name.trimmed().length() == 0) {
         emit failed(tr("用户名不可为空"));
-    } else if (pwd.length() < 6 || pwd.length() > 16) {
-        emit failed(tr("请输入6-16位的密码"));
     } else if (isUserExists(name)) {
         emit failed(tr("用户名已经存在"));
+    } else if (pwd.length() < 6 || pwd.length() > 16) {
+        emit failed(tr("请输入6-16位的密码"));
     } else {
         // 转换为json格式
         QJsonObject json;
@@ -76,7 +75,6 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
             json.insert(iter.key(), iter.value().toJsonValue());
         }
 
-        AppSettings::Instance()->CurrentUserId = 0;
         User::Instance()->fromJson(json);
         emit registered();
     }
@@ -89,7 +87,7 @@ bool AppLoginOperation::isUserExists(const QString& userName)
     const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("0/")).entryList(QDir::Dirs);
 
     for (int i = 0; i < dirs.size(); i++) {
-        if (dirs.at(i) == userName) {
+        if (userName.compare(dirs.at(i), Qt::CaseInsensitive)) {
             return true;
         }
     }

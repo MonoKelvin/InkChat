@@ -13,7 +13,7 @@ typedef quint16 Port;
 
 class IChatItem;
 class QUdpSocket;
-class ChatView;
+class ChatList;
 //class TcpServer;
 
 /**
@@ -44,20 +44,20 @@ public:
      * @param data 要发送的消息数据
      * @return qint64 返回发送成功的字节数，如果失败则返回-1
      */
-    qint64 sendMessage(ChatView* view, int type, const QVariant& data);
+    qint64 sendMessage(ChatList* view, int type, const QVariant& data);
 
     /**
      * @brief 加载聊天记录到指定视图
      * @param view 聊天视图
      */
-    void loadChatRecords(ChatView* view);
+    void loadChatRecords(ChatList* view);
 
     /**
      * @brief 保存一条聊天记录到指定视图
      * @param view 聊天视图
      * @param item 聊天记录
      */
-    void saveAChatRecord(ChatView* view, IChatItem* item) const;
+    void saveAChatRecord(ChatList* view, IChatItem* item) const;
 
 private Q_SLOTS:
     /**

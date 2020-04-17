@@ -12,7 +12,7 @@ public:                                                          \
     Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr); \
                                                                  \
 private:                                                         \
-    friend class ChatView;
+    friend class ChatList;
 
 /**
  * @brief 聊天消息基类，可以实现自定义聊天内容。比如消息气泡，文件、图片、视频等聊天内容
@@ -21,15 +21,9 @@ class IChatItem : public QObject
 {
     Q_OBJECT
 
-    friend class ChatView;
+    friend class ChatList;
     friend class MessageManager;
     friend class MessageDatabase;
-
-private:
-    Q_PROPERTY(ESendState sendState READ getSendState WRITE setSendState NOTIFY sendStateChanged)
-    Q_PROPERTY(unsigned int id READ getChatId CONSTANT)
-    Q_PROPERTY(QString time READ getMessageTime CONSTANT)
-    Q_PROPERTY(IChatObject *sender READ getSender CONSTANT)
 
 public:
     explicit IChatItem(QObject* parent = nullptr);
@@ -105,7 +99,7 @@ public:
      * @return 返回qml组件文件。
      * @note 该组件文件必须包含在qrc文件中
      */
-    Q_INVOKABLE virtual const QString qmlFile() = 0;
+    virtual const QString qmlFile() = 0;
 
     /**
      * @brief 接收数据抽象方法，旨在从网络信道接收数据，解析后给成员赋值。

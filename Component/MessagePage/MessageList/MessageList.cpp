@@ -77,7 +77,7 @@ void MessageList::moveMessage(int from, int to)
 bool MessageList::isChatObjectExists(IChatObject* chatObj)
 {
     for (int i = 0; i < mMessages.size(); i++) {
-        if (mMessages.at(i)->mChatObject == chatObj) {
+        if (mMessages.at(i)->mChatObject.data() == chatObj) {
             return true;
         }
     }

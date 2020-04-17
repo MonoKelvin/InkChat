@@ -7,8 +7,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class ChatView;
+class ChatList;
 class MessageList;
+class QMenu;
 
 class MainWindow : public QWidget
 {
@@ -18,8 +19,20 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
-private:
+private Q_SLOTS:
     // void dynamicDestroyForChatView();
+
+    /**
+     * @brief 侦听所有失败消息的槽函数
+     * @param msg 失败的返回消息
+     */
+    void onFailed(const QString& msg);
+
+    /**
+     * @brief 当消息列表弹出上下文菜单
+     * @param index
+     */
+    //void onContextMenuInMessageItem(const QModelIndex& index);
 
 private:
     Ui::MainWindow* ui;
@@ -30,6 +43,8 @@ private:
     /**
      * @brief 聊天视图的集合
      */
-    QList<QPointer<ChatView>> mChatViewsList;
+    QList<QPointer<ChatList>> mChatViewsList;
+
+    //QMenu* mMessageMenu;
 };
 #endif // MAINWINDOW_H

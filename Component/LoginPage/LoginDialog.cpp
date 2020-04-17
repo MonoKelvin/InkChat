@@ -2,6 +2,7 @@
 #include "ui_LoginDialog.h"
 
 #include <AppLoginOperation.h>
+#include <AppSettings.h>
 #include <Configuation.h>
 #include <Utility.h>
 #include <Widget/PromptWidget.h>
@@ -16,11 +17,26 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // 让界面显示在屏幕中间位置
+    QSize lt = QApplication::primaryScreen()->size() - this->size();
+    setGeometry(lt.width() / 2, lt.height() / 2, width(), height());
+    setWindowTitle(QStringLiteral("InkChat-v%1.%2.%3").arg(CHAT_MAJOR_VERSION).arg(CHAT_MINOR_VERSION).arg(CHAT_REVERSION));
     resize(810, 500);
+
     ui->lbTitle->setObjectName(QStringLiteral("title"));
 
     // 登录方式默认为系统方式登录
     mLoginMethod = new AppLoginOperation(this);
+
+    // 初始化相关参数
+    mIsSignUp = false;
+    mIsExit = false;
+    ui->leRecheckPwd->setHidden(true);
+    AppSettings::Instance()->CurrentUserId = 0;
+
+    // TODO: 发布时删除
+    ui->leNickName->setText("mono");
+    ui->lePassword->setText("123123");
 
     // 左上角的诗句
     // QLabel *verse = new QLabel(this);
@@ -28,21 +44,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // verse->setText(QStringLiteral("直\n当\n花\n院\n里\n，\n书\n斋\n望\n晓\n开\n。"));
     // verse->setAlignment(Qt::AlignTop);
     // verse->setGeometry(ESpacing::Std, ESpacing::Std, 50, height());
-
-    // 让界面显示在屏幕中间位置
-    QSize lt = QApplication::primaryScreen()->size() - this->size();
-
-    this->setGeometry(lt.width() / 2, lt.height() / 2, width(), height());
-    this->setWindowTitle(QStringLiteral("InkChat-v%1.%2.%3").arg(CHAT_MAJOR_VERSION).arg(CHAT_MINOR_VERSION).arg(CHAT_REVERSION));
-
-    // 初始化登录、注册页面控件显隐和相关参数
-    mIsSignUp = false;
-    mIsExit = false;
-    ui->leRecheckPwd->setHidden(true);
-
-    // TODO: 发布时删除
-    ui->leNickName->setText("mono");
-    ui->lePassword->setText("123123");
 
     connections();
 }
@@ -61,6 +62,14 @@ bool LoginDialog::loggedIn()
 
 void LoginDialog::connections()
 {
+    // 侦听失败消息
+    connect(mLoginMethod, &ILoginOperation::failed, [this](const QString& msg) {
+        new PromptWidget(msg, this, PromptWidget::Alert);
+
+        ui->btnLogin->setEnabled(true);
+        ui->btnSignup->setEnabled(true);
+    });
+
     // 当点击 登录/注册 按钮，进行 验证登录/提交注册
     connect(ui->btnLogin, &QPushButton::clicked, [this] {
         QVariantMap mapping;
@@ -87,14 +96,9 @@ void LoginDialog::connections()
 
     // 注册成功
     connect(mLoginMethod, &ILoginOperation::registered, [this] {
-        ui->btnLogin->setEnabled(true);
-        ui->btnSignup->setEnabled(true);
-    });
+        new PromptWidget(tr("新用户创建成功"), this);
 
-    // 登录注册失败
-    connect(mLoginMethod, &ILoginOperation::failed, [this](const QString& msg) {
-        new PromptWidget(msg, this, PromptWidget::Alert);
-
+        ui->leRecheckPwd->clear();
         ui->btnLogin->setEnabled(true);
         ui->btnSignup->setEnabled(true);
     });
@@ -105,18 +109,17 @@ void LoginDialog::connections()
         mIsSignUp = !mIsSignUp;
 
         if (mIsSignUp) {
-            ui->lbTitle->setText(tr("新建用户"));
-            ui->btnLogin->setText(tr("新建"));
+            ui->lbTitle->setText(tr("新用户"));
+            ui->btnLogin->setText(tr("创建用户"));
             ui->btnSignup->setText(tr("返回登录"));
             ui->lePassword->clear();
+            ui->leNickName->clear();
+            ui->leRecheckPwd->clear();
         } else {
             ui->lbTitle->setText(tr("登录"));
             ui->btnLogin->setText(tr("登录"));
             ui->btnSignup->setText(tr("新建用户"));
         }
-
-        ui->leRecheckPwd->clear();
-        ui->leNickName->clear();
     });
 
     // 当登录页面退出时

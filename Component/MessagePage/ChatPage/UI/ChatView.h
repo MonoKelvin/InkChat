@@ -44,7 +44,10 @@ private:
     QLabel *mHeaderTitle;
 
     /** 顶部工具按钮 */
-    QPushButton *mBtnTool;
+    QPushButton* mBtnTool;
+
+    /** 聊天视图 */
+    QListView* mChatView;
 };
 
 #endif // CHATVIEW_H

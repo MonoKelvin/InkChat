@@ -55,9 +55,10 @@
  */
 
 * {
-    font: 14px 'Microsoft YaHei';
+    font: 10pt 'Microsoft YaHei';
     background-color: white;
     outline: none;
+    color: #2D3135;
     /* border: 1px solid red; */
     border: none;
 }
@@ -78,25 +79,25 @@ QMenu::item {
 }
 QMenu::item:selected {
     color: #fff;
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
 }
 QMenu::item:pressed {
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
 }
 QMenu::separator {
     height: 1px;
-    background: #d9e8ff;
+    background: #D9E8FF;
     margin-left: 10px;
     margin-right: 10px;
 }
 QMenu:disabled {
-    color: #a7adbd;
+    color: #A7ADBD;
 }
 
 /** LineEdit */
 QLineEdit {
     color: #3b4151;
-    background-color: #f5f6fa;
+    background-color: #F5F6FA;
     border-radius: 6px;
     padding: 0 10px;
     min-height: 40px;
@@ -122,7 +123,7 @@ QPlainTextEdit {
     color: #3b4151;
     border-radius: 10px;
     padding: 6px;
-    background-color: #f5f6fa;
+    background-color: #F5F6FA;
 }
 
 /** ScrollBar Vertical */
@@ -131,11 +132,11 @@ QScrollBar:vertical {
     max-width: 10px;
 }
 QScrollBar::handle:vertical {
-    background-color: #d9e8ff;
+    background-color: #D9E8FF;
     min-height: 10px;
 }
 QScrollBar::handle:hover {
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
 }
 QScrollBar::add-line:vertical {
     height: 0;
@@ -150,11 +151,11 @@ QScrollBar:horizontal {
     max-height: 10px;
 }
 QScrollBar::handle:horizontal {
-    background-color: #d9e8ff;
+    background-color: #D9E8FF;
     min-width: 10px;
 }
 QScrollBar::horizontal:hover {
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
 }
 QScrollBar::add-line:horizontal {
     width: 0;
@@ -165,9 +166,9 @@ QScrollBar::sub-line:horizontal {
 
 #title {
     padding: 15px;
-    font-size: 18px;
+    font-size: 13pt;
     font-weight: bold;
-    color: #a7adbd;
+    color: #A7ADBD;
 }
 
 /************************/
@@ -176,17 +177,17 @@ QScrollBar::sub-line:horizontal {
 
 /** Login Dialog */
 #showWidget {
-    background-color: #f5f6fa;
+    background-color: #F5F6FA;
 }
 LoginDialog #lbAppName {
-    font-size: 36px;
+    font-size: 26pt;
     font-weight: bold;
 }
 #lbVerse {
     color: #A7ADBD;
 }
 #lbDeveloper {
-    color: #a7adbd;
+    color: #A7ADBD;
 }
 #lbAppLogo {
     image: url(:/Icons/AppIcons/BookStudy.png);
@@ -196,7 +197,7 @@ LoginDialog #lbAppName {
     color: #ffffff;
     min-height: 40px;
     border-radius: 6px;
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
 }
 #btnLogin:hover,
 #btnSignup:hover {
@@ -213,8 +214,8 @@ LoginDialog #lbAppName {
 
 /** Navigation */
 Navigation {
-    color: #a7adbd;
-    border-right: 1px solid #d9e8ff;
+    color: #A7ADBD;
+    border-right: 2px solid #F5F6FA;
 }
 #navButton {
     min-width: 40px;
@@ -225,42 +226,30 @@ Navigation {
     background-color: transparent;
 }
 #navButton::checked {
-    background-color: #d9e8ff;
+    background-color: #D9E8FF;
 }
 
 /** Message List */
-MessageList {
-    margin-top: 15px;
+#messageList {
+    border-right: 2px solid #F5F6FA;
 }
-MessageList::item:hover {
-    background-color: #f5f6fa;
-}
-MessageList::item:selected {
-    background-color: #d9e8ff;
-}
-MessageList::item:hover:!selected {
-    background-color: #f5f6fa;
+#msgTitle {
+    /* min-height: 46px; */
+    padding: 15px;
+    font-size: 13pt;
+    font-weight: bold;
+    color: #A7ADBD;
+    background-color: #ffffff;
+    border-right: 2px solid #F5F6FA;
 }
 #btnBackTop {
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
     border-radius: 20px;
-}
-
-/** Message Item */
-MessageItem #name {
-    font-weight: bold;
-    color: #3b4151;
-    min-height: 24px;
-}
-MessageItem #message {
-    /* min-height: 24px; */
-    font-size: 12px;
-    color: #a7adbd;
 }
 
 /** Avatar */
 Avatar {
-    background-color: #d9e8ff;
+    background-color: #D9E8FF;
     border-radius: 23px;
     min-width: 46px;
     min-height: 46px;
@@ -269,24 +258,18 @@ Avatar {
 }
 
 /** Chat List */
-ChatListView {
-    margin-top: 55px;
-    border-left: 1px solid #d9e8ff;
-}
-ChatListView::item {
+ChatList::item {
     background-color: transparent;
 }
-ChatListView #header {
-    font-size: 16px;
-    color: #3b4151;
+ChatViewWidget #lbTitle {
+    font-size: 12pt;
     background-color: #ffffff;
     min-height: 55px;
-    border-left: 1px solid #d9e8ff;
-    border-bottom: 1px solid #d9e8ff;
+    border-bottom: 2px solid #F5F6FA;
 }
 #message_ta {
     color: #ffffff;
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
     border-top-right-radius: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -294,37 +277,33 @@ ChatListView #header {
 }
 #message_me {
     color: #3b4151;
-    background-color: #f5f6fa;
-    border: 1px solid #d9e8ff;
+    background-color: #F5F6FA;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 8px;
 }
 ChatItem #time {
-    font-size: 12px;
-    color: #a7adbd;
+    font-size: 8pt;
+    color: #A7ADBD;
 }
 
 /** Chat Inpu tBox */
 ChatInputBox {
-    border-top: 1px solid #d9e8ff;
-    border-left: 1px solid #d9e8ff;
+    border-top: 2px solid #F5F6FA;
 }
 ChatInputBox QPushButton {
-    border: 1px solid gray;
-    min-width: 20px;
-    min-height: 20px;
-    max-width: 20px;
-    max-height: 20px;
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 24px;
+    max-height: 24px;
     margin: 5px;
 }
 #btnSend {
-    background-color: #4d7bf5;
+    background-color: #4D7CFE;
     border-radius: 20px;
     min-height: 40px;
     min-width: 40px;
-    border: none;
 }
 
 /** Badge */
@@ -332,7 +311,7 @@ Badge {
     padding: 0 6px;
 }
 #badge {
-    font-size: 12px;
+    font-size: 8pt;
     color: #fe2a52;
     border-radius: 10px;
     background-color: #ffd6de;
@@ -349,7 +328,7 @@ Badge {
 /** Prompt Widget */
 PromptWidget {
     border-radius: 4px;
-    background-color: #4d7bf6;
+    background-color: #4D7CFE;
 }
 PromptWidget QLabel {
     color: #ffffff;
@@ -368,19 +347,19 @@ FriendInfoCard #avatar {
 FriendInfoCard QPushButton {
     min-height: 36px;
     color: #3b4151;
-    background-color: #f5f6fa;
+    background-color: #F5F6FA;
     border-radius: 6px;
 }
 FriendInfoCard QPushButton:hover {
-    background-color: #d9e8ff;
+    background-color: #D9E8FF;
 }
 FriendInfoCard QPushButton:pressed {
-    color: #4d7bf5;
-    background-color: #d9e8ff;
+    color: #4D7CFE;
+    background-color: #D9E8FF;
 }
 FriendInfoCard #line {
     max-width: 1px;
-    border-right: 2px dashed #d9e8ff;
+    border-right: 2px dashed #D9E8FF;
     margin-right: 1px;
 }
 #idBadge {
@@ -408,11 +387,11 @@ FriendInfoCard #line {
     background-color: #ffedd5;
 }
 #onlineDaysIcon {
-    background-color: #d9e8ff;
+    background-color: #D9E8FF;
 }
 #friendNum,
 #onlineDays {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12pt;
     color: #3b4151;
 }

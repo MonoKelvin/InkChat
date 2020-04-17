@@ -37,8 +37,16 @@ void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pix
     path.addEllipse(rect);
 
     painter->setRenderHints(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QBrush("#D9E8FF"));
     painter->setClipPath(path);
-    painter->drawPixmap(rect, pixmap);
+
+    // 当没有图片时绘制背景色
+    if (pixmap.isNull()) {
+        painter->drawRect(rect);
+    } else {
+        painter->drawPixmap(rect, pixmap);
+    }
 
     if (state != User::NoneState)
     {

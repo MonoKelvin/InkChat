@@ -8,6 +8,7 @@
 #include <QStylePainter>
 
 class QLabel;
+class QAbstractButton;
 
 /**
  * @brief 图片处理函数
@@ -52,11 +53,11 @@ typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
  * @param color 阴影颜色
  * @note 阴影会附加到widget的每一个子控件
  */
-void attachShadowEffect(QWidget *widget,
-                        double xoffset = 0.0,
-                        double yoffset = 0.0,
-                        double radius = 30.0,
-                        const QColor &color = "#A7ADBD");
+void attachShadowEffect(QWidget* widget,
+    double xoffset = 0.0,
+    double yoffset = 0.0,
+    double radius = 20.0,
+    const QColor& color = "#2054565A");
 
 /**
  * @brief 获取超出给定最大宽度的省略字符串
@@ -215,5 +216,12 @@ const QString getWirelessAddress(QString* mac = nullptr, QString* netName = null
  * @return 如果存在：\ / \ " * ? < > | 者9个非法字符则返回true，否则返回false
  */
 bool hasIllegalCharInFile(const QString& str);
+
+/**
+ * @brief 为按钮切换icon颜色
+ * @param btn 要切换icon颜色的按钮
+ * @param color 要切换的颜色
+ */
+void switchIconColorForButton(QAbstractButton* btn, const QColor& color);
 
 #endif // UTILITY_H

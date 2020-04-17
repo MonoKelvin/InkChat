@@ -2,6 +2,7 @@
 #include "ui_Navigation.h"
 
 #include <User.h>
+#include <Utility.h>
 
 #include <QButtonGroup>
 #include <QPushButton>
@@ -13,10 +14,7 @@ Navigation::Navigation(QWidget *parent) :
     ui->setupUi(this);
 
     mButtonGroup = new QButtonGroup(this);
-
-    connect(mButtonGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [this](int i) {
-        emit onNavigated(i);
-    });
+    connect(mButtonGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &Navigation::navigate);
 }
 
 Navigation::~Navigation()
@@ -32,6 +30,7 @@ void Navigation::addNavButton(const QIcon& icon, const QString& text)
     btn->setObjectName(QStringLiteral("navButton"));
     btn->setCursor(Qt::PointingHandCursor);
     btn->setFixedSize(40, 40);
+    btn->setIconSize(QSize(30, 30));
 
 #ifndef QT_NO_TOOLTIP
     btn->setToolTip(btn->text());
@@ -43,12 +42,21 @@ void Navigation::addNavButton(const QIcon& icon, const QString& text)
 
 void Navigation::navigate(int index)
 {
-    if (index < mButtonGroup->buttons().length()) {
-        mButtonGroup->button(index)->click();
+    int len = mButtonGroup->buttons().length();
+    if (index >= 0 && index < len) {
+        switchIconColorForButton(mButtonGroup->button(index), "#4D7CFE");
+
+        for (int j = 0; j < len; j++) {
+            if (j != index) {
+                switchIconColorForButton(mButtonGroup->button(j), "#A7ADBD");
+            }
+        }
+
+        emit navigated(index);
     }
 }
 
-void Navigation::setUser(QScopedPointer<User> user)
+void Navigation::setUser(User* user) const
 {
     ui->avatar->setOnlineState(user->getOnlineState());
     ui->lbUserName->setText(user->getNickName());
@@ -59,11 +67,9 @@ int Navigation::getCurrentNavigationIndex()
     return mButtonGroup->checkedId();
 }
 
-/*
 void Navigation::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event)
 
     USE_STYLE_SHEET
 }
-*/

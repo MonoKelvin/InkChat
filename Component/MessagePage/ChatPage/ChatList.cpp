@@ -1,19 +1,19 @@
-﻿#include "ChatView.h"
+﻿#include "ChatList.h"
 
 #include <AppSettings.h>
 #include <MessageManager.h>
 #include <MyFriend.h>
 #include <User.h>
 
-QHash<int, QByteArray> ChatView::mRegistryChatClasses;
+QHash<int, QByteArray> ChatList::mRegistryChatClasses;
 
-ChatView::ChatView(QObject* parent)
+ChatList::ChatList(QObject* parent)
     : QAbstractListModel(parent)
 {
-    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatView::onReceived);
+    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatList::onReceived);
 }
 
-ChatView::~ChatView()
+ChatList::~ChatList()
 {
     if (mChatObject) {
         mChatObject.clear();
@@ -24,7 +24,7 @@ ChatView::~ChatView()
     qDebug() << "ChatView Destroyed: " << this;
 }
 
-IChatItem* ChatView::BuildChatItem(int chatType, bool isMe, unsigned int uid)
+IChatItem* ChatList::BuildChatItem(int chatType, bool isMe, unsigned int uid)
 {
     const auto className = mRegistryChatClasses.value(chatType);
     const auto id = QMetaType::type(className);
@@ -47,7 +47,7 @@ IChatItem* ChatView::BuildChatItem(int chatType, bool isMe, unsigned int uid)
     return chat;
 }
 
-IChatItem* ChatView::BuildChatItem(int chatType, const QDateTime& time, const QVariant& data)
+IChatItem* ChatList::BuildChatItem(int chatType, const QDateTime& time, const QVariant& data)
 {
     const auto item = BuildChatItem(chatType, true, User::Instance()->getID());
     if (nullptr == item) {
@@ -60,7 +60,7 @@ IChatItem* ChatView::BuildChatItem(int chatType, const QDateTime& time, const QV
     return item;
 }
 
-IChatItem* ChatView::BuildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data)
+IChatItem* ChatList::BuildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data)
 {
     const auto item = BuildChatItem(chatType, false, uid);
     if (nullptr == item) {
@@ -73,7 +73,7 @@ IChatItem* ChatView::BuildChatItem(int chatType, unsigned int uid, const QDateTi
     return item;
 }
 
-IChatItem* ChatView::getChatItem(int index) const
+IChatItem* ChatList::getChatItem(int index) const
 {
     if (index >= 0 && index < mChats.size()) {
         return mChats.at(index);
@@ -81,7 +81,7 @@ IChatItem* ChatView::getChatItem(int index) const
     return nullptr;
 }
 
-void ChatView::removeChatItem(int row, bool cascade)
+void ChatList::removeChatItem(int row, bool cascade)
 {
     if (row >= 0 && row < mChats.size()) {
         beginRemoveRows(QModelIndex(), row, row);
@@ -96,7 +96,7 @@ void ChatView::removeChatItem(int row, bool cascade)
     }
 }
 
-bool ChatView::insertChat(int row, IChatItem* chat)
+bool ChatList::insertChat(int row, IChatItem* chat)
 {
     if (row >= 0 && row <= mChats.size()) {
         beginInsertRows(QModelIndex(), row, row);
@@ -108,19 +108,19 @@ bool ChatView::insertChat(int row, IChatItem* chat)
     return false;
 }
 
-int ChatView::rowCount(const QModelIndex& parent) const
+int ChatList::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
 
     return mChats.size();
 }
 
-void ChatView::sendChat(int chatType, const QVariant& data)
+void ChatList::sendChat(int chatType, const QVariant& data)
 {
     MessageManager::Instance()->sendMessage(this, chatType, data);
 }
 
-void ChatView::initLoad(IChatObject* chatObj)
+void ChatList::initLoad(IChatObject* chatObj)
 {
     if (mChatObject) {
         return;
@@ -131,14 +131,14 @@ void ChatView::initLoad(IChatObject* chatObj)
     fetchMore();
 }
 
-void ChatView::clearChatRecord()
+void ChatList::clearChatRecord()
 {
     clear();
 
     // TODO: 删除数据库中对应的记录
 }
 
-void ChatView::clear()
+void ChatList::clear()
 {
     beginResetModel();
     qDeleteAll(mChats.begin(), mChats.end());
@@ -146,7 +146,7 @@ void ChatView::clear()
     endResetModel();
 }
 
-void ChatView::fetchMore(const QModelIndex& parent)
+void ChatList::fetchMore(const QModelIndex& parent)
 {
     Q_UNUSED(parent)
 
@@ -154,7 +154,7 @@ void ChatView::fetchMore(const QModelIndex& parent)
     MessageManager::Instance()->loadChatRecords(this);
 }
 
-void ChatView::onReceived(IChatItem* item, const QVariantMap& sourceData)
+void ChatList::onReceived(IChatItem* item, const QVariantMap& sourceData)
 {
     bool receive = false;
     int roleType = sourceData.value(QStringLiteral("roleType")).toInt();
@@ -182,7 +182,7 @@ void ChatView::onReceived(IChatItem* item, const QVariantMap& sourceData)
     MessageManager::Instance()->saveAChatRecord(this, item);
 }
 
-QVariant ChatView::data(const QModelIndex& index, int role) const
+QVariant ChatList::data(const QModelIndex& index, int role) const
 {
     Q_UNUSED(role)
 
@@ -195,7 +195,7 @@ QVariant ChatView::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-bool ChatView::setData(const QModelIndex& index, const QVariant& value, int role)
+bool ChatList::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     if (index.row() >= 0 && index.row() < mChats.size()) {
         if (role >= 0) {

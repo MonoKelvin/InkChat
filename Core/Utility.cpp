@@ -2,6 +2,7 @@
 
 //#include <HttpRequest.h>
 
+#include <QAbstractButton>
 #include <QDateTime>
 #include <QDir>
 #include <QGraphicsDropShadowEffect>
@@ -166,4 +167,9 @@ bool copyFile(const QString& source, const QString& newFile, bool isOverWrite)
     }
 
     return file.copy(newFile);
+}
+
+void switchIconColorForButton(QAbstractButton* btn, const QColor& color)
+{
+    // TODO
 }

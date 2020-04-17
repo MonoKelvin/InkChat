@@ -1,6 +1,8 @@
 ﻿#ifndef CHATINPUTBOX_H
 #define CHATINPUTBOX_H
 
+#include <IChatItem.h>
+
 #include <QWidget>
 
 class QPushButton;
@@ -25,14 +27,24 @@ public:
     };
 
 Q_SIGNALS:
-    void onFoldup(bool enabled);
+    /**
+     * @brief 信号：当折叠或展开输入面板时发送的信号
+     * @param enabled 是否折叠
+     */
+    void foldup(bool enabled);
 
-public slots:
+    /**
+     * @brief 当发送（普通文本）消息时
+     * @param content 文本内容
+     */
+    void send(const QString& content);
+
+public Q_SLOTS:
     /**
      * @brief 收起消息输入框
      * @param enabled 开关，传入true表示收起，false则表示展开
      */
-    void foldup(bool enabled);
+    void onFoldup(bool enabled);
 
 protected:
     void moveEvent(QMoveEvent *event) override;

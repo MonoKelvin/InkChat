@@ -20,12 +20,6 @@ public:
     ~Navigation();
 
     /**
-     * @brief 导航动作
-     * @param index 按钮索引
-     */
-    void navigate(int index);
-
-    /**
      * @brief 添加一个导航按钮
      * @param icon 按钮显示的图标
      * @param text 按钮显示的文字
@@ -37,7 +31,7 @@ public:
      * @param user 用户
      * @note 若不想添加到默认位置，可以不设置该值，而是用@see pullWidget()添加到头部。
      */
-    void setUser(QScopedPointer<User> user);
+    void setUser(User* user) const;
 
     /**
      * 返回当前选中的导航按钮索引，如果没有选中则返回-1
@@ -45,15 +39,24 @@ public:
      */
     int getCurrentNavigationIndex(void);
 
+public Q_SLOTS:
+    /**
+     * @brief 导航动作
+     * @param index 导航按钮的索引
+     * @see navigated
+     */
+    void navigate(int index);
+
 Q_SIGNALS:
     /**
-     * @brief 当点击导航按钮进行导航时发送的信号
+     * @brief 信号：当点击导航按钮或手动触发navigate方法时进行导航时发送的信号
      * @param index 导航按钮的索引
+     * @see navigate 
      */
-    void onNavigated(int index);
+    void navigated(int index);
 
-    //protected:
-    //    void paintEvent(QPaintEvent* event) override;
+protected:
+    void paintEvent(QPaintEvent* event) override;
 
 private:
     Ui::Navigation *ui;
