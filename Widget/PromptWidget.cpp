@@ -22,15 +22,15 @@ PromptWidget::PromptWidget(const QString& content, QWidget* parent, PromptWidget
 
 void PromptWidget::show()
 {
-    QSize pwSize = parentWidget()->size();
-    int xOffset = (pwSize.width() - this->width()) / 2;
+    const QSize pwSize = parentWidget()->size();
+    const int xOffset = (pwSize.width() - this->width()) / 2;
     QRect oriRect = QRect(xOffset, pwSize.height() + 10, this->width(), this->height());
 
     QPropertyAnimation *showAni = new QPropertyAnimation(this, "geometry", this);
     showAni->setDuration(300);
     showAni->setStartValue(oriRect);
 
-    int yOffset = this->height() + ESpacing::Wide;
+    const int yOffset = this->height() + ESpacing::Wide;
     oriRect.setTop(oriRect.top() - yOffset);
     oriRect.setBottom(oriRect.bottom() - yOffset);
     showAni->setEndValue(oriRect);

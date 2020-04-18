@@ -104,7 +104,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
             path.lineTo(rect.topRight() - QPointF(10, 0));
             path.lineTo(rect.topRight() + QPointF(0, 10));
             path.lineTo(rect.topRight());
-            painter->setBrush(QColor("#4D7CFE"));
+            painter->setBrush(QColor("#F5F6FA"));
             painter->drawPath(path);
         }
 
@@ -124,7 +124,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         if (!itemData->mReadFlag) {
             const QString msgCountStr = QString::number(itemData->mUnreadMsgCount);
 
-            mcRect.setTop(ch + ESpacing::Tiny);
+            mcRect.setTop(ch);
             mcRect.setRight(rect.width() - ESpacing::Narrow);
             mcRect.setHeight(getFontPixelHeight(f));
             mcRect.setWidth(getFontPixelWidth(f, msgCountStr) + ESpacing::Narrow);
@@ -144,12 +144,13 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
         // 绘制消息概要
         QRect msgRect;
+        const QString& msg = itemData->mMessage.isEmpty() ? tr("【暂无最近消息】") : itemData->mMessage;
         msgRect.setLeft(avtRect.right() + ESpacing::Narrow);
-        msgRect.setTop(ch + ESpacing::Tiny);
+        msgRect.setTop(ch);
         msgRect.setRight(mcRect.left() + ESpacing::Std);
         msgRect.setBottom(rect.height() - ESpacing::Std);
         painter->setPen(QColor("#A7ADBD"));
-        painter->drawText(msgRect, Qt::AlignLeft | Qt::AlignTop, getElidedText(itemData->mMessage, f, msgRect.width()));
+        painter->drawText(msgRect, Qt::AlignLeft | Qt::AlignTop, getElidedText(msg, f, msgRect.width()));
 
         // 绘制名称
         QRect nameRect;

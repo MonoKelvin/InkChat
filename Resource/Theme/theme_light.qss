@@ -3,7 +3,7 @@
  * - 亮色主题配色表 -
  * 背景色：#ffffff
  * 主蓝色：#4D7CFE
- * 次蓝色：#D9E8FF
+ * 次蓝色：#E5ECFF
  * 主橘色：#FFAB2E
  * 次橘色：#FFEDD5
  * 主红色：#FE2B52
@@ -86,7 +86,7 @@ QMenu::item:pressed {
 }
 QMenu::separator {
     height: 1px;
-    background: #D9E8FF;
+    background: #E5ECFF;
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -111,7 +111,7 @@ QLabel {
 /** ToolTip */
 QToolTip {
     color: rgb(30, 40, 70);
-    border: 1px solid rgba(180, 180, 180, 100);
+    border: 1px solid #A7ADBD;
     padding: 5px;
     border-radius: 4px;
     opacity: 150;
@@ -132,7 +132,7 @@ QScrollBar:vertical {
     max-width: 10px;
 }
 QScrollBar::handle:vertical {
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
     min-height: 10px;
 }
 QScrollBar::handle:hover {
@@ -151,7 +151,7 @@ QScrollBar:horizontal {
     max-height: 10px;
 }
 QScrollBar::handle:horizontal {
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
     min-width: 10px;
 }
 QScrollBar::horizontal:hover {
@@ -226,7 +226,7 @@ Navigation {
     background-color: transparent;
 }
 #navButton::checked {
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
 }
 
 /** Message List */
@@ -249,7 +249,7 @@ Navigation {
 
 /** Avatar */
 Avatar {
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
     border-radius: 23px;
     min-width: 46px;
     min-height: 46px;
@@ -267,7 +267,20 @@ ChatViewWidget #lbTitle {
     min-height: 55px;
     border-bottom: 2px solid #F5F6FA;
 }
-#message_ta {
+#lbEmptyChat {
+    font-size: 14pt;
+    color: #A7ADBD;
+    font-weight: bold;
+    background-image: url("App/icon/empty_page.png");
+    background-repeat:no-repeat;
+    background-position:center;
+    padding-top: 230px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/** Chat Item */
+TextChatItem #chatItem_ta {
     color: #ffffff;
     background-color: #4D7CFE;
     border-top-right-radius: 10px;
@@ -275,17 +288,13 @@ ChatViewWidget #lbTitle {
     border-bottom-right-radius: 10px;
     padding: 8px;
 }
-#message_me {
+TextChatItem #chatItem_me {
     color: #3b4151;
     background-color: #F5F6FA;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 8px;
-}
-ChatItem #time {
-    font-size: 8pt;
-    color: #A7ADBD;
 }
 
 /** Chat Inpu tBox */
@@ -297,13 +306,26 @@ ChatInputBox QPushButton {
     min-height: 24px;
     max-width: 24px;
     max-height: 24px;
-    margin: 5px;
+    border-radius: 4px;
+    padding: 2px;
+}
+ChatInputBox QPushButton:hover {
+    background-color: #F5F6FA;
+}
+ChatInputBox QPushButton:pressed {
+    background-color: #E5ECFF;
 }
 #btnSend {
     background-color: #4D7CFE;
     border-radius: 20px;
     min-height: 40px;
     min-width: 40px;
+}
+#btnSend:hover {
+    background-color: #658eff;
+}
+#benSend:pressed {
+    background-color: #3F6EEE;
 }
 
 /** Badge */
@@ -322,7 +344,7 @@ Badge {
     max-width: 8px;
     max-height: 8px;
     border-radius: 4px;
-    background-color: #4d7bf6;
+    background-color: #4D7CFE;
 }
 
 /** Prompt Widget */
@@ -351,15 +373,15 @@ FriendInfoCard QPushButton {
     border-radius: 6px;
 }
 FriendInfoCard QPushButton:hover {
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
 }
 FriendInfoCard QPushButton:pressed {
     color: #4D7CFE;
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
 }
 FriendInfoCard #line {
     max-width: 1px;
-    border-right: 2px dashed #D9E8FF;
+    border-right: 2px dashed #E5ECFF;
     margin-right: 1px;
 }
 #idBadge {
@@ -387,7 +409,7 @@ FriendInfoCard #line {
     background-color: #ffedd5;
 }
 #onlineDaysIcon {
-    background-color: #D9E8FF;
+    background-color: #E5ECFF;
 }
 #friendNum,
 #onlineDays {

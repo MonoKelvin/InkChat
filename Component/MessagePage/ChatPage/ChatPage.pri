@@ -1,5 +1,4 @@
-INCLUDEPATH *= \
-    $$PWD/
+INCLUDEPATH *= $$PWD
 
 HEADERS += \
     $$PWD/ChatList.h \

@@ -9,21 +9,20 @@ class ChatViewWidget;
 
 class ChatList;
 class IChatItem;
+class IChatObject;
 
 class ChatViewWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ChatViewWidget(QWidget *parent = nullptr);
+    explicit ChatViewWidget(QWidget* parent = nullptr);
     ~ChatViewWidget() override;
 
-public Q_SLOTS:
-    /**
-     * @brief 当发送（普通文本）消息时
-     * @param msg 要发送的文本消息
-     */
-    void onSend(const QString& msg);
+    ChatList* getChatListModel(void) const
+    {
+        return mChatListModel;
+    }
 
 protected:
     void resizeEvent(QResizeEvent* e) override;

@@ -44,6 +44,7 @@ void Navigation::navigate(int index)
 {
     int len = mButtonGroup->buttons().length();
     if (index >= 0 && index < len) {
+        mButtonGroup->button(index)->toggle();
         switchIconColorForButton(mButtonGroup->button(index), "#4D7CFE");
 
         for (int j = 0; j < len; j++) {

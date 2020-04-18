@@ -6,7 +6,7 @@
 
 #include <QSqlError>
 
-QPointer<MessageItem> MessageList::mCurrentSelectedItem;
+//QPointer<MessageItem> MessageList::mCurrentSelectedItem;
 
 MessageList::MessageList(QObject* parent)
     : QAbstractListModel(parent)
@@ -31,9 +31,9 @@ void MessageList::clearMessage()
     mMessages.clear();
     endResetModel();
 
-    if (mCurrentSelectedItem) {
+    /*if (mCurrentSelectedItem) {
         mCurrentSelectedItem->deleteLater();
-    }
+    }*/
 }
 
 void MessageList::removeMessage(int index)
@@ -98,7 +98,7 @@ void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
     message->mChatObject->setIsTop(isTop);
 }
 
-MessageItem* MessageList::getCurrentSelectedItem() const
+/*MessageItem* MessageList::getCurrentSelectedItem() const
 {
     return mCurrentSelectedItem.data();
 }
@@ -106,7 +106,7 @@ MessageItem* MessageList::getCurrentSelectedItem() const
 QSharedPointer<IChatObject> MessageList::GetCurrentChatObject()
 {
     return mCurrentSelectedItem->mChatObject;
-}
+}*/
 
 MessageItem* MessageList::getMessage(int index) const
 {
@@ -152,7 +152,7 @@ QHash<int, QByteArray> MessageList::roleNames() const
     return names;
 }
 
-void MessageList::setCurrentSelectedIndex(int index)
+/*void MessageList::setCurrentSelectedIndex(int index)
 {
     if (index >= 0 && index < mMessages.size()) {
         mCurrentSelectedItem = mMessages.at(index);
@@ -164,7 +164,7 @@ void MessageList::setCurrentSelectedIndex(int index)
 int MessageList::getCurrentSelectedIndex()
 {
     return mMessages.indexOf(mCurrentSelectedItem);
-}
+}*/
 
 void MessageList::ariseMessage(MessageItem* message)
 {

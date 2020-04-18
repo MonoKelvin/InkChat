@@ -92,11 +92,8 @@ public:
         : QAbstractItemDelegate(parent)
     {
     }
-    ~MessageItemDelegate() override = default;
 
-    enum {
-        MessageItemRole = Qt::UserRole + 100
-    };
+    enum { MessageItemRole = Qt::UserRole + 100 };
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 

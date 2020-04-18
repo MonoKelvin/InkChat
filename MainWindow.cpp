@@ -1,16 +1,23 @@
 ﻿#include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include <AppSettings.h>
+#include <ChatList.h>
 #include <MessageDatabase.h>
 #include <MessageItem.h>
 #include <MessageList.h>
+#include <UI/ChatViewWidget.h>
 #include <User.h>
 #include <Utility.h>
 #include <Widget/PromptWidget.h>
 
+// 聊天控件
+#include <TextChatItem.h>
+
 #include <QListView>
 #include <QMenu>
 #include <QScrollBar>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -49,16 +56,65 @@ MainWindow::MainWindow(QWidget *parent)
     //     }
     // });
 
+    // 注册聊天控件，TODO: 添加更多
+    REGISTER_CHATITEM(TextChatItem);
+
     connect(ui->navigation, &Navigation::navigated, ui->stackedWidget, &QStackedWidget::setCurrentIndex);
+    connect(ui->messageList, &QListView::clicked, this, &MainWindow::onMessageItemActived);
     connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
 }
 
 MainWindow::~MainWindow()
 {
+    mChatPages.clear();
+
     delete ui;
 }
 
 void MainWindow::onFailed(const QString& msg)
 {
     new PromptWidget(msg, this);
+}
+
+void MainWindow::onMessageItemActived(const QModelIndex& index)
+{
+    if (!index.isValid()) {
+        ui->lbEmptyChat->setVisible(true);
+        return;
+    }
+
+    // 关闭提示和其他聊天视图，如果有缓存就直接显示缓存的内容
+    bool isChatPageExists = false;
+    ui->lbEmptyChat->setVisible(false);
+    const auto& msgItem = index.data(MessageItemDelegate::MessageItemRole).value<MessageItem*>();
+    for (int i = 0; i < mChatPages.length(); i++) {
+        mChatPages.at(i)->setVisible(false);
+        if (mChatPages.at(i)->getChatListModel()->getChatObject() == msgItem->getChatObject()) {
+            mChatPages.at(i)->setVisible(true);
+            isChatPageExists = true;
+
+            // 把最近使用的页面放置在最前
+            mChatPages.move(i, 0);
+        }
+    }
+
+    // 如果没有缓存就新建一个聊天视图
+    if (!isChatPageExists) {
+        ChatViewWidget* cvw = new ChatViewWidget(this);
+        ui->messagePage->layout()->addWidget(cvw);
+        cvw->getChatListModel()->initLoad(msgItem->getChatObject());
+
+        // 缓存
+        int max = AppSettings::Value(QStringLiteral("App/maxChatPageCount"), 3).toInt();
+        max = max > 1 ? (max < 32 ? max : 32) : 1;
+
+        if (mChatPages.length() > max) {
+            mChatPages.last()->deleteLater();
+            mChatPages.removeLast();
+        }
+        mChatPages.append(cvw);
+    }
+
+    // 更新布局
+    //updateLayout(this);
 }

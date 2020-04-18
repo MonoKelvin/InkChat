@@ -3,28 +3,20 @@
 #include <Configuation.h>
 #include <Utility.h>
 
-#include <QPushButton>
-#include <QPlainTextEdit>
 #include <QGridLayout>
+#include <QPlainTextEdit>
+#include <QPropertyAnimation>
+#include <QPushButton>
+#include <QSequentialAnimationGroup>
 #include <QSpacerItem>
 
-ChatInputBox::ChatInputBox(QWidget *parent)
+ChatInputBox::ChatInputBox(QWidget* parent)
     : QWidget(parent)
-    , mDisplayMode(EDisplayMode::Expand)
 {
     setFixedHeight(150);
     setAutoFillBackground(true);
 
-    const QSize iconSize(24, 24);
-
-    // mBtnSend = new QPushButton(this->parentWidget());
-    mBtnSend = new QPushButton(this);
-    mBtnSend->setObjectName(QStringLiteral("btnSend"));
-    mBtnSend->setCursor(Qt::PointingHandCursor);
-    mBtnSend->setFixedSize(40, 40);
-    mBtnSend->setIcon(QIcon::fromTheme(QStringLiteral("send")));
-    mBtnSend->setIconSize(QSize(30, 30));
-    mBtnSend->raise();
+    const QSize iconSize(20, 20);
 
     QGridLayout *gridLayout = new QGridLayout(this);
 
@@ -73,8 +65,25 @@ ChatInputBox::ChatInputBox(QWidget *parent)
     mBtnExpand->setIconSize(iconSize);
     gridLayout->addWidget(mBtnExpand, 0, 5, 1, 1);
 
+    mBtnSend = new QPushButton(this->parentWidget());
+    mBtnSend->setObjectName(QStringLiteral("btnSend"));
+    mBtnSend->setCursor(Qt::PointingHandCursor);
+    mBtnSend->setFixedSize(40, 40);
+    mBtnSend->setIcon(QIcon::fromTheme(QStringLiteral("send")));
+    mBtnSend->setIconSize(QSize(24, 24));
+    mBtnSend->raise();
+    attachShadowEffect(mBtnSend, 0, 5.0, 20.0, QColor("#4D7CFE").lighter(120));
+
     connect(mBtnExpand, &QPushButton::toggled, this, &ChatInputBox::onFoldup);
-    connect(mBtnSend, &QPushButton::clicked, [this] { emit send(mChatInputer->toPlainText()); });
+    connect(mBtnSend, &QPushButton::clicked, [this] {
+        if (mChatInputer->toPlainText().isEmpty()) {
+            return;
+        }
+
+        emit send(mChatInputer->toPlainText());
+
+        mChatInputer->clear();
+    });
 
     moveEvent(nullptr);
     _oldH = height();
@@ -82,9 +91,8 @@ ChatInputBox::ChatInputBox(QWidget *parent)
 
 void ChatInputBox::onFoldup(bool enabled)
 {
-    if (enabled && mDisplayMode == EDisplayMode::Expand) {
+    if (enabled) {
         setFixedHeight(mChatInputer->y());
-        mDisplayMode = EDisplayMode::Foldup;
 
         // 设置控件状态
         mBtnSend->setVisible(false);
@@ -96,13 +104,11 @@ void ChatInputBox::onFoldup(bool enabled)
         mBtnExpand->setIcon(QIcon::fromTheme(QStringLiteral("up")));
 
         parentWidget()->adjustSize();
-    } else if (!enabled && mDisplayMode != EDisplayMode::Expand) {
+    } else {
         setFixedHeight(_oldH);
-        mDisplayMode = EDisplayMode::Expand;
 
         mBtnSend->setVisible(true);
         mChatInputer->setVisible(true);
-
         mBtnText->setEnabled(true);
         mBtnImage->setEnabled(true);
         mBtnVideo->setEnabled(true);
@@ -119,8 +125,8 @@ void ChatInputBox::moveEvent(QMoveEvent *event)
 {
     Q_UNUSED(event)
 
-    mBtnSend->move(geometry().right() - mBtnSend->width() - ESpacing::Wide,
-        height() - mBtnSend->height() - ESpacing::Wide);
+    mBtnSend->move(geometry().right() - mBtnSend->width() - ESpacing::Std,
+        y() - mBtnSend->height() - ESpacing::Std);
 }
 
 void ChatInputBox::paintEvent(QPaintEvent *event)

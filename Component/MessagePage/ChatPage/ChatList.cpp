@@ -102,6 +102,8 @@ bool ChatList::insertChat(int row, IChatItem* chat)
         beginInsertRows(QModelIndex(), row, row);
         mChats.insert(row, chat);
         endInsertRows();
+
+        emit chatAdded(row);
         return true;
     }
 

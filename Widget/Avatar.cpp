@@ -38,7 +38,7 @@ void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pix
 
     painter->setRenderHints(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(QBrush("#D9E8FF"));
+    painter->setBrush(QBrush("#E5ECFF"));
     painter->setClipPath(path);
 
     // 当没有图片时绘制背景色

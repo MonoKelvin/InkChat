@@ -11,30 +11,15 @@
 class TextChatItem : public IChatItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString text READ getText CONSTANT)
 
-    CHATITEM_OBJECT(TextChatItem)
-
+    CHATITEM_OBJECT(TextChatItem, Text)
 public:
-    inline const QString getText() const { return mText; }
-    inline void setText(const QString& text) { mText = text; }
-
     void praseData(const QVariant& data) override;
-    const QVariant getData() override;
+    const QVariant getData(void) override;
 
-    unsigned int getChatType() const override
-    {
-        return ChatType;
-    }
-
-    inline const QString qmlFile() override
-    {
-        return QStringLiteral("TextChatItem.qml");
-    }
+    const QRect paintContent(QPainter* painter, const QRect& availableRect) override;
 
 private:
-    enum { ChatType = Text };
-
     /** 聊天的文本内容 */
     QString mText;
 };

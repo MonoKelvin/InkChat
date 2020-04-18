@@ -5,6 +5,9 @@
 
 #include <QAbstractListModel>
 
+/** 注册聊天控件类 */
+#define REGISTER_CHATITEM(_ChatItemClassName_) ChatList::RegisterChatItemClass<_ChatItemClassName_>()
+
 class ChatList : public QAbstractListModel {
     Q_OBJECT
     Q_DISABLE_COPY_MOVE(ChatList)
@@ -24,7 +27,7 @@ public:
      * @param chat 聊天项
      * @return bool 插入成功返回true，否则返回false
      * @warning 实际情况中尽量不要使用该函数，因为消息的增加几乎发生在从聊天视图的底部推送。
-     * @see sendChat
+     * @see sendChat、appendChat
      */
     bool insertChat(int row, IChatItem* chat);
 
@@ -122,6 +125,29 @@ public:
     int rowCount(const QModelIndex& parent) const override;
 
     /**
+     * @brief 获取当前聊天视图的聊天对象
+     * @return IChatObject* 返回聊天对象的指针
+     * @note 如果不使用void load(IChatObject* chatObj);方法加载视图，则返回结果为空。即
+     * 设置聊天对象方法应当使用load替代，那么一旦设置后无法更改了。
+     * @see load()
+     */
+    inline IChatObject* getChatObject(void) const
+    {
+        return mChatObject.data();
+    }
+
+    /**
+     * @brief 直接在尾部追加一条消息，不会改变数据库的内容
+     * @param chat 要追加的聊天消息
+     */
+    inline void appendChat(IChatItem* chat)
+    {
+        insertChat(mChats.size(), chat);
+    }
+
+public Q_SLOTS:
+
+    /**
      * @brief 发送一条文本聊天消息，会改变数据库的内容
      * @param msg 普通文本消息
      * @note 该方法是最常用来发送普通消息或富文本
@@ -138,29 +164,6 @@ public:
      * @note 该方法为通用方法，可以发送普通文本、富文本、图片和文件等控件
      */
     void sendChat(int chatType, const QVariant& data);
-
-    /**
-     * @brief 获取当前聊天视图的聊天对象
-     * @return IChatObject* 返回聊天对象的指针
-     * @note 如果不使用void load(IChatObject* chatObj);方法加载视图，则返回结果为空。即
-     * 设置聊天对象方法应当使用load替代，那么一旦设置后无法更改了。
-     * @see load()
-     */
-    inline IChatObject* getChatObject(void) const
-    {
-        return mChatObject.data();
-    }
-
-    /**
-     * @brief 直接在尾部追加一条消息，不会改变数据库的内容
-     * @param chat 要追加的聊天消息
-     * @note 该方法通常作为接收消息使用，每调用一次就发射 @see chatAdded 信号
-     */
-    inline void appendChat(IChatItem* chat)
-    {
-        insertChat(mChats.size(), chat);
-        emit chatAdded(chat->mChatObject->getRoleType() == IChatObject::Me);
-    }
 
 protected:
     QVariant data(const QModelIndex& index, int role) const override;
@@ -183,11 +186,11 @@ Q_SIGNALS:
 
     /** 
      * @brief 信号：当聊天消息增加时
-     * @param 是否是我发出的消息
+     * @param row 增加时的行数
      */
-    void chatAdded(bool isMe);
+    void chatAdded(int row);
 
-protected Q_SLOTS:
+public Q_SLOTS:
     /**
      * @brief 加载更多
      * @param parent 可以忽视该参数
@@ -202,7 +205,7 @@ protected Q_SLOTS:
     void onReceived(IChatItem* item, const QVariantMap& sourceData);
 
     /**
-     * @brief c初始化加载与给定用户的聊天消息
+     * @brief 初始化加载与给定用户的聊天消息
      * @param chatObj 聊天对象
      * @note 一般来说只用一次
      */

@@ -173,3 +173,21 @@ void switchIconColorForButton(QAbstractButton* btn, const QColor& color)
 {
     // TODO
 }
+
+void drawRoundRect(QPainter* painter, const QRect& rect, int lt, int rt, int lb, int rb)
+{
+    QPainterPath path;
+
+    path.moveTo(rect.bottomRight() - QPointF(0, rb));
+    path.lineTo(rect.topRight() + QPointF(0, rt));
+    path.arcTo(QRectF(QPointF(rect.topRight() - QPointF(rt * 2, 0)), QSize(rt * 2, rt * 2)), 0, 90);
+    path.lineTo(rect.topLeft() + QPointF(lt, 0));
+    path.arcTo(QRectF(QPointF(rect.topLeft()), QSize(lt * 2, lt * 2)), 90, 90);
+    path.lineTo(rect.bottomLeft() - QPointF(0, lb));
+    path.arcTo(QRectF(QPointF(rect.bottomLeft() - QPointF(0, lb * 2)), QSize(lb * 2, lb * 2)), 180, 90);
+    path.lineTo(rect.bottomLeft() + QPointF(lb, 0));
+    path.arcTo(QRectF(QPointF(rect.bottomRight() - QPointF(lb * 2, lb * 2)), QSize(lb * 2, lb * 2)), 270, 90);
+
+    painter->fillPath(path, painter->brush());
+    painter->drawPath(path);
+}

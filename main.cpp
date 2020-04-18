@@ -7,6 +7,21 @@
 #include <QFile>
 #include <QPushButton>
 
+// 实时调试样式表
+void debugStyleSheet(QWidget* parent)
+{
+    QPushButton* btn = new QPushButton("重新加载样式表", parent);
+    btn->show();
+    btn->resize(120, 40);
+    QObject::connect(btn, &QPushButton::clicked, [&] {
+        QFile f("../InkChat/Resource/Theme/theme_light.qss");
+        if (f.open(QFile::ReadOnly)) {
+            qApp->setStyleSheet(f.readAll());
+        }
+    });
+    btn->click();
+}
+
 int main(int argc, char *argv[])
 {
     // QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -18,21 +33,7 @@ int main(int argc, char *argv[])
     {
         // 登录页面
         LoginDialog loginPage;
-
-        //////////////////////////////////////////////////////////
-        // 实时调试样式表
-        //////////////////////////////////////////////////////////
-        QPushButton btn("重新加载样式表", &loginPage);
-        btn.show();
-        btn.resize(200, 100);
-        QObject::connect(&btn, &QPushButton::clicked, [&] {
-            QFile f("../InkChat/Resource/Theme/theme_light.qss");
-            if (f.open(QFile::ReadOnly)) {
-                a.setStyleSheet(f.readAll());
-            }
-        });
-        btn.click();
-        //////////////////////////////////////////////////////////
+        debugStyleSheet(&loginPage);
 
         loginPage.exec();
 
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
     // 主页面
     MainWindow w;
     w.show();
+    debugStyleSheet(&w);
 
     return a.exec();
 }

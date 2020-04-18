@@ -103,12 +103,18 @@
         </layout>
        </item>
        <item>
-        <widget class="ChatViewWidget" name="chatView" native="true">
+        <widget class="QLabel" name="lbEmptyChat">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="text">
+          <string>选择左侧的消息开始聊天</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -126,12 +132,6 @@
    <class>Navigation</class>
    <extends>QWidget</extends>
    <header location="global">Navigation.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ChatViewWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">ChatViewWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

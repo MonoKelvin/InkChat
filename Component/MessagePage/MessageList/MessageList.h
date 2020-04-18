@@ -136,9 +136,9 @@ public:
         return mMessages.size();
     }
 
-    MessageItem* getCurrentSelectedItem(void) const;
+    //MessageItem* getCurrentSelectedItem(void) const;
 
-    static QSharedPointer<IChatObject> GetCurrentChatObject(void);
+    //static QSharedPointer<IChatObject> GetCurrentChatObject(void);
 
 Q_SIGNALS:
     void saved();
@@ -164,13 +164,13 @@ protected:
      * @param index 选中item的索引
      * @note 设置后并不会直观的改变列表界面中任何显示的内容
      */
-    void setCurrentSelectedIndex(int index);
+    //void setCurrentSelectedIndex(int index);
 
     /**
      * @brief 获得当前选中的item的索引
      * @return int 选中item的索引
      */
-    int getCurrentSelectedIndex(void);
+    //int getCurrentSelectedIndex(void);
 
     /**
      * @brief 调整给定的消息
@@ -198,7 +198,7 @@ private:
      * @brief 当前被选中的item
      * @note 方便更新列表时也更新item索引，同时判断当前打开的聊天视图，在收发数据时数据有用
      */
-    static QPointer<MessageItem> mCurrentSelectedItem;
+    //static QPointer<MessageItem> mCurrentSelectedItem;
 };
 
 #endif // MESSAGELIST_H

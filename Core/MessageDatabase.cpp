@@ -183,9 +183,6 @@ void MessageDatabase::loadLanMessageItems(MessageList* list)
         item->mReadFlag = query.value(3).toBool();
         item->mTime = GetMessageTime(query.value(4).toDateTime());
         item->mMessage = query.value(5).toString();
-        if (item->mMessage.isEmpty()) {
-            item->mMessage = tr("【暂无最近消息】");
-        }
 
         list->appendMessage(item);
     }

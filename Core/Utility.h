@@ -17,6 +17,18 @@ class QAbstractButton;
  */
 typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
 
+/** 向上取整，返回的是int类型 */
+#define Ceil(x) int(float(x) + 0.500000f)
+
+/** 安全删除指针 */
+#define SAFE_DELETE(_Pointer_)   \
+    do {                         \
+        if (_Pointer_) {         \
+            delete _Pointer_;    \
+            _Pointer_ = nullptr; \
+        }                        \
+    } while (0)
+
 // 解析消息出错时发送失败信号
 #define EMIT_FAILED_MESSAGE(_JsonDoc_, _FailSignal_)                        \
     do {                                                                    \
@@ -180,18 +192,6 @@ inline const QString encryptTextByMD5(const QString& source, bool isHalf = false
  */
 const QString GetMessageTime(const QDateTime& time);
 
-/** 向上取整，返回的是int类型 */
-#define Ceil(x) int(float(x) + 0.500000f)
-
-/** 安全删除指针 */
-#define SAFE_DELETE(_Pointer_)   \
-    do {                         \
-        if (_Pointer_) {         \
-            delete _Pointer_;    \
-            _Pointer_ = nullptr; \
-        }                        \
-    } while (0)
-
 /**
  * @brief 选择一个可用的端口号
  * @param defaultPort 默认端口号。如果该端口号没被占用就直接返回，否则从系统中选择一个未被占
@@ -223,5 +223,16 @@ bool hasIllegalCharInFile(const QString& str);
  * @param color 要切换的颜色
  */
 void switchIconColorForButton(QAbstractButton* btn, const QColor& color);
+
+/**
+ * @brief 绘制圆角矩形
+ * @param painter 画笔
+ * @param rect 矩形
+ * @param lt 左上角圆弧
+ * @param rt 右上角圆弧
+ * @param lb 左下角圆弧
+ * @param rb 右下角圆弧
+ */
+void drawRoundRect(QPainter* painter, const QRect& rect, int lt = 10, int rt = 10, int lb = 10, int rb = 10);
 
 #endif // UTILITY_H

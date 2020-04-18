@@ -1,7 +1,6 @@
 ﻿#include "MessageManager.h"
 
 #include <ChatList.h>
-#include <InkChatApi.h>
 #include <MessageDatabase.h>
 #include <User.h>
 
@@ -24,7 +23,7 @@ MessageManager::MessageManager(QObject* parent)
 
 MessageManager::~MessageManager()
 {
-    qDebug() << "ChatManager Destroyed";
+    qDebug() << "MessageManager Destroyed";
 }
 
 qint64 MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)

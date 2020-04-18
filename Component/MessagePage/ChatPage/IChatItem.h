@@ -3,16 +3,22 @@
 
 #include <IChatObject.h>
 
+#include <QAbstractItemDelegate>
 #include <QDateTime>
 #include <QPointer>
 
 /** 继承自IChatItem的子类必须使用该宏，否则无法注册到聊天视图中 */
-#define CHATITEM_OBJECT(_ClassName_)                             \
-public:                                                          \
-    Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr); \
-                                                                 \
-private:                                                         \
-    friend class ChatList;
+#define CHATITEM_OBJECT(_ClassName_, _ChatType_)                       \
+public:                                                                \
+    Q_INVOKABLE explicit _ClassName_(QObject* parent = nullptr);       \
+    unsigned int getChatType(void) const override { return ChatType; } \
+                                                                       \
+private:                                                               \
+    friend class ChatItemDelegate;                                     \
+    friend class ChatList;                                             \
+    enum { ChatType = _ChatType_ };
+
+class QPainter;
 
 /**
  * @brief 聊天消息基类，可以实现自定义聊天内容。比如消息气泡，文件、图片、视频等聊天内容
@@ -22,6 +28,7 @@ class IChatItem : public QObject
     Q_OBJECT
 
     friend class ChatList;
+    friend class ChatItemDelegate;
     friend class MessageManager;
     friend class MessageDatabase;
 
@@ -47,20 +54,17 @@ public:
         UserEntry, // 用户进入局域网
         UserLeft, // 用户离开局域网
     };
-    Q_ENUM(EBaseChatType)
 
     /**
      * @brief 聊天消息发送状态枚举
      */
-    enum ESendState
-    {
-        Sending,  // 正在发送
-        Succeed,  // 发送成功
-        Failed,   // 发送失败
+    enum ESendState {
+        Sending, // 正在发送
+        Succeed, // 发送成功
+        Failed, // 发送失败
         Withdraw, // 撤回
         Rejected, // 发送被拒绝，一般被拒绝的是文件，其他内容谨慎使用
     };
-    Q_ENUM(ESendState)
 
     /**
      * @brief 获得聊天类型
@@ -99,7 +103,15 @@ public:
      * @return 返回qml组件文件。
      * @note 该组件文件必须包含在qrc文件中
      */
-    virtual const QString qmlFile() = 0;
+    //virtual const QString qmlFile() = 0;
+
+    /**
+     * @brief 绘制内容。针对于QWidget作为界面开发使用
+     * @param painter 画笔，需要使用save、restore来暂存设置
+     * @param availableRect 可用矩形，即聊天内容可以使用范围，其中可以忽略高度参数
+     * @return const QRect 内容矩形
+     */
+    virtual const QRect paintContent(QPainter* painter, const QRect& availableRect) = 0;
 
     /**
      * @brief 接收数据抽象方法，旨在从网络信道接收数据，解析后给成员赋值。
@@ -136,17 +148,6 @@ protected:
      * @brief 聊天项类型
      * @note 子类必须设置ChatType为不同值来作为聊天项角色标记，若有多个自定义类，需要为每一
      * 个ChatType重新定义不同的值。且所有值必须大于 @see Qt::UserRole
-     * @example
-     *
-     * class MyChatItem : public IChatItem
-     * {
-     * protected:
-     *      enum { ChatType = Qt::UserRole + 1 }
-     *
-     *      // ...
-     * public:
-     *      unsigned int getChatType() const { return ChatType; }
-     * }
      */
     enum { ChatType = Qt::UserRole };
 
@@ -169,6 +170,25 @@ protected:
 
     /** 发送聊天消息的对象 */
     QPointer<IChatObject> mChatObject;
+};
+
+/**
+ * @brief 聊天消息代理
+ */
+class ChatItemDelegate : public QAbstractItemDelegate {
+public:
+    explicit ChatItemDelegate(QWidget* parent = nullptr);
+    ~ChatItemDelegate() override;
+
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+
+protected:
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+
+    enum { ChatItemType = Qt::UserRole + 101 };
+
+protected:
+    mutable QSize mCurrentSize;
 };
 
 #endif // ICHATITEM_H

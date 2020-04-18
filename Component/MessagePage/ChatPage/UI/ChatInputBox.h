@@ -16,16 +16,6 @@ class ChatInputBox : public QWidget
 public:
     explicit ChatInputBox(QWidget *parent = nullptr);
 
-    /**
-     * @brief 显示模式
-     */
-    enum EDisplayMode
-    {
-        Expand, // 展开
-        Foldup, // 收起
-        Simple, // 精简 TODO: next version
-    };
-
 Q_SIGNALS:
     /**
      * @brief 信号：当折叠或展开输入面板时发送的信号
@@ -71,9 +61,6 @@ private:
 
     /** 收回\展开 输入框按钮 */
     QPushButton *mBtnExpand;
-
-    /** 显示模式 */
-    EDisplayMode mDisplayMode;
 
 private:
     /** 在收起之前的高度 */

@@ -3,33 +3,36 @@
 
 #include <ChatList.h>
 #include <IChatItem.h>
+#include <Utility.h>
 
+#include <QItemDelegate>
 #include <QScrollBar>
 
-ChatViewWidget::ChatViewWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::ChatViewWidget)
+ChatViewWidget::ChatViewWidget(QWidget* parent)
+    : QWidget(parent)
+    , ui(new Ui::ChatViewWidget)
 {
     ui->setupUi(this);
 
     mChatListModel = new ChatList(this);
+    ui->chatView->lower();
     ui->chatView->setModel(mChatListModel);
 
-    // 每次滚动时，更新items
-    connect(ui->chatView->verticalScrollBar(), &QScrollBar::valueChanged, [=] {
-        updateViewport();
-    });
+    auto itemDelegate = new ChatItemDelegate(this);
+    ui->chatView->setItemDelegate(itemDelegate);
 
-    connect(ui->chatInputer, &ChatInputBox::send, this, &ChatViewWidget::onSend);
+    // 每次滚动时，更新items
+    // connect(ui->chatView->verticalScrollBar(), &QScrollBar::valueChanged, [=] {
+    //     updateViewport();
+    // });
+
+    connect(ui->chatInputer, &ChatInputBox::send, mChatListModel,
+        static_cast<void (ChatList::*)(const QString&)>(&ChatList::sendChat));
 }
 
 ChatViewWidget::~ChatViewWidget()
 {
     delete ui;
-}
-
-void ChatViewWidget::onSend(const QString& msg)
-{
 }
 
 void ChatViewWidget::resizeEvent(QResizeEvent* e)
