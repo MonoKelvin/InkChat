@@ -8,8 +8,7 @@ class ChatViewWidget;
 }
 
 class ChatList;
-class IChatItem;
-class IChatObject;
+class QListView;
 
 class ChatViewWidget : public QWidget
 {
@@ -24,14 +23,14 @@ public:
         return mChatListModel;
     }
 
-protected:
-    void resizeEvent(QResizeEvent* e) override;
+    QListView* getChatView() const;
 
-private:
+public Q_SLOTS:
     /**
-     * @brief 更新视图
+     * @brief 发送普通的文本消息
+     * @param msg 文本消息
      */
-    void updateViewport(void);
+    void sendMessage(const QString& msg);
 
 private:
     Ui::ChatViewWidget* ui;

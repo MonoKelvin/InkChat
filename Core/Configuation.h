@@ -24,7 +24,7 @@ enum ESpacing {
     Std = 15,
     Wide = 20,
     Large = 25,
-    Extreme = 30,
+    Extreme = 40,
 };
 
 enum class EBorderStyle

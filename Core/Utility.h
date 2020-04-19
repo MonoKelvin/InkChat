@@ -112,12 +112,17 @@ void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode = Qt::Eli
 /**
  * @brief 更新widget控件的布局，让子控件重新适应布局
  * @param widget 给定的widget控件
+ * @param isHeightStrategy 是否为调整高度的更新策略
  * @note 只针对有子布局的控件可以取到很好的效果，可以很好的取代adjustSize()方法
  */
-inline void updateLayout(QWidget *widget)
+inline void updateLayout(QWidget* widget, bool isHeightStrategy = false)
 {
-    const auto s = widget->size();
-    widget->resize(s.width() + 1, s.height());
+    const auto& s = widget->size();
+    if (isHeightStrategy) {
+        widget->resize(s.width(), s.height() - 1);
+    } else {
+        widget->resize(s.width() - 1, s.height());
+    }
     widget->resize(s.width(), s.height());
 }
 

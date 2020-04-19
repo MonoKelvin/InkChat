@@ -44,8 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->messageList->setItemDelegate(new MessageItemDelegate(this)); // 设置代理
     ui->messageList->setModel(mMessageListModel); // 设置模型
 
-    // 加载缓存消息
-    mMessageListModel->load();
+    connect(ui->navigation, &Navigation::navigated, ui->stackedWidget, &QStackedWidget::setCurrentIndex);
+    connect(ui->messageList, &QListView::clicked, this, &MainWindow::onMessageItemActived);
+    connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
 
     // 当聊天视图滚动到最底端时，又展开输入框后，会使得视图布局不更新，导致无法看到最后几条消息。
     // connect(ui->chatInputer, &ChatInputBox::onFoldup, [=] {
@@ -59,9 +60,8 @@ MainWindow::MainWindow(QWidget *parent)
     // 注册聊天控件，TODO: 添加更多
     REGISTER_CHATITEM(TextChatItem);
 
-    connect(ui->navigation, &Navigation::navigated, ui->stackedWidget, &QStackedWidget::setCurrentIndex);
-    connect(ui->messageList, &QListView::clicked, this, &MainWindow::onMessageItemActived);
-    connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
+    // 加载缓存消息，必须放在最后，因为加载数据需要关联各种信号并先注册号聊天类等。
+    mMessageListModel->load();
 }
 
 MainWindow::~MainWindow()
@@ -103,6 +103,7 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
         ChatViewWidget* cvw = new ChatViewWidget(this);
         ui->messagePage->layout()->addWidget(cvw);
         cvw->getChatListModel()->initLoad(msgItem->getChatObject());
+        cvw->getChatView()->scrollToBottom();
 
         // 缓存
         int max = AppSettings::Value(QStringLiteral("App/maxChatPageCount"), 3).toInt();
@@ -115,6 +116,5 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
         mChatPages.append(cvw);
     }
 
-    // 更新布局
-    //updateLayout(this);
+    resizeEvent(nullptr);
 }

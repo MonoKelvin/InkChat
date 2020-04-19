@@ -18,7 +18,8 @@ IChatItem::IChatItem(QObject* parent)
 }
 
 IChatItem::IChatItem(const IChatItem& item)
-    : mSendState(item.mSendState)
+    : QObject(item.parent())
+    , mSendState(item.mSendState)
     , mChatId(item.mChatId)
     , mTime(item.mTime)
     , mChatObject(item.mChatObject)
@@ -51,15 +52,6 @@ const QString IChatItem::getMessageTime()
 // ChatItem Delegate
 /////////////////////////////////////////////
 
-ChatItemDelegate::ChatItemDelegate(QWidget* parent)
-    : QAbstractItemDelegate(parent)
-{
-}
-
-ChatItemDelegate::~ChatItemDelegate()
-{
-}
-
 //void ChatItemDelegate::setChatItemData(IChatItem* data)
 //{
 //    Q_ASSERT(data != nullptr);
@@ -83,67 +75,65 @@ void ChatItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
         return;
     }
 
-    // 聊天内容尺寸
-    QRect ctRect;
-
-    const auto& rw = option.rect.width();
-    const auto& avatar = itemData->getSender()->getAvatar();
+    // 聊天内容区域
+    const auto& rect = option.rect;
+    const int& t = rect.top(); // 每个item需要以此为顶端
     const bool& isMultiPerson = itemData->getSender()->getRoleType() & IChatObject::MultiPerson;
+    QRect avtRect(rect.x(), t, AVATAR_SIZE, AVATAR_SIZE);
+    QRect ctRect;
+    const int& ch = AVATAR_SIZE / 2; // 头像中心y高度
 
     painter->save();
-    QRect avtRect(0, 0, AVATAR_SIZE, AVATAR_SIZE);
+
     if (itemData->getSender()->getRoleType() == IChatObject::Me) {
-        avtRect.setX(rw - AVATAR_SIZE - ESpacing::Narrow);
+        avtRect.moveRight(rect.right());
 
         // 多人聊天才显示名称
         if (isMultiPerson) {
             const QString& name = itemData->getSender()->getNickName();
-            const QRect nameRect(0, 0, rw - avtRect.left() - ESpacing::Narrow, AVATAR_SIZE / 2);
+            const QRect nameRect(rect.x(), t, avtRect.x() - ESpacing::Narrow, ch);
             painter->setPen(QPen("#2D3135"));
             painter->drawText(nameRect, Qt::AlignBottom | Qt::AlignRight, name);
         }
 
         // 内容控件
-        ctRect = itemData->paintContent(painter, QRect(0, AVATAR_SIZE / 2, rw - avtRect.left() - ESpacing::Narrow, 0));
+        itemData->paintContent(painter, QRect(rect.x(), t + ch, avtRect.x() - ESpacing::Narrow - rect.x(), 1));
+        ctRect = itemData->contentArea();
 
         // 时间
         const QString& time = itemData->getMessageTime();
-        QRect timeRect;
-        timeRect.setX(ctRect.x());
-        timeRect.setY(ctRect.bottom() + ESpacing::Tiny);
-        timeRect.setWidth(qMax(50, ctRect.width()));
-        timeRect.setHeight(20);
+        const QRect timeRect(ctRect.x(), ctRect.bottom() + ESpacing::Tiny, qMax(50, ctRect.width()), 20);
         painter->setPen(QPen("#A7ADBD"));
         painter->drawText(timeRect, Qt::AlignTop | Qt::AlignLeft, time);
     } else {
-        avtRect.setX(ESpacing::Narrow);
         if (isMultiPerson) {
             const QString& name = itemData->getSender()->getNickName();
-            const QRect rect(avtRect.right() + ESpacing::Narrow, 0, rw, AVATAR_SIZE / 2);
+            const QRect nameRect(avtRect.right() + ESpacing::Narrow, t, rect.right(), ch);
             painter->setPen(QPen("#2D3135"));
-            painter->drawText(rect, Qt::AlignBottom | Qt::AlignLeft, name);
+            painter->drawText(nameRect, Qt::AlignBottom | Qt::AlignLeft, name);
         }
 
-        ctRect = itemData->paintContent(painter, QRect(avtRect.right() + ESpacing::Narrow, AVATAR_SIZE / 2, rw - avtRect.right() - ESpacing::Narrow, 0));
+        itemData->paintContent(painter, QRect(avtRect.right() + ESpacing::Narrow, t + ch, rect.right() - avtRect.right() - ESpacing::Narrow, 1));
+        ctRect = itemData->contentArea();
 
         const QString& time = itemData->getMessageTime();
-        QRect timeRect;
-        timeRect.setX(ctRect.x());
-        timeRect.setY(ctRect.bottom() + ESpacing::Tiny);
-        timeRect.setWidth(qMax(50, ctRect.width()));
-        timeRect.setHeight(20);
+        const QRect timeRect(ctRect.x(), ctRect.bottom() + ESpacing::Tiny, qMax(50, ctRect.width()), 20);
         painter->setPen(QPen("#A7ADBD"));
         painter->drawText(timeRect, Qt::AlignTop | Qt::AlignRight, time);
     }
 
     // 头像
-    Avatar::DrawAvatar(painter, avtRect, avatar);
-    painter->restore();
+    Avatar::DrawAvatar(painter, avtRect, itemData->getSender()->getAvatar());
 
-    mCurrentSize = QSize(rw, qMax(ctRect.bottom() + 25, AVATAR_SIZE));
+    painter->restore();
 }
 
 QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    return mCurrentSize;
+    const auto& itemData = index.data(ChatItemDelegate::ChatItemType).value<IChatItem*>();
+    if (!itemData) {
+        return QSize();
+    }
+
+    return QSize(option.rect.width(), qMax(itemData->contentArea().height() + ESpacing::Wide + AVATAR_SIZE / 2, AVATAR_SIZE));
 }

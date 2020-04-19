@@ -127,26 +127,19 @@ bool MessageDatabase::loadMessageItems(MessageList* list)
     }
 
     while (query.next()) {
-        MessageItem* item = new MessageItem;
-
-        const auto roleType = query.value(1).toInt();
+        //const auto roleType = query.value(1).toInt();
         const auto chatObjId = query.value(0).toUInt();
 
         // TODO: 添加更多的聊天对象
-        switch (roleType) {
-        case IChatObject::Friend:
-            item->setChatObject(User::Instance()->getFriendById(chatObjId));
-            break;
-        default:
-            break;
+        const auto& chatObj = User::Instance()->getFriendById(chatObjId);
+
+        // 获取数据失败
+        if (nullptr == chatObj) {
+            continue;
         }
 
-        if (item->mChatObject.isNull()) {
-            delete item;
-            item = nullptr;
-            return false;
-        }
-
+        MessageItem* item = new MessageItem;
+        item->setChatObject(chatObj);
         item->mUnreadMsgCount = query.value(2).toInt();
         item->mReadFlag = query.value(3).toBool();
         item->mTime = GetMessageTime(query.value(4).toDateTime());

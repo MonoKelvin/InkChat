@@ -110,8 +110,12 @@ public:
      * @param painter 画笔，需要使用save、restore来暂存设置
      * @param availableRect 可用矩形，即聊天内容可以使用范围，其中可以忽略高度参数
      * @return const QRect 内容矩形
+     * @warning 使用availableRect时请注意使用相对位置，比如在矩形中绘制(0,0)点，即左上角，
+     * 务必使用(availableRect.left(), availableRect.top())替代，否则视图中无法正常显示
      */
-    virtual const QRect paintContent(QPainter* painter, const QRect& availableRect) = 0;
+    virtual void paintContent(QPainter* painter, const QRect& availableRect) = 0;
+
+    virtual const QRect contentArea(void) const { return mContentArea; }
 
     /**
      * @brief 接收数据抽象方法，旨在从网络信道接收数据，解析后给成员赋值。
@@ -139,6 +143,12 @@ public:
      * @return const QVariant 主要用于保存到数据库
      */
     virtual const QVariant getData(void) = 0;
+
+protected:
+    /**
+     * @brief 内容相对于整个聊天控件的区域，子类需要在 @see paintContent 方法内更新该值
+     */
+    QRect mContentArea;
 
 Q_SIGNALS:
     void sendStateChanged();
@@ -177,18 +187,15 @@ protected:
  */
 class ChatItemDelegate : public QAbstractItemDelegate {
 public:
-    explicit ChatItemDelegate(QWidget* parent = nullptr);
-    ~ChatItemDelegate() override;
-
-    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-
-protected:
-    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+    explicit ChatItemDelegate(QObject* parent = nullptr)
+        : QAbstractItemDelegate(parent)
+    {
+    }
 
     enum { ChatItemType = Qt::UserRole + 101 };
 
-protected:
-    mutable QSize mCurrentSize;
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
 
 #endif // ICHATITEM_H

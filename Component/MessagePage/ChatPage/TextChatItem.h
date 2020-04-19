@@ -17,7 +17,7 @@ public:
     void praseData(const QVariant& data) override;
     const QVariant getData(void) override;
 
-    const QRect paintContent(QPainter* painter, const QRect& availableRect) override;
+    void paintContent(QPainter* painter, const QRect& rect) override;
 
 private:
     /** 聊天的文本内容 */
