@@ -60,7 +60,7 @@
       <enum>QListView::Adjust</enum>
      </property>
      <property name="spacing">
-      <number>15</number>
+      <number>10</number>
      </property>
     </widget>
    </item>

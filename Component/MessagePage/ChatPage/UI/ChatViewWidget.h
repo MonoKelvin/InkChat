@@ -25,6 +25,9 @@ public:
 
     QListView* getChatView() const;
 
+private:
+    void resizeEvent(QResizeEvent* event) override;
+
 public Q_SLOTS:
     /**
      * @brief 发送普通的文本消息

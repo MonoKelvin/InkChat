@@ -1,6 +1,6 @@
 ﻿#include "Badge.h"
 
-#include <Configuation.h>
+#include <AppTheme.h>
 
 Badge::Badge(QWidget *parent)
     : QLabel(parent)
@@ -25,7 +25,7 @@ Badge::Badge(const QString &text, QWidget *parent)
 void Badge::init()
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    setMinimumSize(ESpacing::Wide, ESpacing::Wide);
+    setMinimumSize(ESize::Wide, ESize::Wide);
     setAlignment(Qt::AlignCenter);
     setScaledContents(true);
     setObjectName(QStringLiteral("badge"));
@@ -35,7 +35,7 @@ void Badge::turnIntoDotAndAttachWidget(QWidget *widget, const QPoint &point)
 {
     setObjectName(QStringLiteral("dotBadge"));
     setParent(widget);
-    setMinimumSize(ESpacing::Narrow, ESpacing::Narrow);
+    setMinimumSize(ESize::Narrow, ESize::Narrow);
     move(point);
 }
 

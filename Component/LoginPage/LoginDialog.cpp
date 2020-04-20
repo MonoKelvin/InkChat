@@ -43,7 +43,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // verse->setObjectName(QStringLiteral("lbVerse"));
     // verse->setText(QStringLiteral("直\n当\n花\n院\n里\n，\n书\n斋\n望\n晓\n开\n。"));
     // verse->setAlignment(Qt::AlignTop);
-    // verse->setGeometry(ESpacing::Std, ESpacing::Std, 50, height());
+    // verse->setGeometry(ESize::Std, ESize::Std, 50, height());
 
     connections();
 }

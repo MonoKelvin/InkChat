@@ -28,7 +28,6 @@ class IChatItem : public QObject
     Q_OBJECT
 
     friend class ChatList;
-    friend class ChatItemDelegate;
     friend class MessageManager;
     friend class MessageDatabase;
 
@@ -115,7 +114,22 @@ public:
      */
     virtual void paintContent(QPainter* painter, const QRect& availableRect) = 0;
 
-    virtual const QRect contentArea(void) const { return mContentArea; }
+    /**
+     * @brief 更新内容区域尺寸
+     * @param const QRect& 内容最大外围矩形，其中可以忽略高度参数
+     * @param const QStyleOptionViewItem& 样式
+     * @return 返回内容区域尺寸
+     */
+    virtual void updateContentSize(const QRect&, const QStyleOptionViewItem&) {}
+
+    /**
+     * @brief 获得相对与聊天视图的区域大小
+     * @return const QSize 内容大小
+     */
+    Q_DECL_CONSTEXPR const QSize getContentSize(void) const noexcept
+    {
+        return mContentSize;
+    }
 
     /**
      * @brief 接收数据抽象方法，旨在从网络信道接收数据，解析后给成员赋值。
@@ -146,9 +160,9 @@ public:
 
 protected:
     /**
-     * @brief 内容相对于整个聊天控件的区域，子类需要在 @see paintContent 方法内更新该值
+     * @brief 内容尺寸，子类需要在 @see updateContentSize 方法内更新该值
      */
-    QRect mContentArea;
+    QSize mContentSize;
 
 Q_SIGNALS:
     void sendStateChanged();

@@ -87,7 +87,7 @@ bool AppLoginOperation::isUserExists(const QString& userName)
     const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("0/")).entryList(QDir::Dirs);
 
     for (int i = 0; i < dirs.size(); i++) {
-        if (userName.compare(dirs.at(i), Qt::CaseInsensitive)) {
+        if (userName.compare(dirs.at(i), Qt::CaseInsensitive) == 0) {
             return true;
         }
     }

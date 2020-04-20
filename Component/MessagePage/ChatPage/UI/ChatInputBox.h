@@ -19,7 +19,7 @@ public:
 Q_SIGNALS:
     /**
      * @brief 信号：当折叠或展开输入面板时发送的信号
-     * @param enabled 是否折叠
+     * @param enabled 是否折叠，true表示折叠，否则表示展开
      */
     void foldup(bool enabled);
 

@@ -15,6 +15,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/AppSettings.h \
+    $$PWD/AppTheme.h \
     $$PWD/IChatObject.h \
     $$PWD/LanObject.h \
     $$PWD/MessageDatabase.h \

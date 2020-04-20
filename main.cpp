@@ -1,11 +1,15 @@
 ﻿#include "MainWindow.h"
 
 #include <AppSettings.h>
+#include <AppTheme.h>
 #include <LoginDialog.h>
 
 #include <QApplication>
 #include <QFile>
 #include <QPushButton>
+
+// 全局主题样式
+AppTheme XTheme;
 
 // 实时调试样式表
 void debugStyleSheet(QWidget* parent)

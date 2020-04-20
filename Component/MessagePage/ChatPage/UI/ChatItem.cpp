@@ -36,7 +36,7 @@ ChatItem::ChatItem(QSharedPointer<User> user, const QString &msg, ESender sender
 
     // 正在发送标志
     mSendStateLabel = new QLabel(this);
-    mSendStateLabel->setFixedSize(ESpacing::Std, ESpacing::Std);
+    mSendStateLabel->setFixedSize(ESize::Std, ESize::Std);
     mSendStateLabel->setScaledContents(true);
     mSendStateLabel->setObjectName(QStringLiteral("sendState_sending"));
     mSendStateLabel->setAttribute(Qt::WA_TranslucentBackground);
@@ -92,14 +92,14 @@ void ChatItem::updateContents()
 
     mMessage->adjustSize();
 
-    const int sp = ESpacing::Narrow; // 标准间隔
+    const int sp = ESize::Narrow; // 标准间隔
 
     // 计算消息气泡的宽高
     {
         const auto msgF = mMessage->fontMetrics(); // 消息字体
         const int msgFW = msgF.horizontalAdvance(mMessage->text()); // 消息字体总宽度
         int msgRW = qMin(int(0.7f * width()), msgFW); // 消息字体真实总宽度
-        const int msgRH = msgF.lineSpacing() * qMax(Ceil(msgFW / float(msgRW)), 1); // 消息内容真实总行高
+        const int msgRH = msgF.linESize() * qMax(Ceil(msgFW / float(msgRW)), 1); // 消息内容真实总行高
 
         mMessage->setMinimumSize(msgRW, msgRH);
     }
@@ -132,7 +132,7 @@ void ChatItem::updateContents()
     mName->setFixedWidth(mMessage->width());
 
     // 5.确定时间位置
-    mTime->move(mMessage->x(), mMessage->geometry().bottom() + ESpacing::Tiny);
+    mTime->move(mMessage->x(), mMessage->geometry().bottom() + ESize::Tiny);
     mTime->setFixedWidth(mMessage->width());
 
     adjustSize();

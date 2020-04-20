@@ -122,7 +122,7 @@ public:
      * @param parent 指定的父元素
      * @return 行数
      */
-    int rowCount(const QModelIndex& parent) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
     /**
      * @brief 获取当前聊天视图的聊天对象

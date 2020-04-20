@@ -18,6 +18,7 @@ public:
     const QVariant getData(void) override;
 
     void paintContent(QPainter* painter, const QRect& rect) override;
+    void updateContentSize(const QRect& rect, const QStyleOptionViewItem& option) override;
 
 private:
     /** 聊天的文本内容 */

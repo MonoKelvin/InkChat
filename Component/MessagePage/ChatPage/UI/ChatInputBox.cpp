@@ -1,6 +1,6 @@
 ﻿#include "ChatInputBox.h"
 
-#include <Configuation.h>
+#include <AppTheme.h>
 #include <Utility.h>
 
 #include <QGridLayout>
@@ -125,8 +125,8 @@ void ChatInputBox::moveEvent(QMoveEvent *event)
 {
     Q_UNUSED(event)
 
-    mBtnSend->move(geometry().right() - mBtnSend->width() - ESpacing::Std,
-        y() - mBtnSend->height() - ESpacing::Std);
+    mBtnSend->move(geometry().right() - mBtnSend->width() - ESize::Std,
+        y() - mBtnSend->height() - ESize::Std);
 }
 
 void ChatInputBox::paintEvent(QPaintEvent *event)

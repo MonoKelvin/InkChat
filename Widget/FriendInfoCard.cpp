@@ -1,6 +1,6 @@
 ﻿#include "FriendInfoCard.h"
 
-#include <Configuation.h>
+#include <AppTheme.h>
 #include <User.h>
 #include <Utility.h>
 
@@ -26,8 +26,8 @@ FriendInfoCard::FriendInfoCard(QSharedPointer<User> user, QWidget *parent)
     QWidget *line;
 
     thisLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-    thisLayout->setSpacing(ESpacing::Narrow);
-    thisLayout->setMargin(ESpacing::Std);
+    thisLayout->setSpacing(ESize::Narrow);
+    thisLayout->setMargin(ESize::Std);
 
     // 标题
     lbTitle = new QLabel(tr("好友信息"), this);
@@ -36,7 +36,7 @@ FriendInfoCard::FriendInfoCard(QSharedPointer<User> user, QWidget *parent)
     thisLayout->addWidget(lbTitle);
 
     gridLayout2 = new QGridLayout();
-    gridLayout2->setVerticalSpacing(ESpacing::Narrow);
+    gridLayout2->setVerticalSpacing(ESize::Narrow);
 
     // id 控件
     lbID = new QLabel("id:" + QString::number(int(user->getID())), this);
@@ -73,7 +73,7 @@ FriendInfoCard::FriendInfoCard(QSharedPointer<User> user, QWidget *parent)
     thisLayout->addStretch(1);
 
     gridLayout = new QGridLayout();
-    gridLayout->setVerticalSpacing(ESpacing::Narrow);
+    gridLayout->setVerticalSpacing(ESize::Narrow);
 
     // 好友数量icon
     lbFriendNumIcon = new QLabel(this);

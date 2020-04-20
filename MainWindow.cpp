@@ -115,6 +115,4 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
         }
         mChatPages.append(cvw);
     }
-
-    resizeEvent(nullptr);
 }

@@ -1,6 +1,6 @@
 ﻿#include "PromptWidget.h"
 
-#include <Configuation.h>
+#include <AppTheme.h>
 #include <Utility.h>
 
 #include <QLabel>
@@ -26,17 +26,17 @@ void PromptWidget::show()
     const int xOffset = (pwSize.width() - this->width()) / 2;
     QRect oriRect = QRect(xOffset, pwSize.height() + 10, this->width(), this->height());
 
-    QPropertyAnimation *showAni = new QPropertyAnimation(this, "geometry", this);
+    QPropertyAnimation* showAni = new QPropertyAnimation(this, QByteArrayLiteral("geometry"), this);
     showAni->setDuration(300);
     showAni->setStartValue(oriRect);
 
-    const int yOffset = this->height() + ESpacing::Wide;
+    const int yOffset = this->height() + ESize::Wide;
     oriRect.setTop(oriRect.top() - yOffset);
     oriRect.setBottom(oriRect.bottom() - yOffset);
     showAni->setEndValue(oriRect);
     showAni->setEasingCurve(QEasingCurve::OutBack);
 
-    QPropertyAnimation *quitAni = new QPropertyAnimation(this, "geometry", this);
+    QPropertyAnimation* quitAni = new QPropertyAnimation(this, QByteArrayLiteral("geometry"), this);
     quitAni->setDuration(300);
     quitAni->setStartValue(showAni->endValue());
     quitAni->setEndValue(showAni->startValue());
@@ -65,7 +65,6 @@ void PromptWidget::buildUI(const QString &prompt)
 {
     QLabel *lbContents = new QLabel(prompt, this);
     QHBoxLayout *hbLayout = new QHBoxLayout(this);
-    QFontMetrics font(lbContents->font());
 
     lbContents->setAlignment(Qt::AlignCenter);
     lbContents->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -73,5 +72,5 @@ void PromptWidget::buildUI(const QString &prompt)
 
     hbLayout->addWidget(lbContents);
 
-    this->resize(font.horizontalAdvance(prompt) + 2 * ESpacing::Large, lbContents->height() + ESpacing::Narrow);
+    this->resize(getFontPixelWidth(lbContents->font(), prompt) + 2 * ESize::Large, lbContents->height() + ESize::Narrow);
 }

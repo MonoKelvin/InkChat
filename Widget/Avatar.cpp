@@ -1,6 +1,6 @@
 ﻿#include "Avatar.h"
 
-#include <Configuation.h>
+#include <Apptheme.h>
 #include <Utility.h>
 
 #include <QPainter>
@@ -10,7 +10,7 @@ Avatar::Avatar(QWidget *parent)
     , mOnlineState(User::Offline)
 {
     setAutoFillBackground(true);
-    setFixedSize(AVATAR_SIZE, AVATAR_SIZE);
+    setFixedSize(XTheme.AvatarSize, XTheme.AvatarSize);
     setCursor(Qt::PointingHandCursor);
 }
 
@@ -20,7 +20,7 @@ Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
 {
     setAutoFillBackground(true);
     setAvatar(pixmap);
-    setFixedSize(AVATAR_SIZE, AVATAR_SIZE);
+    setFixedSize(XTheme.AvatarSize, XTheme.AvatarSize);
     setCursor(Qt::PointingHandCursor);
 }
 
@@ -50,7 +50,7 @@ void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pix
 
     if (state != User::NoneState)
     {
-        qreal d = ONLINE_STATE_DOT_SIZE;
+        qreal d = ESize::Narrow;
         qreal offset = 0.8535 * rect.width() - 0.5 * d;
         QRectF rt(offset, offset, d, d);
 
@@ -59,13 +59,13 @@ void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pix
         switch (state)
         {
         case User::Online:
-            painter->setBrush(QBrush(ONLINE_STATE_COLOR));
+            painter->setBrush(QBrush(XTheme.PrimayColor1));
             break;
         case User::Offline:
-            painter->setBrush(QBrush(OFFLINE_STATE_COLOR));
+            painter->setBrush(QBrush(XTheme.SubTextColor));
             break;
         case User::Busy:
-            painter->setBrush(QBrush(BUSY_STATE_COLOR));
+            painter->setBrush(QBrush(XTheme.PrimayColor2));
             break;
         default:
             break;

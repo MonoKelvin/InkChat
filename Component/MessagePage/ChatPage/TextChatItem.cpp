@@ -1,7 +1,6 @@
 ﻿#include "TextChatItem.h"
 
-#include <Configuation.h>
-#include <QLabel>
+#include <AppTheme.h>
 #include <QVariant>
 #include <Utility.h>
 
@@ -24,32 +23,39 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 {
     painter->save();
 
-    const int& d = ESpacing::Std;
-    const QFont f(QStringLiteral("Microsoft Yahei"), 10);
-    const QRect limit(rect.x() + d, rect.y() + d, int(0.7f * rect.width()) - 2 * d, 0);
-    QRect textRect = painter->fontMetrics().boundingRect(limit, Qt::TextWrapAnywhere, mText);
+    const int& d = ESize::Std;
+    const int& sd = ESize::Narrow;
+
+    // 背景
+    QRect bg;
+    bg.setTopLeft(rect.topLeft());
+    bg.setSize(mContentSize);
 
     // 绘制气泡背景
-    painter->setFont(f);
-    painter->setPen(Qt::NoPen);
+    painter->setFont(XTheme.StdFont);
     if (mChatObject->getRoleType() == IChatObject::Me) {
-        textRect.moveRight(rect.right() - d);
-        mContentArea = textRect.adjusted(-d, -d, d, d);
+        bg.moveRight(rect.right());
 
-        painter->setBrush(QBrush("#F5F6FA"));
-        drawRoundRect(painter, mContentArea, 10, 0);
+        painter->setPen(XTheme.RightBubbleStyle.BorderColor);
+        painter->setBrush(XTheme.RightBubbleStyle.BubbleColor);
+        drawRoundRect(painter, bg, sd, 0, sd, sd);
 
-        painter->setPen(QPen("#2D3135"));
+        painter->setPen(XTheme.RightBubbleStyle.TextColor);
     } else {
-        mContentArea = textRect.adjusted(-d, -d, d, d);
+        painter->setPen(XTheme.LeftBubbleStyle.BorderColor);
+        painter->setBrush(XTheme.LeftBubbleStyle.BubbleColor);
+        drawRoundRect(painter, bg, 0, sd, sd, sd);
 
-        painter->setBrush(QBrush("#4D7CFE"));
-        drawRoundRect(painter, mContentArea, 0, 10);
-
-        painter->setPen(QPen(Qt::white));
+        painter->setPen(XTheme.LeftBubbleStyle.TextColor);
     }
 
     // 绘制文本
-    painter->drawText(textRect, Qt::TextWrapAnywhere, mText);
+    painter->drawText(bg.adjusted(d, sd, -d, -sd), Qt::TextWrapAnywhere, mText);
     painter->restore();
+}
+
+void TextChatItem::updateContentSize(const QRect& rect, const QStyleOptionViewItem& option)
+{
+    const QRect limit(rect.x(), rect.y(), int(0.7f * rect.width()), 50);
+    mContentSize = option.fontMetrics.boundingRect(limit, Qt::TextWrapAnywhere, mText).size();
 }
