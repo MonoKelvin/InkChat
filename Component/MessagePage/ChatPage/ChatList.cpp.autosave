@@ -52,6 +52,11 @@ IChatItem* ChatList::BuildChatItem(int chatType, IPerson* person)
     return chat;
 }
 
+IChatItem *ChatList::BuildChatItem(int chatType, const QVariant &data)
+{
+    
+}
+
 IChatItem* ChatList::BuildChatItem(int chatType, bool isMe, const QDateTime& time, const QVariant& data)
 {
     if (mChatObject && mChatObject->getRoleType() & IChatObject::SinglePerson) {

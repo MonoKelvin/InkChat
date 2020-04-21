@@ -116,11 +116,10 @@ public:
 
     /**
      * @brief 更新内容区域尺寸
-     * @param const QRect& 内容最大外围矩形，其中可以忽略高度参数
      * @param const QStyleOptionViewItem& 样式
      * @return 返回内容区域尺寸
      */
-    virtual void updateContentSize(const QRect&, const QStyleOptionViewItem&) {}
+    virtual void updateContentSize(const QStyleOptionViewItem&) {}
 
     /**
      * @brief 获得相对与聊天视图的区域大小
@@ -129,6 +128,15 @@ public:
     Q_DECL_CONSTEXPR const QSize getContentSize(void) const noexcept
     {
         return mContentSize;
+    }
+
+    /**
+     * @brief 是否是自身绘制方法
+     * @return 是否自身绘制，如果返回true，则代理中不会显示头像、姓名等，否则只需绘制消息内容
+     */
+    virtual bool selfPaint(void)
+    {
+        return false;
     }
 
     /**

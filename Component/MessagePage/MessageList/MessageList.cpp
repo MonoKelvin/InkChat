@@ -95,7 +95,7 @@ void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
         moveMessage(sourceIndex, mMessages.size() - 1);
     }
 
-    message->mChatObject->setIsTop(isTop);
+    message->setIsTop(isTop);
 }
 
 /*MessageItem* MessageList::getCurrentSelectedItem() const
@@ -176,9 +176,9 @@ void MessageList::ariseMessage(MessageItem* message)
     const int sourceIndex = getRow(message);
 
     int targetIndex = 0;
-    if (!message->mChatObject->getIsTop()) {
+    if (!message->isTop()) {
         for (auto iter = mMessages.cbegin(); iter != mMessages.cend(); ++iter) {
-            if (!(*iter)->mChatObject->getIsTop()) {
+            if (!(*iter)->isTop()) {
                 break;
             }
             targetIndex++;
@@ -203,11 +203,10 @@ void MessageList::fetchMore(const QModelIndex& index)
 void MessageList::load(void)
 {
     MessageDatabase::Instance()->loadMessageItems(this);
-    MessageDatabase::Instance()->loadLanMessageItems(this);
 
     int pos = 0;
     for (int i = 0; i < mMessages.size(); i++) {
-        if (mMessages.at(i)->mChatObject->getIsTop()) {
+        if (mMessages.at(i)->isTop()) {
             mMessages.move(i, pos++);
         }
     }

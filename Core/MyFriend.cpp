@@ -5,7 +5,7 @@
 #include <QJsonObject>
 
 MyFriend::MyFriend(QObject* parent)
-    : IChatObject(parent)
+    : IPerson(parent)
 {
     mRoleType = ERoleType::Friend;
 }

@@ -43,6 +43,15 @@ public:
     inline const QString getMessage(void) const { return mMessage; }
     // void setMessage(const QString& message);
 
+    inline bool isTop(void) const { return mIsTop; }
+    inline void setIsTop(bool top)
+    {
+        if (top != mIsTop) {
+            mIsTop = top;
+            emit topChanged();
+        }
+    }
+
     inline bool getReadFlag(void) const { return mReadFlag; }
     inline void setReadFlag(bool readFlag)
     {
@@ -62,6 +71,7 @@ public:
     }
 
 Q_SIGNALS:
+    void topChanged();
     void dirtyChanged();
     void readFlagChanged();
     void unreadMsgCountChanged();
@@ -70,6 +80,9 @@ private Q_SLOTS:
     void onTopChanged();
 
 private:
+    /** 是否置顶 */
+    bool mIsTop;
+
     /** 是否已经读过消息了 */
     bool mReadFlag;
 

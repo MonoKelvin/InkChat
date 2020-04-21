@@ -33,6 +33,7 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 
     // 绘制气泡背景
     painter->setFont(XTheme.StdFont);
+    painter->setRenderHint(QPainter::Antialiasing);
     if (mChatObject->getRoleType() == IChatObject::Me) {
         bg.moveRight(rect.right());
 
@@ -50,12 +51,15 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
     }
 
     // 绘制文本
+    painter->setRenderHint(QPainter::Antialiasing, false);
     painter->drawText(bg.adjusted(d, sd, -d, -sd), Qt::TextWrapAnywhere, mText);
     painter->restore();
 }
 
-void TextChatItem::updateContentSize(const QRect& rect, const QStyleOptionViewItem& option)
+void TextChatItem::updateContentSize(const QStyleOptionViewItem& option)
 {
-    const QRect limit(rect.x(), rect.y(), int(0.7f * rect.width()), 50);
+    const QRect limit(0, 0, int(0.7f * option.rect.width()), 50);
     mContentSize = option.fontMetrics.boundingRect(limit, Qt::TextWrapAnywhere, mText).size();
+    mContentSize.rwidth() += ESize::Std + ESize::Std;
+    mContentSize.rheight() += ESize::Narrow + ESize::Narrow;
 }

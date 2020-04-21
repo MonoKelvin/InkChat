@@ -32,13 +32,10 @@ void MessageItem::setChatObject(QSharedPointer<IChatObject> chatObject)
     if (mChatObject) {
         if (mChatObject == chatObject) {
             return;
-        } else {
-            disconnect(mChatObject.get(), &IChatObject::isTopChanged, this, &MessageItem::onTopChanged);
         }
     } else if (chatObject) {
         mChatObject.clear();
         mChatObject = chatObject;
-        connect(mChatObject.get(), &IChatObject::isTopChanged, this, &MessageItem::onTopChanged);
     }
 }
 
@@ -85,7 +82,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         painter->setPen(Qt::NoPen);
 
         // 鼠标移过或置顶
-        if (option.state.testFlag(QStyle::State_MouseOver) || itemData->mChatObject->getIsTop()) {
+        if (option.state.testFlag(QStyle::State_MouseOver) || itemData->isTop()) {
             painter->setBrush(XTheme.TintColor);
             painter->drawRect(rect);
         }
@@ -97,7 +94,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         }
 
         // 置顶标识
-        if (itemData->mChatObject->getIsTop()) {
+        if (itemData->isTop()) {
             QPainterPath path;
             path.moveTo(rect.topRight());
             path.lineTo(rect.topRight() - QPointF(10, 0));
@@ -109,7 +106,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
         // 绘制头像
         const QRect avtRect(ESize::Narrow, (rect.height() - XTheme.AvatarSize) / 2, XTheme.AvatarSize, XTheme.AvatarSize);
-        Avatar::DrawAvatar(painter, avtRect, itemData->mChatObject->getAvatar(), itemData->mChatObject->getOnlineState());
+        Avatar::DrawAvatar(painter, avtRect, itemData->mChatObject->getAvatar(), itemData->mChatObject->getOnlineState(), itemData->mChatObject->getNickName());
 
         // 字体
         painter->setFont(XTheme.StdFont);

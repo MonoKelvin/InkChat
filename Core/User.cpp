@@ -10,7 +10,7 @@
 #include <QJsonObject>
 
 User::User(QObject* parent)
-    : IChatObject(parent)
+    : IPerson(parent)
 {
     mRoleType = ERoleType::Me;
     mHostAddress = getWirelessAddress();
@@ -27,14 +27,6 @@ void User::fromJson(const QJsonObject& json, bool cache)
 
     mAccount = json.value(QLatin1String("account")).toString();
     mPassword = json.value(QLatin1String("password")).toString();
-
-    // 加载好友
-    QJsonArray chatObjs = json.value(QLatin1String("friends")).toArray();
-    for (const auto i : chatObjs) {
-        MyFriend* f = new MyFriend(this);
-        f->fromJson(i.toObject(), cache);
-        mMyChatObjects.append(f);
-    }
 
     if (cache) {
         const auto fileName = AppSettings::UserDataFile();
@@ -65,83 +57,63 @@ QJsonObject User::toJson()
     json.insert(QLatin1String("account"), QJsonValue(mAccount));
     json.insert(QLatin1String("password"), QJsonValue(mPassword));
 
-    // 写入好友数据
-    QJsonArray friends;
-    for (const auto i : mMyChatObjects) {
-        if (i->getRoleType() == Friend) {
-            friends.append(i->toJson());
-        }
-    }
-    json.insert(QLatin1String("friends"), friends);
-
     return json;
 }
 
-MyFriend* User::getFriendById(unsigned int id)
+/*IChatObject* User::getChatObjectById(unsigned int id)
 {
     for (int i = 0; i < mMyChatObjects.size(); i++) {
-        if (mMyChatObjects.at(i)->getID() == id
-            && mMyChatObjects.at(i)->getRoleType() == Friend) {
-            return static_cast<MyFriend*>(mMyChatObjects[i]);
+        if (mMyChatObjects.at(i)->getID() == id) {
+            return mMyChatObjects[i];
         }
     }
 
-    return nullptr;
+    IChatObject* obj = nullptr;
+
+    dynamicLoadCacheData(obj, AppSettings::ChatObjectCacheFile(id));
+
+    return obj;
+}*/
+
+IChatObject* User::getChatObjectByUuid(const QString& uuid)
+{
+    for (int i = 0; i < mMyChatObjects.size(); i++) {
+        if (mMyChatObjects.at(i)->getUuid() == uuid) {
+            return mMyChatObjects[i];
+        }
+    }
+
+    IChatObject* obj = nullptr;
+
+    dynamicLoadCacheData(obj, AppSettings::ChatObjectCacheFile(uuid));
+
+    return obj;
 }
 
-LanObject* User::getLanObjectById(unsigned int id)
+LanObject* User::getLanObjectByUuid(const QString& uuid)
 {
-    for (int i = 0; i < mMyChatObjects.size(); i++) {
-        if (mMyChatObjects.at(i)->getID() == id
-            && mMyChatObjects.at(i)->getRoleType() == LAN) {
-            return static_cast<LanObject*>(mMyChatObjects[i]);
-        }
+    return static_cast<LanObject*>(getChatObjectByUuid(uuid));
+}
+
+void User::dynamicLoadCacheData(IChatObject* chatObj, const QString& fileName)
+{
+    if (nullptr != chatObj) {
+        return;
     }
 
-    const QSettings index(AppSettings::LanIndexFile(), QSettings::IniFormat);
-    QFile file(AppSettings::LanDataDir() + index.value(QString::number(id)).toString());
-    LanObject* lan = nullptr;
+    QFile file(fileName);
 
     // 动态加载
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         QJsonParseError err;
         const auto& doc = QJsonDocument::fromJson(file.readAll(), &err);
         if (err.error != QJsonParseError::NoError && doc.isObject()) {
-            lan = new LanObject(this);
-            lan->fromJson(doc.object());
-            mMyChatObjects.append(lan);
+            chatObj = new LanObject(this);
+            chatObj->fromJson(doc.object());
+            mMyChatObjects.append(chatObj);
         }
     }
     file.close();
-
-    return lan;
-}
-
-LanObject* User::getLanObjectByMd5(const QString& md5)
-{
-    for (int i = 0; i < mMyChatObjects.size(); i++) {
-        if (mMyChatObjects.at(i)->getRoleType() == LAN
-            && mMyChatObjects.at(i)->getMD5() == md5) {
-            return static_cast<LanObject*>(mMyChatObjects[i]);
-        }
-    }
-
-    QFile file(AppSettings::LanDataDir() + md5);
-    LanObject* lan = nullptr;
-
-    // 动态加载
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
-        QJsonParseError err;
-        const auto& doc = QJsonDocument::fromJson(file.readAll(), &err);
-        if (err.error == QJsonParseError::NoError && doc.isObject()) {
-            lan = new LanObject(this);
-            lan->fromJson(doc.object());
-            mMyChatObjects.append(lan);
-        }
-    }
-    file.close();
-
-    return lan;
 }
 
 bool User::hasCache()
@@ -150,23 +122,6 @@ bool User::hasCache()
     mID = AppSettings::Instance()->getCurrentUserId();
     if (mID == 0) {
         return false;
-    }
-
-    const auto fileName = AppSettings::UserDataFile();
-
-    if (isFileExists(fileName)) {
-        QFile file(fileName);
-        if (file.open(QFile::ReadOnly | QFile::Text)) {
-            // TODO: 解密
-
-            auto jsonDoc = QJsonDocument::fromJson(file.readAll());
-            if (!jsonDoc.isNull() && jsonDoc.isObject()) {
-                const auto json = jsonDoc.object();
-                mAccount = json.value(QLatin1String("account")).toString();
-                mPassword = json.value(QLatin1String("password")).toString();
-                return true;
-            }
-        }
     }
 
     return false;

@@ -34,33 +34,38 @@ public:
     /**
      * @brief 通过给定聊天类类型构建一个空的聊天控件
      * @param chatType 聊天类型 @see IChatItem::ChatType
-     * @param isMe 是否是我发送的消息
-     * @param uid 用户id
+     * @param person 该条信息的发送者
      * @return 返回创建好的聊天类，如果创建失败则返回nullptr
-     * @note 该方法构建的聊天消息不会推送到聊天视图中
+     * @note 该方法构建的聊天消息不会保存到数据库、不会推送到聊天视图中
      */
-    static IChatItem* BuildChatItem(int chatType, bool isMe, unsigned int uid);
+    static IChatItem* BuildChatItem(int chatType, IPerson* person);
 
     /**
-     * @brief 构建一个“我”发送的聊天控件
-     * @param chatType 聊天类型 @see IChatItem::ChatType
-     * @param time 发送时间
-     * @param data 发送的数据
-     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
-     * @note 注意，构建好的聊天数据不会保存到数据库
+     * @brief 构建一个无关发送者的聊天消息项
+     * @param chatType 消息类型
+     * @param data 数据
+     * @note 该方法构建的聊天消息不会保存到数据库、但会推送到聊天视图中
      */
-    static IChatItem* BuildChatItem(int chatType, const QDateTime& time, const QVariant& data);
+    IChatItem* BuildChatItem(int chatType, const QVariant& data);
 
     /**
-     * @brief 构建一个对方发送过来的聊天控件
+     * @brief 通过给定聊天类类型构建聊天控件，只适用于单用户聊天
      * @param chatType 聊天类型 @see IChatItem::ChatType
-     * @param uid 与我聊天的用户id
-     * @param time 接收时间
-     * @param data 接收的数据
      * @return 返回创建好的聊天类，如果创建失败则返回nullptr
-     * @note 注意，构建好的聊天数据不会保存到数据库
+     * @note 该方法构建的聊天消息不会保存到数据库、不会推送到聊天视图中
      */
-    static IChatItem* BuildChatItem(int chatType, unsigned int uid, const QDateTime& time, const QVariant& data);
+    IChatItem* BuildChatItem(int chatType, bool isMe, const QDateTime& time, const QVariant& data);
+
+    /**
+     * @brief 构建一个用户发送的聊天控件
+     * @param chatType 聊天类型 @see IChatItem::ChatType
+     * @param person 用户对象
+     * @param time 时间
+     * @param data 数据
+     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
+     * @note 注意，构建好的聊天数据不会保存到数据库、不会推送到聊天视图中
+     */
+    static IChatItem* BuildChatItem(int chatType, IPerson* person, const QDateTime& time, const QVariant& data);
 
     /**
      * @brief 注册一个聊天类。这样在就可使用自定义的聊天类发送或接收消息
@@ -115,7 +120,7 @@ public:
      * @param cascade 级联选项，如果为true则同步删除本地数据库中对应的聊天记录，否则仅仅
      * 删除聊天视图中的记录。
      */
-    void removeChatItem(int row, bool cascade = true);
+    void removeChatItem(int row, bool cascade = false);
 
     /**
      * @brief 给定父元素下的行数量，即聊天总数

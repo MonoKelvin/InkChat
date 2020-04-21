@@ -23,7 +23,6 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
     const auto& user = User::Instance();
     const auto nickName = mapping.value(QStringLiteral("nickName")).toString();
 
-    AppSettings::OfflineUserName = nickName;
     const auto fileName = AppSettings::AppDataDir() + QStringLiteral("0/%1/User/User.udat").arg(nickName);
 
     if (!isFileExists(fileName)) {
@@ -57,9 +56,6 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
     const QString name = mapping.value(QStringLiteral("nickName")).toString();
     const QString pwd = mapping.value(QStringLiteral("password")).toString();
 
-    // 保存当前用户名
-    AppSettings::OfflineUserName = name;
-
     if (hasIllegalCharInFile(name)) {
         emit failed(tr("数据目录创建失败，用户名可能包含以下非法字符：\\/\"*?<>|"));
     } else if (name.trimmed().length() == 0) {
@@ -75,6 +71,9 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
             json.insert(iter.key(), iter.value().toJsonValue());
         }
 
+        // 离线状态下生成必须使用uuid来标识用户
+        json.insert(QLatin1String("uuid"), User::Instance()->generateUuid());
+
         User::Instance()->fromJson(json);
         emit registered();
     }
@@ -82,8 +81,6 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
 
 bool AppLoginOperation::isUserExists(const QString& userName)
 {
-    AppSettings::OfflineUserName = userName;
-
     const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("0/")).entryList(QDir::Dirs);
 
     for (int i = 0; i < dirs.size(); i++) {

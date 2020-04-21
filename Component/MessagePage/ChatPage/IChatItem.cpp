@@ -66,8 +66,10 @@ const QString IChatItem::getMessageTime()
 void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     const auto &data = index.data(ChatItemDelegate::ChatItemType).value<IChatItem *>();
-    if (!data)
-    {
+    if (!data) {
+        return;
+    } else if (data->selfPaint()) {
+        data->paintContent(painter, option.rect);
         return;
     }
 
@@ -91,7 +93,7 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         // 多人聊天才显示名称
         if (isMultiPerson)
         {
-            painter->setPen(QPen("#2D3135"));
+            painter->setPen(XTheme.MainTextColor);
             painter->drawText(QRect(rect.x(), t, cr, ch), Qt::AlignBottom | Qt::AlignRight, data->getSender()->getNickName());
         }
 
@@ -100,7 +102,7 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
         // 时间
         const QRect timeRect(cr - ctSize.width(), t + ch + ctSize.height() + ESize::Tiny, qMax(50, ctSize.width()), 20);
-        painter->setPen(QPen("#A7ADBD"));
+        painter->setPen(XTheme.SubTextColor);
         painter->drawText(timeRect, Qt::AlignTop | Qt::AlignLeft, data->getMessageTime());
     }
     else
@@ -110,14 +112,14 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
         if (isMultiPerson)
         {
-            painter->setPen(QPen("#2D3135"));
+            painter->setPen(XTheme.MainTextColor);
             painter->drawText(QRect(cl, t, rect.right(), ch), Qt::AlignBottom | Qt::AlignLeft, data->getSender()->getNickName());
         }
 
         data->paintContent(painter, QRect(cl, t + ch, rect.right() - cl, 1));
 
-        const QRect timeRect(cl, t + ch + ctSize.height() + ESize::Tiny, qMax(50, ctSize.width()), 20);
-        painter->setPen(QPen("#A7ADBD"));
+        const QRect timeRect(cl, t + ch + ctSize.height() + ESize::Tiny, qMax(50, ctSize.width()), ESize::Wide);
+        painter->setPen(XTheme.SubTextColor);
         painter->drawText(timeRect, Qt::AlignTop | Qt::AlignRight, data->getMessageTime());
     }
 
@@ -135,6 +137,6 @@ QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMode
         return QSize();
     }
 
-    data->updateContentSize(option.rect, option);
+    data->updateContentSize(option);
     return QSize(option.rect.width(), qMax(data->getContentSize().height() + ESize::Wide + XTheme.AvatarSize / 2, XTheme.AvatarSize));
 }

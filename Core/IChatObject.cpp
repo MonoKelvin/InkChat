@@ -7,12 +7,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPixmap>
+#include <QUuid>
 
 IChatObject::IChatObject(QObject* parent)
     : QObject(parent)
     , mID(0)
-    , mGender('-')
-    , mIsTop(false)
     , mRoleType(Stranger)
     , mOnlineState(NoneState)
 {
@@ -63,8 +62,7 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
 
     mID = json.value(QLatin1String("id")).toString().toUInt();
     mMD5 = json.value(QLatin1String("md5")).toString();
-    mIsTop = json.value(QLatin1String("top")).toBool(false);
-    mGender = json.value(QLatin1String("gender")).toString(QStringLiteral("-")).front().toLatin1();
+    mUuid = json.value(QLatin1String("uuid")).toString();
     mNickName = json.value(QLatin1String("nickName")).toString();
     mSignature = json.value(QLatin1String("signature")).toString(tr("还没有任何简介"));
     mHostAddress = json.value(QLatin1String("hostAddress")).toString();
@@ -73,12 +71,40 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
 QJsonObject IChatObject::toJson(void)
 {
     QJsonObject json;
-    json.insert(QLatin1String("top"), mIsTop);
     json.insert(QLatin1String("id"), QString::number(mID));
     json.insert(QLatin1String("md5"), mMD5);
-    json.insert(QLatin1String("gender"), QString(mGender));
+    json.insert(QLatin1String("uuid"), mUuid);
     json.insert(QLatin1String("nickName"), mNickName);
     json.insert(QLatin1String("signature"), mSignature);
     json.insert(QLatin1String("hostAddress"), mHostAddress);
+    return json;
+}
+
+const QString IChatObject::generateUuid()
+{
+    mUuid = QUuid::createUuid().toString(QUuid::Id128);
+    return mUuid;
+}
+
+////////////////////////////////////////////////////
+// IPerson Class
+////////////////////////////////////////////////////
+
+IPerson::~IPerson()
+{
+}
+
+void IPerson::fromJson(const QJsonObject& json, bool cache)
+{
+    mGender = json.value(QLatin1String("gender")).toString(QStringLiteral("-")).front().toLatin1();
+
+    return IChatObject::fromJson(json, cache);
+}
+
+QJsonObject IPerson::toJson()
+{
+    auto json = IChatObject::toJson();
+    json.insert(QLatin1String("gender"), QString(mGender));
+
     return json;
 }

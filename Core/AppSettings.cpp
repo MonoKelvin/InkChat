@@ -1,35 +1,32 @@
 ﻿#include "AppSettings.h"
 
+#include <MessageDatabase.h>
+#include <User.h>
+
 #include <QIcon>
 
-QString AppSettings::OfflineUserName;
+EAppState AppSettings::AppState = EAppState::Offline;
 
 AppSettings::AppSettings(QObject* parent)
     : QSettings(AppConfigFile(), IniFormat, parent)
 {
-    CurrentUserId = value(QStringLiteral("User/currentUser"), 0).toUInt();
 }
 
 AppSettings::~AppSettings()
 {
 }
 
-const QString AppSettings::MessageCacheFile(IChatObject::ERoleType type)
+const QString AppSettings::ChatObjectCacheFile(unsigned int id)
 {
-    QString res;
+}
 
-    switch (type) {
-    case IChatObject::Friend:
-        res = UserDataDir() + QStringLiteral("Message.db");
-        break;
-    case IChatObject::LAN:
-        res = LanDataDir() + QStringLiteral("Message.db");
-        break;
-    default:
-        break;
+const QString AppSettings::UserDir()
+{
+    if (AppState == EAppState::Online) {
+        return AppDir() + QString::number(User::Instance()->getID());
     }
 
-    return res;
+    return AppDir() + QStringLiteral("/0/") + User::Instance()->getNickName();
 }
 
 void AppSettings::SetIconTheme(const QString& themeName)

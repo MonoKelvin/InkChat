@@ -61,7 +61,7 @@ public:
 
     /** 头像尺寸枚举 */
     enum EAvatarSize {
-        AvatarSize45x45 = 45,
+        AvatarSize45x45 = 46,
         AvatarSize64x64 = 64,
         AvatarSize128x128 = 128,
         AvatarSize256x256 = 256,
@@ -76,15 +76,6 @@ public:
 
     inline const QString getMD5(void) const { return mMD5; }
     inline void setMD5(const QString& md5) { mMD5 = md5; }
-
-    inline bool getIsTop() const { return mIsTop; }
-    inline void setIsTop(bool isTop)
-    {
-        if (isTop != mIsTop) {
-            mIsTop = isTop;
-            emit isTopChanged();
-        }
-    }
 
     inline const QString getNickName(void) const { return mNickName; }
     inline void setNickName(const QString& nickName)
@@ -109,15 +100,6 @@ public:
      * @return 如果文件存在返回true，否则返回空字符串
      */
     virtual const QString getAvatar(void) const;
-
-    inline char getGender(void) const { return mGender; }
-    inline void setGender(char gender)
-    {
-        if (gender != mGender) {
-            mGender = gender;
-            emit genderChanged();
-        }
-    }
 
     inline EOnlineState getOnlineState(void) const { return mOnlineState; }
     inline void setOnlineState(EOnlineState onlineState)
@@ -159,6 +141,18 @@ public:
      */
     virtual bool updateLocalData() { return true; }
 
+    inline const QString getUuid(void) const { return mUuid; }
+    inline void setUuid(const QString& uuid)
+    {
+        mUuid = uuid;
+    }
+
+    /**
+     * @brief 生成一个Uuid并返回
+     * @return 返回唯一标识
+     */
+    const QString generateUuid(void);
+
 protected Q_SLOTS:
     /**
      * @brief 从数据库中获取对象的头像并缓存
@@ -178,11 +172,9 @@ Q_SIGNALS:
     /** 信号：数据需要更新时触发，会调用 @see updateJson方法 */
     //void needToUpdate();
 
-    void isTopChanged();
     void nickNameChanged();
     void signatureChanged();
     void avatarChanged();
-    void genderChanged();
     void onlineStateChanged();
 
     //protected:
@@ -196,14 +188,11 @@ protected:
     // 用户ID
     unsigned int mID;
 
+    // Uuid，针对于离线使用的用户标识
+    QString mUuid;
+
     // 数据完整性校验
     QString mMD5;
-
-    // 性别。1男，0女，'-'（减号）保密或无（组和局域网）
-    char mGender;
-
-    // 是否置顶
-    bool mIsTop;
 
     // 角色类型
     ERoleType mRoleType;
@@ -219,6 +208,34 @@ protected:
 
     // 主机地址，如果是局域网对象则保存的应该是局域网地址
     QString mHostAddress;
+};
+
+/**
+ * @brief 可以进行聊天的用户（人）类，包括User、MyFriend等
+ */
+class IPerson : public IChatObject {
+
+public:
+    explicit IPerson(QObject* parent = nullptr)
+        : IChatObject(parent)
+        , mGender('-')
+    {
+    }
+
+    virtual ~IPerson() override;
+
+    inline char getGender(void) const { return mGender; }
+    inline void setGender(char gender)
+    {
+        mGender = gender;
+    }
+
+    virtual void fromJson(const QJsonObject& json, bool cache = true) override;
+    virtual QJsonObject toJson() override;
+
+protected:
+    // 性别。1男，0女，'-'（减号）保密或无（组和局域网）
+    char mGender;
 };
 
 #endif // ICHATOBJECT_H

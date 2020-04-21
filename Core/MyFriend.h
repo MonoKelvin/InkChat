@@ -5,8 +5,7 @@
 
 class User;
 
-class MyFriend : public IChatObject
-{
+class MyFriend : public IPerson {
     Q_OBJECT
     friend class User;
 

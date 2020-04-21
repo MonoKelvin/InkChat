@@ -52,7 +52,7 @@ public:
      * @param md5_16 16为的md5，其格式为(hostAddr + msc)再取中间16位
      * @return 返回局域网uuid，如果不存在则返回空字符串
      */
-    const QString getCachedLanObject(const QString& md5_16);
+    LanObject* getCachedLanObject(const QString& md5_16);
 
     /**
      * @brief 更新阅读消息标记

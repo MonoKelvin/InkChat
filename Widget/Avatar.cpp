@@ -26,10 +26,9 @@ Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
 
 Avatar::~Avatar()
 {
-
 }
 
-void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pixmap, User::EOnlineState state)
+void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pixmap, User::EOnlineState state, const QString& defalultText)
 {
     painter->save();
 
@@ -43,6 +42,12 @@ void Avatar::DrawAvatar(QPainter *painter, const QRect &rect, const QPixmap &pix
 
     // 当没有图片时绘制背景色
     if (pixmap.isNull()) {
+        const auto& c = defalultText.trimmed().at(1);
+        if (!c.isNull()) {
+            painter->setFont(XTheme.TitleFont);
+            painter->setPen(XTheme.MainTextColor);
+            painter->drawText(rect, Qt::AlignCenter, c);
+        }
         painter->drawRect(rect);
     } else {
         painter->drawPixmap(rect, pixmap);

@@ -1,5 +1,6 @@
 ﻿#include "MessageManager.h"
 
+#include <AppSettings.h>
 #include <ChatList.h>
 #include <MessageDatabase.h>
 #include <User.h>
@@ -32,8 +33,8 @@ qint64 MessageManager::sendMessage(ChatList* view, int type, const QVariant& dat
         return -1;
     }
 
-    auto time = QDateTime::currentDateTime();
-    auto item = ChatList::BuildChatItem(type, time, data);
+    const auto& time = QDateTime::currentDateTime();
+    const auto& item = ChatList::BuildChatItem(type, time, data);
 
     QByteArray outData;
     QDataStream out(&outData, QIODevice::WriteOnly);
@@ -41,7 +42,11 @@ qint64 MessageManager::sendMessage(ChatList* view, int type, const QVariant& dat
     const auto& chatObj = view->mChatObject.data();
 
     // 填充数据
-    out << User::Instance()->getID();
+    if (AppSettings::IsOffline()) {
+        out << User::Instance()->getUuid();
+    } else {
+        out << User::Instance()->getID();
+    }
     out << User::Instance()->getHostAddress();
     out << User::Instance()->getNickName();
     out << type;
@@ -93,11 +98,19 @@ void MessageManager::processPendingDatagrams()
 
         QDataStream in(&datagram, QIODevice::ReadOnly);
         unsigned int senderId = 0;
-        in >> senderId;
 
         // 首先判断是否是自己发送的数据，如果是则不接收
-        if (senderId == User::Instance()->getID()) {
-            return;
+        if (AppSettings::IsOffline()) {
+            QString uuid;
+            in >> uuid;
+            if (uuid == User::Instance()->getUuid()) {
+                continue;
+            }
+        } else {
+            in >> senderId;
+            if (senderId == User::Instance()->getID()) {
+                continue;
+            }
         }
 
         // 处理数据

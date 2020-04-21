@@ -11,7 +11,7 @@ class LanObject;
 /**
  * @brief 用户类。整个系统中用户是唯一的
  */
-class User : public IChatObject {
+class User : public IPerson {
     Q_OBJECT
 
 protected:
@@ -51,31 +51,26 @@ public:
      * @param id 好友id
      * @return 如果id不存在将返回nullptr，否则返回好友对象
      */
-    MyFriend* getFriendById(unsigned int id);
+    //MyFriend* getFriendById(unsigned int id);
 
     /**
-     * @brief 通过id获取我的局域网
-     * @param id 局域网id
-     * @return 如果id不存在将返回nullptr，否则返回局域网聊天对象
-     * @note 该方法是动态加载局域网对象，即如果内存中不存在则会到局域网缓存文件夹搜索对应的配
-     * 置文件，如果依旧没有搜索到才会返回nullptr
+     * @brief 通过id获取我的聊天对象，不推荐使用
+     * @param id 聊天对象id
+     * @return 如果id不存在将返回nullptr，否则返回聊天对象
      */
-    LanObject* getLanObjectById(unsigned int id);
+    //IChatObject* getChatObjectById(unsigned int id);
 
-    /**
-     * @brief 通过md5获取我的局域网
-     * @param md5 局域网md5
-     * @return 如果md5不存在将返回nullptr，否则返回局域网聊天对象
-     * @note 该方法是动态加载局域网对象，即如果内存中不存在则会到局域网缓存文件夹搜索对应的配
-     * 置文件，如果依旧没有搜索到才会返回nullptr
-     */
-    LanObject* getLanObjectByMd5(const QString& md5);
+    IChatObject* getChatObjectByUuid(const QString& uuid);
+    LanObject* getLanObjectByUuid(const QString& uuid);
 
     static QPointer<User> Instance()
     {
         static QPointer<User> instance = QPointer<User>(new User);
         return instance;
     }
+
+private:
+    void dynamicLoadCacheData(IChatObject* chatObj, const QString& fileName);
 
 private:
     Q_DISABLE_COPY_MOVE(User)

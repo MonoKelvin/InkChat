@@ -11,4 +11,12 @@
 /** 每次刷新时获取聊天消息的最大数量 */
 #define CHAT_RECORD_FECTH_COUNT 30
 
+/**
+ * @brief App状态
+ */
+enum class EAppState {
+    Online,
+    Offline
+};
+
 #endif // CONFIGUATION_H

@@ -1,6 +1,7 @@
 ﻿#include "LanObject.h"
 
 #include <AppSettings.h>
+#include <MessageDatabase.h>
 #include <User.h>
 
 #include <QDir>
@@ -20,9 +21,9 @@ void LanObject::fromJson(const QJsonObject& json, bool cache) noexcept(false)
     mMacAddress = json.value(QLatin1String("mac")).toString();
 
     if (cache) {
-        const auto fileName = AppSettings::LanDataDir() + mMD5;
+        const auto fileName = AppSettings::ChatObjectCacheFile(mUuid);
         if (!isFileExists(fileName, true)) {
-            throw tr("局域网数据文件创建失败");
+            throw tr("局域网缓存数据创建失败");
         }
 
         QFile file(fileName);
@@ -50,7 +51,7 @@ QJsonObject LanObject::toJson()
 
 bool LanObject::updateLocalData()
 {
-    const auto fileName = AppSettings::LanDataDir() + mMD5;
+    const auto& fileName = AppSettings::ChatObjectCacheFile(mUuid);
 
     if (!isFileExists(fileName, true)) {
         return false;
@@ -79,23 +80,22 @@ LanObject* LanObject::DetectLanEnvironment()
         return nullptr;
     }
 
-    const auto& md5 = encryptTextByMD5(addr + mac);
+    const auto& md5 = encryptTextByMD5(addr + mac, true);
+    LanObject* lan = MessageDatabase::Instance()->getCachedLanObject(md5);
 
-    // 先从缓存中获取
-    LanObject* lan = User::Instance()->getLanObjectByMd5(md5);
-
-    // 检测到一个新的局域网
+    // 先从缓存中获取，不存在就新建一个局域网
     if (nullptr == lan) {
         lan = new LanObject;
 
-        // WARINING: 必须加到用户列表，否则刷新消息视图将出现重复对象
-        User::Instance()->addChatObject(lan);
-
+        lan->generateUuid();
         lan->mMD5 = md5;
         lan->mNickName = addr;
         lan->mHostAddress = addr;
         lan->mMacAddress = mac;
         // lan->updateLocalData();
+
+        // WARINING: 必须加到用户列表，否则刷新消息视图将出现重复对象
+        User::Instance()->addChatObject(lan);
     }
 
     return lan;
