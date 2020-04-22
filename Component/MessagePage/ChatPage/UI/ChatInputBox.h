@@ -1,7 +1,7 @@
 ﻿#ifndef CHATINPUTBOX_H
 #define CHATINPUTBOX_H
 
-#include <IChatItem.h>
+#include <ChatItem.h>
 
 #include <QWidget>
 

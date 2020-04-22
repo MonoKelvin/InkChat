@@ -5,7 +5,7 @@
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-class IChatItem;
+class ChatItem;
 class ChatList;
 class MessageItem;
 class MessageList;
@@ -52,7 +52,7 @@ public:
      * @param md5_16 16为的md5，其格式为(hostAddr + msc)再取中间16位
      * @return 返回局域网uuid，如果不存在则返回空字符串
      */
-    const QString getCachedLanObject(const QString& md5_16);
+    LanObject* getCachedLanObject(const QString& md5_16);
 
     /**
      * @brief 更新阅读消息标记
@@ -83,7 +83,7 @@ public:
      * @param chatObj 聊天对象的实例
      * @return 保存成功返回true，并且将成功后的消息(chatId)保存到item中，保存失败返回false
      */
-    bool saveAChatRecord(IChatItem* item, IChatObject* chatObj);
+    bool saveAChatRecord(ChatItem* item, IChatObject* chatObj);
 
     QSqlDatabase& getDatabase(void) { return mDatabase; }
 

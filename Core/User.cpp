@@ -97,10 +97,6 @@ LanObject* User::getLanObjectByUuid(const QString& uuid)
 
 void User::dynamicLoadCacheData(IChatObject* chatObj, const QString& fileName)
 {
-    if (nullptr != chatObj) {
-        return;
-    }
-
     QFile file(fileName);
 
     // 动态加载

@@ -24,17 +24,17 @@ IChatObject::~IChatObject()
 
 const QString IChatObject::getAvatar() const
 {
-    const auto fileName = AppSettings::AvatarCacheFile(mRoleType, mID);
+    const auto fileName = AppSettings::AvatarCacheFile(mUuid);
     if (QFileInfo::exists(fileName)) {
         return QStringLiteral("file:///") + fileName;
     }
 
-    return QStringLiteral("");
+    return QString();
 }
 
 void IChatObject::cacheAvatar(EAvatarSize size)
 {
-    if (QFileInfo::exists(AppSettings::AvatarCacheFile(mRoleType, mID))) {
+    if (QFileInfo::exists(AppSettings::AvatarCacheFile(mUuid))) {
         return;
     }
 
@@ -84,6 +84,12 @@ const QString IChatObject::generateUuid()
 {
     mUuid = QUuid::createUuid().toString(QUuid::Id128);
     return mUuid;
+}
+
+const SUserChatData IChatObject::getChatData() noexcept
+{
+    const SUserChatData data { mUuid, mNickName };
+    return data;
 }
 
 ////////////////////////////////////////////////////

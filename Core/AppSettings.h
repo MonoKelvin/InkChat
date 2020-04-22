@@ -78,9 +78,9 @@ public:
     }
 
     // 用户缓存头像文件夹
-    inline static const QString AvatarCacheFile(int roleType, unsigned int id)
+    inline static const QString AvatarCacheFile(const QString& uuid)
     {
-        return UserDir() + QStringLiteral("/Avatar/%1-%2.thumb").arg(roleType).arg(id);
+        return UserDir() + QStringLiteral("/Avatar/") + uuid;
     }
 
     // 聊天缓存图片文件夹

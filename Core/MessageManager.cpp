@@ -1,13 +1,17 @@
 ﻿#include "MessageManager.h"
 
 #include <AppSettings.h>
+#include <ChatItem.h>
 #include <ChatList.h>
 #include <MessageDatabase.h>
 #include <User.h>
 
 #include <QDataStream>
+
 #include <QDateTime>
 #include <QUdpSocket>
+
+QHash<int, QByteArray> MessageManager::mRegistryChatClasses;
 
 MessageManager::MessageManager(QObject* parent)
     : QObject(parent)
@@ -27,50 +31,99 @@ MessageManager::~MessageManager()
     qDebug() << "MessageManager Destroyed";
 }
 
-qint64 MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
+template <typename T>
+void MessageManager::RegisterChatItemClass()
 {
-    if (data.isNull() || !data.isValid()) {
-        return -1;
+    const auto metaClass = T::staticMetaObject;
+
+    Q_ASSERT(metaClass.inherits(&AbstractChatListItem::staticMetaObject));
+
+    if (mRegistryChatClasses.contains(T::ChatType)) {
+        qWarning("AbstractChatListItem类型已存在，原类型将会被覆盖");
     }
 
-    const auto& time = QDateTime::currentDateTime();
-    const auto& item = ChatList::BuildChatItem(type, time, data);
+    qRegisterMetaType<T>(metaClass.className());
+    mRegistryChatClasses.insert(T::ChatType, metaClass.className());
+}
+
+ChatItem* MessageManager::BuildChatItem(int chatType, const SUserChatData& userData, const QVariant& data)
+{
+    if (userData.isEmpty()) {
+        return nullptr;
+    }
+
+    const auto& className = mRegistryChatClasses.value(chatType);
+    const auto& id = QMetaType::type(className);
+
+    // 通过反射机制创建实例
+    ChatItem* chat = nullptr;
+    if (id != QMetaType::UnknownType) {
+        chat = static_cast<ChatItem*>(QMetaType::create(id));
+        if (!chat) {
+            return nullptr;
+        }
+
+        chat->fromSenderData(userData);
+        chat->setData(data);
+    }
+
+    return chat;
+}
+
+ChatItem* MessageManager::BuildChatItem(int chatType, const QVariant& data)
+{
+    return BuildChatItem(chatType, User::Instance()->getChatData(), data);
+}
+
+void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
+{
+    if (!data.isValid() || data.isNull()) {
+        emit failed(tr("要发送的消息无效，请尝试重新发送"));
+        return;
+    }
 
     QByteArray outData;
     QDataStream out(&outData, QIODevice::WriteOnly);
 
     const auto& chatObj = view->mChatObject.data();
+    const auto& time = QDateTime::currentDateTime();
+    const auto& item = MessageManager::BuildChatItem(type, data);
+
+    if (nullptr == item) {
+        emit failed(tr("消息构建失败，请尝试重新发送"));
+        return;
+    }
 
     // 填充数据
-    if (AppSettings::IsOffline()) {
-        out << User::Instance()->getUuid();
-    } else {
-        out << User::Instance()->getID();
-    }
+    out << User::Instance()->getUuid();
     out << User::Instance()->getHostAddress();
     out << User::Instance()->getNickName();
-    out << type;
-    out << data;
-    out << time;
     out << chatObj->getRoleType();
+    out << type;
+    out << time;
+    out << data;
 
     // 发送数据
     qint64 result = -1;
     if (chatObj->getRoleType() & IChatObject::MultiPerson) {
-        out << chatObj->getMD5();
+        // md5用于验证同一个多人聊天对象
+        //out << chatObj->getMD5();
         result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, mPort);
     } else {
         result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), mPort);
     }
 
-    // 显示到视图中并保存到本地数据库
-    if (item) {
-        view->appendChat(item);
-        MessageDatabase::Instance()->saveAChatRecord(item, chatObj);
-        item->setSendState(IChatItem::Succeed);
+    if (result < 0) {
+        emit failed(tr("消息发送失败，请再试一遍"));
+        qDebug() << mUdpSocket->errorString();
+        return;
     }
 
-    return result;
+    // 显示到视图中并保存到本地数据库
+    item->setTime(time);
+    item->setSendState(ChatItem::Succeed);
+    view->appendItem(item);
+    MessageDatabase::Instance()->saveAChatRecord(item, chatObj);
 }
 
 void MessageManager::loadChatRecords(ChatList* view)
@@ -78,7 +131,7 @@ void MessageManager::loadChatRecords(ChatList* view)
     MessageDatabase::Instance()->loadChatItems(view);
 }
 
-void MessageManager::saveAChatRecord(ChatList* view, IChatItem* item) const
+void MessageManager::saveAChatRecord(ChatList* view, ChatItem* item) const
 {
     MessageDatabase::Instance()->saveAChatRecord(item, view->mChatObject.data());
 }
@@ -97,58 +150,18 @@ void MessageManager::processPendingDatagrams()
         mUdpSocket->readDatagram(datagram.data(), datagram.size());
 
         QDataStream in(&datagram, QIODevice::ReadOnly);
-        unsigned int senderId = 0;
 
         // 首先判断是否是自己发送的数据，如果是则不接收
-        if (AppSettings::IsOffline()) {
-            QString uuid;
-            in >> uuid;
-            if (uuid == User::Instance()->getUuid()) {
-                continue;
-            }
-        } else {
-            in >> senderId;
-            if (senderId == User::Instance()->getID()) {
-                continue;
-            }
+        SChatItemPackage package;
+        in >> package.UserChatData.Uuid;
+        if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
+            continue;
         }
 
         // 处理数据
-        IChatObject::ERoleType roleType;
-        QString addr;
-        QString name;
-        int type;
-        QVariant data;
-        QDateTime time;
-        in >> addr >> name >> type >> data >> time;
+        in >> package.HostAddress >> package.UserChatData.Name
+            >> package.RoleType >> package.ChatType >> package.Time >> package.Data;
 
-        // 构建到视图
-        IChatItem* item = ChatList::BuildChatItem(type, senderId, time, data);
-        if (nullptr == item) { // 接收到无效信息
-            continue;
-        } else if (item->mChatObject == nullptr) { // 如果不是我或者我的好友，那就是陌生人
-            // TODO：加载头像
-            item->mChatObject = new IChatObject(item);
-            item->mChatObject->setNickName(name);
-            item->mChatObject->setID(senderId);
-        }
-
-        item->mChatObject->setHostAddress(addr);
-
-        // 聊天对象的数据
-        QVariantMap sourceData;
-
-        in >> roleType;
-        sourceData.insert(QStringLiteral("roleType"), roleType);
-
-        if (roleType & IChatObject::MultiPerson) {
-            QString md5;
-            in >> md5;
-            sourceData.insert(QStringLiteral("md5"), md5);
-            item->mChatObject->setMD5(md5);
-        }
-
-        // TODO: 使用消息队列来完成
-        emit received(item, sourceData);
+        emit received(package);
     }
 }

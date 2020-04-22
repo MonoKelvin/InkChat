@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+struct SUserChatData;
+
 /**
  * @brief 聊天对象基类接口
  */
@@ -153,6 +155,12 @@ public:
      */
     const QString generateUuid(void);
 
+    /**
+     * @brief 获取应用在聊天视图中的可用数据
+     * @return 
+     */
+    const SUserChatData getChatData(void) noexcept;
+
 protected Q_SLOTS:
     /**
      * @brief 从数据库中获取对象的头像并缓存
@@ -237,5 +245,24 @@ protected:
     // 性别。1男，0女，'-'（减号）保密或无（组和局域网）
     char mGender;
 };
+
+struct SUserChatData {
+    QString Uuid;
+    QString Name;
+
+    SUserChatData() = default;
+
+    SUserChatData(const QString& uuid, const QString& name)
+        : Uuid(uuid)
+        , Name(name)
+    {
+    }
+
+    Q_DECL_CONSTEXPR inline bool isEmpty(void) const noexcept
+    {
+        return Uuid.isEmpty();
+    }
+};
+Q_DECLARE_METATYPE(SUserChatData);
 
 #endif // ICHATOBJECT_H

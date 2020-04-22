@@ -8,9 +8,12 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class ChatItem;
 class ChatViewWidget;
 class MessageList;
 class QMenu;
+class IChatObject;
+struct SChatItemPackage;
 
 class MainWindow : public QWidget
 {
@@ -19,6 +22,13 @@ class MainWindow : public QWidget
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+
+private:
+    /**
+     * @brief 新建一个聊天视图
+     * @note 新建好的视图会自动加载历史数据
+     */
+    ChatViewWidget* createChatViewWidget(IChatObject* chatObj);
 
 private Q_SLOTS:
 
@@ -36,6 +46,8 @@ private Q_SLOTS:
 
     // 当消息激活时，一般为点击进行聊天
     void onMessageItemActived(const QModelIndex& index);
+
+    void onReceived(const SChatItemPackage& package);
 
 private:
     Ui::MainWindow* ui;

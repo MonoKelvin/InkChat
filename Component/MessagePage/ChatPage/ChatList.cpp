@@ -1,16 +1,13 @@
 ﻿#include "ChatList.h"
 
 #include <AppSettings.h>
+#include <ChatItem.h>
 #include <MessageManager.h>
-#include <MyFriend.h>
 #include <User.h>
-
-QHash<int, QByteArray> ChatList::mRegistryChatClasses;
 
 ChatList::ChatList(QObject* parent)
     : QAbstractListModel(parent)
 {
-    connect(MessageManager::Instance().data(), &MessageManager::received, this, &ChatList::onReceived);
 }
 
 ChatList::~ChatList()
@@ -24,80 +21,11 @@ ChatList::~ChatList()
     qDebug() << "ChatList Destroyed: " << this;
 }
 
-IChatItem* ChatList::BuildChatItem(int chatType, IPerson* person)
+AbstractChatListItem* ChatList::getChatItem(int index, bool onlyChat) const
 {
-    if (person == nullptr) {
-        return nullptr;
-    }
+    // TODO: remove it
+    Q_UNUSED(onlyChat)
 
-    const auto& className = mRegistryChatClasses.value(chatType);
-    const auto& id = QMetaType::type(className);
-
-    // 通过反射机制创建实例
-    IChatItem* chat = nullptr;
-    if (id != QMetaType::UnknownType) {
-        chat = static_cast<IChatItem*>(QMetaType::create(id));
-        if (!chat) {
-            return nullptr;
-        }
-
-        // 如果是我
-        if (person->getUuid() == User::Instance()->getUuid()) {
-            chat->mChatObject = User::Instance();
-        } else {
-            chat->mChatObject = person;
-        }
-    }
-
-    return chat;
-}
-
-IChatItem* ChatList::BuildChatItem(int chatType, bool isMe, const QDateTime& time, const QVariant& data)
-{
-    if (mChatObject && mChatObject->getRoleType() & IChatObject::SinglePerson) {
-        const auto& className = mRegistryChatClasses.value(chatType);
-        const auto& id = QMetaType::type(className);
-
-        // 通过反射机制创建实例
-        IChatItem* chat = nullptr;
-        if (id != QMetaType::UnknownType) {
-            chat = static_cast<IChatItem*>(QMetaType::create(id));
-            if (!chat) {
-                return nullptr;
-            }
-
-            // 如果是我
-            if (isMe) {
-                chat->mChatObject = User::Instance();
-            } else {
-                chat->mChatObject = mChatObject;
-            }
-        }
-
-        chat->mTime = time;
-        chat->praseData(data);
-
-        return chat;
-    }
-
-    return nullptr;
-}
-
-IChatItem* ChatList::BuildChatItem(int chatType, IPerson* person, const QDateTime& time, const QVariant& data)
-{
-    const auto& item = BuildChatItem(chatType, person);
-    if (nullptr == item) {
-        return nullptr;
-    }
-
-    item->mTime = time;
-    item->praseData(data);
-
-    return item;
-}
-
-IChatItem* ChatList::getChatItem(int index) const
-{
     if (index >= 0 && index < mChats.size()) {
         return mChats.at(index);
     }
@@ -119,11 +47,11 @@ void ChatList::removeChatItem(int row, bool cascade)
     }
 }
 
-bool ChatList::insertChat(int row, IChatItem* chat)
+bool ChatList::insertChat(int row, AbstractChatListItem* item)
 {
     if (row >= 0 && row <= mChats.size()) {
         beginInsertRows(QModelIndex(), row, row);
-        mChats.insert(row, chat);
+        mChats.insert(row, item);
         endInsertRows();
 
         if (mChats.size() > 100) {
@@ -179,36 +107,8 @@ void ChatList::fetchMore(const QModelIndex& parent)
 {
     Q_UNUSED(parent)
 
-    isFileExists(AppSettings::MessageDBFile(mChatObject->getRoleType()), true);
+    isFileExists(AppSettings::MessageDBFile(), true);
     MessageManager::Instance()->loadChatRecords(this);
-}
-
-void ChatList::onReceived(IChatItem* item, const QVariantMap& sourceData)
-{
-    bool receive = false;
-    int roleType = sourceData.value(QStringLiteral("roleType")).toInt();
-
-    if (roleType & IChatObject::MultiPerson) {
-        const QString md5 = sourceData.value(QStringLiteral("md5")).toString();
-
-        // 如果数据中的MD5和该聊天对象匹配就接收数据
-        if (md5 == mChatObject->getMD5()) {
-            receive = true;
-        }
-    } else if (roleType & IChatObject::SinglePerson) {
-
-        // 如果数据中的单用户id和该聊天对象的用户id匹配就接收数据
-        if (item->mChatObject->getID() == mChatObject->getID()) {
-            receive = true;
-        }
-    }
-
-    if (!receive) {
-        return;
-    }
-
-    appendChat(item);
-    MessageManager::Instance()->saveAChatRecord(this, item);
 }
 
 QVariant ChatList::data(const QModelIndex& index, int role) const
@@ -228,7 +128,7 @@ bool ChatList::setData(const QModelIndex& index, const QVariant& value, int role
 {
     if (index.row() >= 0 && index.row() < mChats.size()) {
         if (role >= 0) {
-            mChats.replace(index.row(), value.value<IChatItem*>());
+            mChats.replace(index.row(), value.value<ChatItem*>());
             return true;
         }
     }

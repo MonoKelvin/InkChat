@@ -234,7 +234,7 @@ bool MessageDatabase::loadChatItems(ChatList* chatView)
         // 聊天类型
         type = query.value(1).toInt();
 
-        IChatItem* item = chatView->BuildChatItem(type, query.value(2).toBool(), chatObj->getID());
+        ChatItem* item = chatView->BuildChatItem(type, query.value(2).toBool(), chatObj->getID());
         if (nullptr == item) {
             continue;
         }
@@ -249,7 +249,7 @@ bool MessageDatabase::loadChatItems(ChatList* chatView)
     return true;
 }
 
-bool MessageDatabase::saveAChatRecord(IChatItem* item, IChatObject* chatObj)
+bool MessageDatabase::saveAChatRecord(ChatItem* item, IChatObject* chatObj)
 {
     QSqlQuery query;
     if (!query.prepare(SqlInsertChatRecord)) {

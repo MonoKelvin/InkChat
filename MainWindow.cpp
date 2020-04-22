@@ -6,6 +6,7 @@
 #include <MessageDatabase.h>
 #include <MessageItem.h>
 #include <MessageList.h>
+#include <MessageManager.h>
 #include <UI/ChatViewWidget.h>
 #include <User.h>
 #include <Utility.h>
@@ -47,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->navigation, &Navigation::navigated, ui->stackedWidget, &QStackedWidget::setCurrentIndex);
     connect(ui->messageList, &QListView::clicked, this, &MainWindow::onMessageItemActived);
     connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
+    connect(MessageManager::Instance(), &MessageManager::received, this, &MainWindow::onReceived);
 
     // 当聊天视图滚动到最底端时，又展开输入框后，会使得视图布局不更新，导致无法看到最后几条消息。
     // connect(ui->chatInputer, &ChatInputBox::onFoldup, [=] {
@@ -69,6 +71,27 @@ MainWindow::~MainWindow()
     mChatPages.clear();
 
     delete ui;
+}
+
+ChatViewWidget* MainWindow::createChatViewWidget(IChatObject* chatObj)
+{
+    ChatViewWidget* cvw = new ChatViewWidget(this);
+    ui->messagePage->layout()->addWidget(cvw);
+
+    // 缓存
+    int max = AppSettings::Value(QStringLiteral("App/maxChatPageCount"), 3).toInt();
+    max = max > 1 ? (max < 32 ? max : 32) : 1;
+
+    if (mChatPages.length() > max) {
+        mChatPages.last()->deleteLater();
+        mChatPages.removeLast();
+    }
+    mChatPages.append(cvw);
+
+    cvw->getChatListModel()->initLoad(chatObj);
+    cvw->getChatView()->scrollToBottom();
+
+    return cvw;
 }
 
 void MainWindow::onFailed(const QString& msg)
@@ -100,19 +123,54 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
 
     // 如果没有缓存就新建一个聊天视图
     if (!isChatPageExists) {
-        ChatViewWidget* cvw = new ChatViewWidget(this);
-        ui->messagePage->layout()->addWidget(cvw);
-        cvw->getChatListModel()->initLoad(msgItem->getChatObject());
-        cvw->getChatView()->scrollToBottom();
+        createChatViewWidget(msgItem->getChatObject());
+    }
+}
 
-        // 缓存
-        int max = AppSettings::Value(QStringLiteral("App/maxChatPageCount"), 3).toInt();
-        max = max > 1 ? (max < 32 ? max : 32) : 1;
-
-        if (mChatPages.length() > max) {
-            mChatPages.last()->deleteLater();
-            mChatPages.removeLast();
+void MainWindow::onReceived(const SChatItemPackage& package)
+{
+    int i = 0;
+    for (; i < mChatPages.length(); i++) {
+        const auto& model = mChatPages.at(i)->getChatListModel();
+        bool receive = false;
+        if (package.RoleType & IChatObject::MultiPerson) {
+            // 如果数据中的 局域网IP地址 和该聊天对象匹配就接收数据
+            if (package.HostAddress == model->getChatObject()->getHostAddress()) {
+                receive = true;
+            }
+        } else {
+            // 如果数据中的单用户uuid和该聊天对象的用户uuid匹配就接收数据
+            if (package.UserChatData.Uuid == model->getChatObject()->getUuid()) {
+                receive = true;
+            }
         }
-        mChatPages.append(cvw);
+
+        if (!receive) {
+            continue;
+        }
+
+        // 推送到聊天视图中
+        ChatItem* item = MessageManager::BuildChatItem(package.ChatType, package.UserChatData, package.Data);
+
+        // 不接收出错消息
+        if (!item) {
+            return;
+        }
+
+        model->appendItem(item);
+        MessageManager::Instance()->saveAChatRecord(model, item);
+
+        // 一般只在一个聊天视图中接收数据
+        break;
+    }
+
+    // 如果有用户发来消息，但消息列表中没有，就添加一项
+    if (i == mChatPages.length() && !package.UserChatData.Uuid.isEmpty()) {
+        // 是否有缓存的消息对象
+        //mMessageListModel;
+
+        const auto& chatObj = User::Instance()->getChatObjectByUuid(package.UserChatData.Uuid);
+
+        createChatViewWidget(chatObj);
     }
 }

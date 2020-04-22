@@ -11,9 +11,10 @@ typedef quint16 Port;
 /** 定义默认局域网UDP协议端口号为2020 */
 #define LAN_UDP_PORT 2020
 
-class IChatItem;
+class ChatItem;
 class QUdpSocket;
 class ChatList;
+struct SChatItemPackage;
 //class TcpServer;
 
 /**
@@ -38,13 +39,38 @@ public:
     }
 
     /**
+     * @brief 构建一个聊天项
+     * @param type
+     * @param userData
+     * @param data
+     * @return
+     * @note 构建好的item不会发送到视图、也不会保存到数据库
+     */
+    static ChatItem* BuildChatItem(int type, const SUserChatData& userData, const QVariant& data);
+
+    /**
+     * @brief 构建一个由我发送的聊天项
+     * @param type
+     * @param data
+     * @return 
+     * @note 构建好的item不会发送到视图、也不会保存到数据库
+     */
+    static ChatItem* BuildChatItem(int type, const QVariant& data);
+
+    /**
+     * @brief 注册一个聊天类。这样在就可使用自定义的聊天类发送或接收消息
+     */
+    template <typename T>
+    static void RegisterChatItemClass();
+
+    /**
      * @brief 发送消息
      * @param view 聊天视图。消息将被发送到UI界面呈现
      * @param type 消息类型
      * @param data 要发送的消息数据
-     * @return qint64 返回发送成功的字节数，如果失败则返回-1
+     * @note 发送失败消息通过 @see failed 给出
      */
-    qint64 sendMessage(ChatList* view, int type, const QVariant& data);
+    void sendMessage(ChatList* view, int type, const QVariant& data);
 
     /**
      * @brief 加载聊天记录到指定视图
@@ -57,7 +83,7 @@ public:
      * @param view 聊天视图
      * @param item 聊天记录
      */
-    void saveAChatRecord(ChatList* view, IChatItem* item) const;
+    void saveAChatRecord(ChatList* view, ChatItem* item) const;
 
 private Q_SLOTS:
     /**
@@ -81,14 +107,11 @@ private Q_SLOTS:
 Q_SIGNALS:
     /**
      * @brief 信号：接收到聊天的数据
-     * @param IChatItem* 接收到数据并封装好的聊天项，可能为nullptr
-     * @param const QVariantMap& 发送方的来源信息。用于消息分发使用。可以根据内容筛选是
-     * 否为聊天视图所接收的消息
-     * @note 通常该信号会关联多个槽函数，即分发消息。在视图中接收到信号后判断该聊天消息是否
-     * 为自己需要的，如果需要则接收处理，否则可以抛弃。
-     * @see SourceInfoMap
+     * @param package 发送方的发来的数据包。
      */
-    void received(IChatItem*, const QVariantMap&);
+    void received(const SChatItemPackage& package);
+
+    void failed(const QString& msg);
 
 private:
     /** 
@@ -105,6 +128,13 @@ private:
 
     /** 端口号，用于局域网聊天 */
     Port mPort;
+
+    /**
+     * @brief 注册的聊天类容器
+     * @type int 表示类的 ChatType
+     * @type QByteArray 表示类的名称，即在qml中可以访问的类名
+     */
+    static QHash<int, QByteArray> mRegistryChatClasses;
 };
 
 #endif // MESSAGEMANAGER_H

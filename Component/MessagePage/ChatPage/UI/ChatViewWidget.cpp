@@ -2,7 +2,7 @@
 #include "ui_chatviewwidget.h"
 
 #include <ChatList.h>
-#include <IChatItem.h>
+#include <ChatItem.h>
 #include <Utility.h>
 
 #include <QScrollBar>

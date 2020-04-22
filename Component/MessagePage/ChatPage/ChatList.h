@@ -1,12 +1,16 @@
 ﻿#ifndef CHATLIST_H
 #define CHATLIST_H
 
-#include <IChatItem.h>
+#include <AbstractChatListItem.h>
 
 #include <QAbstractListModel>
+#include <QPointer>
 
 /** 注册聊天控件类 */
 #define REGISTER_CHATITEM(_ChatItemClassName_) ChatList::RegisterChatItemClass<_ChatItemClassName_>()
+
+class ChatItem;
+class IChatObject;
 
 class ChatList : public QAbstractListModel {
     Q_OBJECT
@@ -14,9 +18,6 @@ class ChatList : public QAbstractListModel {
 
     friend class MessageDatabase;
     friend class MessageManager;
-
-    Q_PROPERTY(IChatObject* chatObject READ getChatObject CONSTANT)
-
 public:
     explicit ChatList(QObject* parent = nullptr);
     ~ChatList() override;
@@ -29,61 +30,7 @@ public:
      * @warning 实际情况中尽量不要使用该函数，因为消息的增加几乎发生在从聊天视图的底部推送。
      * @see sendChat、appendChat
      */
-    bool insertChat(int row, IChatItem* chat);
-
-    /**
-     * @brief 通过给定聊天类类型构建一个空的聊天控件
-     * @param chatType 聊天类型 @see IChatItem::ChatType
-     * @param person 该条信息的发送者
-     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
-     * @note 该方法构建的聊天消息不会保存到数据库、不会推送到聊天视图中
-     */
-    static IChatItem* BuildChatItem(int chatType, IPerson* person);
-
-    /**
-     * @brief 构建一个无关发送者的聊天消息项
-     * @param chatType 消息类型
-     * @param data 数据
-     * @note 该方法构建的聊天消息不会保存到数据库、但会推送到聊天视图中
-     */
-    IChatItem* BuildChatItem(int chatType, const QVariant& data);
-
-    /**
-     * @brief 通过给定聊天类类型构建聊天控件，只适用于单用户聊天
-     * @param chatType 聊天类型 @see IChatItem::ChatType
-     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
-     * @note 该方法构建的聊天消息不会保存到数据库、不会推送到聊天视图中
-     */
-    IChatItem* BuildChatItem(int chatType, bool isMe, const QDateTime& time, const QVariant& data);
-
-    /**
-     * @brief 构建一个用户发送的聊天控件
-     * @param chatType 聊天类型 @see IChatItem::ChatType
-     * @param person 用户对象
-     * @param time 时间
-     * @param data 数据
-     * @return 返回创建好的聊天类，如果创建失败则返回nullptr
-     * @note 注意，构建好的聊天数据不会保存到数据库、不会推送到聊天视图中
-     */
-    static IChatItem* BuildChatItem(int chatType, IPerson* person, const QDateTime& time, const QVariant& data);
-
-    /**
-     * @brief 注册一个聊天类。这样在就可使用自定义的聊天类发送或接收消息
-     */
-    template <typename T>
-    static inline void RegisterChatItemClass()
-    {
-        const auto metaClass = T::staticMetaObject;
-
-        Q_ASSERT_X(metaClass.inherits(&IChatItem::staticMetaObject), "REGISTER_CLASS_FAILED", "非继承自IChatItem的类无法注册");
-
-        if (mRegistryChatClasses.contains(T::ChatType)) {
-            qWarning("聊天类型已存在，原值将会被覆盖");
-        }
-
-        qRegisterMetaType<T>(metaClass.className());
-        mRegistryChatClasses.insert(T::ChatType, metaClass.className());
-    }
+    bool insertChat(int row, AbstractChatListItem* item);
 
     /**
      * @brief 清空所有的聊天记录，同时也会清空本地聊天数据库中的对应记录。谨慎使用
@@ -100,16 +47,17 @@ public:
     /**
      * @brief 给定行号返回聊天项
      * @param row 聊天项所在行数
+     * @param onlyChat 是否只计算聊天消息的行数
      * @return 返回聊天项
      */
-    IChatItem* getChatItem(int row) const;
+    AbstractChatListItem* getChatItem(int row, bool onlyChat = false) const;
 
     /**
      * @brief 给定聊天项获得其所在行数
      * @param chat 给定的聊天项
      * @return 聊天项所在行数，若不存在则返回-1
      */
-    inline int getRow(IChatItem* message) const
+    inline int getRow(AbstractChatListItem* message) const
     {
         return mChats.indexOf(message);
     }
@@ -142,26 +90,15 @@ public:
     }
 
     /**
-     * @brief 直接在尾部追加一条消息，不会改变数据库的内容
-     * @param chat 要追加的聊天消息
+     * @brief 直接在尾部追加一条项目，不会改变数据库的内容
+     * @param item 要追加的项目
      */
-    inline void appendChat(IChatItem* chat)
+    inline void appendItem(AbstractChatListItem* item)
     {
-        insertChat(mChats.size(), chat);
+        insertChat(mChats.size(), item);
     }
 
 public Q_SLOTS:
-
-    /**
-     * @brief 发送一条文本聊天消息，会改变数据库的内容
-     * @param msg 普通文本消息
-     * @note 该方法是最常用来发送普通消息或富文本
-     */
-    inline void sendChat(const QString& msg)
-    {
-        sendChat(IChatItem::Text, msg);
-    }
-
     /**
      * @brief 发送一条聊天消息，会改变数据库的内容
      * @param type 消息类型
@@ -174,11 +111,9 @@ protected:
     QVariant data(const QModelIndex& index, int role) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 
-    inline QHash<int, QByteArray> roleNames() const override
-    {
-        mRegistryChatClasses.insert(0, QByteArrayLiteral("chatItem"));
-        return mRegistryChatClasses;
-    }
+    //inline QHash<int, QByteArray> roleNames() const override
+    //{
+    //}
 
 Q_SIGNALS:
     void failed(const QString& msg);
@@ -203,11 +138,11 @@ public Q_SLOTS:
     void fetchMore(const QModelIndex& parent = QModelIndex()) override;
 
     /**
-     * @brief 接收一条消息，并会将正确接收下的聊天消息保存到数据库中
-     * @param item 需要接收的消息项，由于sourceData的参数选择，可能会将该item抛弃
-     * @param sourceData 发送来的可用数据。可用作筛选参数作为使用
+     * @brief 是否发送该消息到视图中
+     * @param item 准备发送的消息项。内部实现方法的不同可能会将该item抛弃
+     * @todo TODO: next version
      */
-    void onReceived(IChatItem* item, const QVariantMap& sourceData);
+    //virtual bool isSend(ChatItem* item);
 
     /**
      * @brief 初始化加载与给定用户的聊天消息
@@ -218,17 +153,10 @@ public Q_SLOTS:
 
 private:
     /** 所有的聊天消息容器 */
-    QList<QPointer<IChatItem>> mChats;
+    QList<QPointer<AbstractChatListItem>> mChats;
 
     /** 指向当前聊天对象的指针 */
     QPointer<IChatObject> mChatObject;
-
-    /**
-     * @brief 注册的聊天类容器
-     * @type int 表示类的 ChatType
-     * @type QByteArray 表示类的名称，即在qml中可以访问的类名
-     */
-    static QHash<int, QByteArray> mRegistryChatClasses;
 };
 
 #endif // CHATLIST_H
