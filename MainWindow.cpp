@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->navigation, &Navigation::navigated, ui->stackedWidget, &QStackedWidget::setCurrentIndex);
     connect(ui->messageList, &QListView::clicked, this, &MainWindow::onMessageItemActived);
     connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
-    connect(MessageManager::Instance(), &MessageManager::received, this, &MainWindow::onReceived);
+    connect(MessageManager::Instance().data(), &MessageManager::received, this, &MainWindow::onReceived, Qt::QueuedConnection);
 
     // 当聊天视图滚动到最底端时，又展开输入框后，会使得视图布局不更新，导致无法看到最后几条消息。
     // connect(ui->chatInputer, &ChatInputBox::onFoldup, [=] {
@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     // });
 
     // 注册聊天控件，TODO: 添加更多
-    REGISTER_CHATITEM(TextChatItem);
+    MessageManager::RegisterChatItemClass<TextChatItem>();
 
     // 加载缓存消息，必须放在最后，因为加载数据需要关联各种信号并先注册号聊天类等。
     mMessageListModel->load();
@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     mChatPages.clear();
+    delete User::Instance();
+    User::Instance() = nullptr;
 
     delete ui;
 }
@@ -114,7 +116,6 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
         mChatPages.at(i)->setVisible(false);
         if (mChatPages.at(i)->getChatListModel()->getChatObject() == msgItem->getChatObject()) {
             mChatPages.at(i)->setVisible(true);
-            isChatPageExists = true;
 
             // 把最近使用的页面放置在最前
             mChatPages.move(i, 0);
@@ -129,48 +130,72 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
 
 void MainWindow::onReceived(const SChatItemPackage& package)
 {
+    /*
+     * 接收到消息的算法步骤
+     * I. 判断消息列表中该联系人是否存在
+     *   i.不存在
+     *     a.联系人有缓存：接收该消息并保存到数据库，加载缓存到消息列表指定位置，不打开聊天视图
+     *     b.联系人无缓存：先新建缓存，人后重复 ii.a 操作
+     *   ii.存在（最后保存到数据库）
+     *     a.被选中：直接发送到对应的聊天视图、更新其在消息列表的位置、最近消息、时间等信息
+     *     b.未被选中：更新其在消息列表的位置、未读消息数、最近消息、时间等信息，不打开聊天视图
+     */
+
     int i = 0;
-    for (; i < mChatPages.length(); i++) {
-        const auto& model = mChatPages.at(i)->getChatListModel();
-        bool receive = false;
+    const int len = mMessageListModel->rowCount();
+    for (; i < len; i++) {
+        const auto& msgItem = mMessageListModel->getMessage(i);
         if (package.RoleType & IChatObject::MultiPerson) {
             // 如果数据中的 局域网IP地址 和该聊天对象匹配就接收数据
-            if (package.HostAddress == model->getChatObject()->getHostAddress()) {
-                receive = true;
+            if (package.HostAddress == msgItem->getChatObject()->getHostAddress()) {
+                break;
             }
-        } else {
-            // 如果数据中的单用户uuid和该聊天对象的用户uuid匹配就接收数据
-            if (package.UserChatData.Uuid == model->getChatObject()->getUuid()) {
-                receive = true;
-            }
+        } else if (package.UserChatData.Uuid == msgItem->getChatObject()->getUuid()) {
+            break;
         }
-
-        if (!receive) {
-            continue;
-        }
-
-        // 推送到聊天视图中
-        ChatItem* item = MessageManager::BuildChatItem(package.ChatType, package.UserChatData, package.Data);
-
-        // 不接收出错消息
-        if (!item) {
-            return;
-        }
-
-        model->appendItem(item);
-        MessageManager::Instance()->saveAChatRecord(model, item);
-
-        // 一般只在一个聊天视图中接收数据
-        break;
     }
 
-    // 如果有用户发来消息，但消息列表中没有，就添加一项
-    if (i == mChatPages.length() && !package.UserChatData.Uuid.isEmpty()) {
-        // 是否有缓存的消息对象
-        //mMessageListModel;
+    // 构建消息
+    ChatItem* item = MessageManager::BuildChatItem(package.ChatType, package.UserChatData, package.Data);
+    if (!item) {
+        // 无效消息
+        item = new TextChatItem;
+        item->setSendState(TextChatItem::Failed);
+        item->setData(QStringLiteral("[消息失效]"));
+        return;
+    }
 
-        const auto& chatObj = User::Instance()->getChatObjectByUuid(package.UserChatData.Uuid);
+    // I.i
+    if (i == len) {
+        if (!package.UserChatData.isEmpty()) {
+            // I.ii.a
+            const auto& chatObj = User::Instance()->getChatObjectByUuid(package.UserChatData.Uuid);
+            if (chatObj) {
+                MessageDatabase::Instance()->newMessageItem(mMessageListModel, chatObj);
+                MessageDatabase::Instance()->saveAChatRecord(item, chatObj->getUuid());
+            }
+        }
+    } else {
+        // I.ii
+        const auto& msgItem = mMessageListModel->getMessage(i);
+        if (mMessageListModel->getRow(msgItem) == ui->messageList->currentIndex().row()) {
+            const auto& list = mChatPages.first();
+            // 视图中是否可以接收消息
+            // if (!list->canSend(item)) {
+            //      SAFE_DELETE(item);
+            //      return;
+            // }
+            list->getChatListModel()->appendItem(item);
+        } else {
+            // If I.ii
+            msgItem->setReadFlag(false);
+            msgItem->setUnreadMsgCount(msgItem->getUnreadMsgCount() + 1);
+        }
+        msgItem->setMessage(package.Data.toString());
+        msgItem->setTime(package.Time);
+        mMessageListModel->ariseMessage(msgItem);
 
-        createChatViewWidget(chatObj);
+        // 保存到数据库
+        MessageDatabase::Instance()->saveAChatRecord(item, msgItem->getChatObject()->getUuid());
     }
 }

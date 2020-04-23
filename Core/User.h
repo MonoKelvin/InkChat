@@ -23,8 +23,6 @@ public:
     void fromJson(const QJsonObject& json, bool cache = true) noexcept(false) override;
     QJsonObject toJson() override;
 
-    bool hasCache();
-
     inline const QString getAccount(void) const { return mAccount; }
     inline void setAccount(const QString& value) { mAccount = value; }
 
@@ -37,31 +35,14 @@ public:
      */
     inline void addChatObject(IChatObject* chatObj)
     {
-        assert(nullptr != chatObj);
-
-        if (chatObj->parent() != this) {
-            chatObj->setParent(this);
-        }
-
+        Q_ASSERT(nullptr != chatObj);
+        chatObj->setParent(this);
         mMyChatObjects.append(chatObj);
     }
 
-    /**
-     * @brief 通过好友id获取我的好友
-     * @param id 好友id
-     * @return 如果id不存在将返回nullptr，否则返回好友对象
-     */
-    //MyFriend* getFriendById(unsigned int id);
-
-    /**
-     * @brief 通过id获取我的聊天对象，不推荐使用
-     * @param id 聊天对象id
-     * @return 如果id不存在将返回nullptr，否则返回聊天对象
-     */
-    //IChatObject* getChatObjectById(unsigned int id);
+    LanObject* getLanObjectByUuid(const QString& uuid);
 
     IChatObject* getChatObjectByUuid(const QString& uuid);
-    LanObject* getLanObjectByUuid(const QString& uuid);
 
     static QPointer<User> Instance()
     {
@@ -70,7 +51,7 @@ public:
     }
 
 private:
-    void dynamicLoadCacheData(IChatObject* chatObj, const QString& fileName);
+    IChatObject* dynamicLoadCacheData(const QString& uuid);
 
 private:
     Q_DISABLE_COPY_MOVE(User)

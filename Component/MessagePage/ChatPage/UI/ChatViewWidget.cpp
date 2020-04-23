@@ -53,14 +53,14 @@ QListView* ChatViewWidget::getChatView() const
     return ui->chatView;
 }
 
-void ChatViewWidget::resizeEvent(QResizeEvent* event)
+void ChatViewWidget::resizeEvent(QResizeEvent*)
 {
     updateLayout(ui->chatView, true, true);
 }
 
 void ChatViewWidget::sendMessage(const QString& msg)
 {
-    mChatListModel->sendChat(msg);
+    mChatListModel->sendChat(AbstractChatListItem::Text, msg);
     ui->chatView->scrollToBottom();
     ui->chatView->updateGeometry();
 }

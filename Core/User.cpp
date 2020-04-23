@@ -18,6 +18,7 @@ User::User(QObject* parent)
 
 User::~User()
 {
+    qDebug() << "User Destroyed: " << this;
     mMyChatObjects.clear();
 }
 
@@ -60,20 +61,10 @@ QJsonObject User::toJson()
     return json;
 }
 
-/*IChatObject* User::getChatObjectById(unsigned int id)
+LanObject* User::getLanObjectByUuid(const QString& uuid)
 {
-    for (int i = 0; i < mMyChatObjects.size(); i++) {
-        if (mMyChatObjects.at(i)->getID() == id) {
-            return mMyChatObjects[i];
-        }
-    }
-
-    IChatObject* obj = nullptr;
-
-    dynamicLoadCacheData(obj, AppSettings::ChatObjectCacheFile(id));
-
-    return obj;
-}*/
+    return static_cast<LanObject*>(getChatObjectByUuid(uuid));
+}
 
 IChatObject* User::getChatObjectByUuid(const QString& uuid)
 {
@@ -83,42 +74,36 @@ IChatObject* User::getChatObjectByUuid(const QString& uuid)
         }
     }
 
-    IChatObject* obj = nullptr;
-
-    dynamicLoadCacheData(obj, AppSettings::ChatObjectCacheFile(uuid));
-
-    return obj;
+    return dynamicLoadCacheData(uuid);
 }
 
-LanObject* User::getLanObjectByUuid(const QString& uuid)
+IChatObject* User::dynamicLoadCacheData(const QString& uuid)
 {
-    return static_cast<LanObject*>(getChatObjectByUuid(uuid));
-}
-
-void User::dynamicLoadCacheData(IChatObject* chatObj, const QString& fileName)
-{
-    QFile file(fileName);
+    QFile file(AppSettings::ChatObjectCacheFile(uuid));
 
     // 动态加载
+    IChatObject* chatObj = nullptr;
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         QJsonParseError err;
         const auto& doc = QJsonDocument::fromJson(file.readAll(), &err);
-        if (err.error != QJsonParseError::NoError && doc.isObject()) {
-            chatObj = new LanObject(this);
-            chatObj->fromJson(doc.object());
-            mMyChatObjects.append(chatObj);
+        if (err.error == QJsonParseError::NoError && doc.isObject()) {
+            // TODO: add more type
+            switch (doc.object().value(QLatin1String("roleType")).toInt()) {
+            case LAN:
+                chatObj = new LanObject(this);
+                break;
+            case Friend:
+                chatObj = new MyFriend(this);
+                break;
+            }
+
+            if (chatObj) {
+                chatObj->fromJson(doc.object());
+                mMyChatObjects.append(chatObj);
+            }
         }
     }
     file.close();
-}
 
-bool User::hasCache()
-{
-    // 当前登录的用户
-    mID = AppSettings::Instance()->getCurrentUserId();
-    if (mID == 0) {
-        return false;
-    }
-
-    return false;
+    return chatObj;
 }

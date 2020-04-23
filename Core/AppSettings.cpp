@@ -1,6 +1,6 @@
 ﻿#include "AppSettings.h"
 
-#include <MessageDatabase.h>
+//#include <MessageDatabase.h>
 #include <User.h>
 
 #include <QIcon>
@@ -14,19 +14,16 @@ AppSettings::AppSettings(QObject* parent)
 
 AppSettings::~AppSettings()
 {
+    qDebug() << "AppSettings Destroyed";
 }
 
-const QString AppSettings::ChatObjectCacheFile(unsigned int id)
+const QString AppSettings::UserDir() noexcept
 {
-}
+    //if (AppState == EAppState::Online) {
+    //    return AppDataDir() + QString::number(User::Instance()->getID());
+    //}
 
-const QString AppSettings::UserDir()
-{
-    if (AppState == EAppState::Online) {
-        return AppDir() + QString::number(User::Instance()->getID());
-    }
-
-    return AppDir() + QStringLiteral("/0/") + User::Instance()->getNickName();
+    return AppDataDir() + QStringLiteral("/0/") + User::Instance()->getNickName();
 }
 
 void AppSettings::SetIconTheme(const QString& themeName)

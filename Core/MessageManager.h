@@ -1,6 +1,7 @@
 ﻿#ifndef MESSAGEMANAGER_H
 #define MESSAGEMANAGER_H
 
+#include <AbstractChatListItem.h>
 #include <IChatObject.h>
 
 #include <QSharedPointer>
@@ -14,6 +15,7 @@ typedef quint16 Port;
 class ChatItem;
 class QUdpSocket;
 class ChatList;
+class MessageItem;
 struct SChatItemPackage;
 //class TcpServer;
 
@@ -61,7 +63,19 @@ public:
      * @brief 注册一个聊天类。这样在就可使用自定义的聊天类发送或接收消息
      */
     template <typename T>
-    static void RegisterChatItemClass();
+    inline static void RegisterChatItemClass()
+    {
+        const auto& metaClass = T::staticMetaObject;
+
+        Q_ASSERT(metaClass.inherits(&AbstractChatListItem::staticMetaObject));
+
+        if (mRegistryChatClasses.contains(T::ChatType)) {
+            qWarning("AbstractChatListItem类型已存在，原类型将会被覆盖");
+        }
+
+        qRegisterMetaType<T>(metaClass.className());
+        mRegistryChatClasses.insert(T::ChatType, metaClass.className());
+    }
 
     /**
      * @brief 发送消息
@@ -77,13 +91,6 @@ public:
      * @param view 聊天视图
      */
     void loadChatRecords(ChatList* view);
-
-    /**
-     * @brief 保存一条聊天记录到指定视图
-     * @param view 聊天视图
-     * @param item 聊天记录
-     */
-    void saveAChatRecord(ChatList* view, ChatItem* item) const;
 
 private Q_SLOTS:
     /**
@@ -135,6 +142,8 @@ private:
      * @type QByteArray 表示类的名称，即在qml中可以访问的类名
      */
     static QHash<int, QByteArray> mRegistryChatClasses;
+
+    char _padding[6];
 };
 
 #endif // MESSAGEMANAGER_H

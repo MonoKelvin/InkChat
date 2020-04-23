@@ -10,7 +10,6 @@
 ChatItem::ChatItem(QObject* parent)
     : AbstractChatListItem(parent)
     , mSendState(Sending)
-    , mChatId(-1)
     , mTime(QDateTime::currentDateTime())
 {
 }
@@ -18,7 +17,6 @@ ChatItem::ChatItem(QObject* parent)
 ChatItem::ChatItem(const ChatItem& item)
     : AbstractChatListItem(item.parent())
     , mSendState(item.mSendState)
-    , mChatId(item.mChatId)
     , mTime(item.mTime)
 {
     mData = item.mData;
@@ -57,7 +55,7 @@ void ChatItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 {
     const auto& d = index.data(ChatItemDelegate::ChatItemType);
     const auto& chatItem = d.value<ChatItem*>();
-    if (chatItem) {
+    if (!chatItem) {
         const auto& item = d.value<AbstractChatListItem*>();
         if (item) {
             item->paintContent(painter, option.rect);
@@ -103,7 +101,7 @@ void ChatItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
     }
 
     // 头像
-    Avatar::DrawAvatar(painter, avtRect, AppSettings::AvatarCacheFile(userData.Uuid));
+    Avatar::DrawAvatar(painter, avtRect, AppSettings::AvatarCacheFile(userData.Uuid), userData.Name);
 
     painter->restore();
 }

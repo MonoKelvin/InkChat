@@ -42,6 +42,15 @@ public:
     //    MessageItem* queryMessage(const QString& str, const QDateTime& time);
 
     /**
+     * @brief 创建一个新的消息项，并保存到数据库
+     * @param list 消息列表 @see MessageList
+     * @param uuid 消息对应的联系人
+     * @return bool 如果成功建立并保存到数据库中就返回MessageItem对象，且自动加载到列表中，
+     * 否则返回nullptr
+     */
+    MessageItem* newMessageItem(MessageList* list, IChatObject* chatObj);
+
+    /**
      * @brief 加载消息到列表中
      * @param list 消息列表 @see MessageList
      */
@@ -79,11 +88,11 @@ public:
 
     /**
      * @brief 保存一条聊天记录
-     * @param item 消息
-     * @param chatObj 聊天对象的实例
+     * @param item 发送者发送的消息
+     * @param chatObjUuid 聊天对象的Uuid
      * @return 保存成功返回true，并且将成功后的消息(chatId)保存到item中，保存失败返回false
      */
-    bool saveAChatRecord(ChatItem* item, IChatObject* chatObj);
+    bool saveAChatRecord(ChatItem* item, const QString& chatObjUuid);
 
     QSqlDatabase& getDatabase(void) { return mDatabase; }
 

@@ -1,9 +1,7 @@
 ﻿#include "Avatar.h"
 
-#include <Apptheme.h>
+#include <AppTheme.h>
 #include <Utility.h>
-
-#include <QPainter>
 
 Avatar::Avatar(QWidget *parent)
     : QWidget(parent)
@@ -28,7 +26,7 @@ Avatar::~Avatar()
 {
 }
 
-void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pixmap, User::EOnlineState state, const QString& defalultText)
+void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pixmap, const QString& defalultText, User::EOnlineState state)
 {
     painter->save();
 
@@ -42,13 +40,14 @@ void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pix
 
     // 当没有图片时绘制背景色
     if (pixmap.isNull()) {
-        const auto& c = defalultText.trimmed().at(1);
-        if (!c.isNull()) {
-            painter->setFont(XTheme.TitleFont);
-            painter->setPen(XTheme.MainTextColor);
-            painter->drawText(rect, Qt::AlignCenter, c);
-        }
         painter->drawRect(rect);
+
+        const auto& trimmedStr = defalultText.trimmed();
+        if (!trimmedStr.isEmpty()) {
+            painter->setFont(XTheme.TitleFont);
+            painter->setPen(XTheme.PrimayColor1);
+            painter->drawText(rect, Qt::AlignCenter, trimmedStr.at(0));
+        }
     } else {
         painter->drawPixmap(rect, pixmap);
     }

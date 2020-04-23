@@ -12,10 +12,6 @@ ChatList::ChatList(QObject* parent)
 
 ChatList::~ChatList()
 {
-    if (mChatObject) {
-        mChatObject.clear();
-    }
-
     clear();
 
     qDebug() << "ChatList Destroyed: " << this;
@@ -23,7 +19,7 @@ ChatList::~ChatList()
 
 AbstractChatListItem* ChatList::getChatItem(int index, bool onlyChat) const
 {
-    // TODO: remove it
+    // TODO: achieve it
     Q_UNUSED(onlyChat)
 
     if (index >= 0 && index < mChats.size()) {
@@ -72,20 +68,14 @@ int ChatList::rowCount(const QModelIndex& parent) const
     return mChats.size();
 }
 
+IChatObject* ChatList::getChatObject() const noexcept
+{
+    return mChatObject;
+}
+
 void ChatList::sendChat(int chatType, const QVariant& data)
 {
     MessageManager::Instance()->sendMessage(this, chatType, data);
-}
-
-void ChatList::initLoad(IChatObject* chatObj)
-{
-    if (mChatObject) {
-        return;
-    } else {
-        mChatObject = chatObj;
-    }
-
-    fetchMore();
 }
 
 void ChatList::clearChatRecord()
@@ -109,6 +99,14 @@ void ChatList::fetchMore(const QModelIndex& parent)
 
     isFileExists(AppSettings::MessageDBFile(), true);
     MessageManager::Instance()->loadChatRecords(this);
+}
+
+void ChatList::initLoad(IChatObject* chatObj)
+{
+    Q_ASSERT(nullptr != chatObj);
+
+    mChatObject = chatObj;
+    fetchMore();
 }
 
 QVariant ChatList::data(const QModelIndex& index, int role) const

@@ -19,29 +19,20 @@ public:
     explicit MessageItem(QObject* parent = nullptr);
     ~MessageItem() override;
 
-    IChatObject* getChatObject() const { return mChatObject.get(); }
+    inline IChatObject* getChatObject() const { return mChatObject; }
 
     /**
      * @brief 设置聊天对象
      * @param chatObject 聊天对象类，内容不可为空
      * @see void setChatObject(IChatObject* chatObject)
      */
-    void setChatObject(QSharedPointer<IChatObject> chatObject);
-
-    /**
-     * @brief 设置聊天对象
-     * @param chatObject 聊天对象类，内容不可为空
-     * @see void setChatObject(QSharedPointer<IChatObject> chatObject)
-     */
-    inline void setChatObject(IChatObject* chatObject)
-    {
-        setChatObject(QSharedPointer<IChatObject>(chatObject));
-    }
+    void setChatObject(IChatObject* chatObject);
 
     inline const QString getTime(void) const { return mTime; }
+    void setTime(const QDateTime& time) noexcept;
 
     inline const QString getMessage(void) const { return mMessage; }
-    // void setMessage(const QString& message);
+    inline void setMessage(const QString& message) { mMessage = message; }
 
     inline bool isTop(void) const { return mIsTop; }
     inline void setIsTop(bool top)
@@ -96,7 +87,7 @@ private:
     int mUnreadMsgCount;
 
     /** 聊天对象，可以是单用户，也可以是局域网 */
-    QSharedPointer<IChatObject> mChatObject;
+    QPointer<IChatObject> mChatObject;
 };
 
 class MessageItemDelegate : public QAbstractItemDelegate {

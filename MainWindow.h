@@ -8,12 +8,14 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class ChatList;
 class ChatItem;
 class ChatViewWidget;
 class MessageList;
-class QMenu;
+class MessageItem;
 class IChatObject;
 struct SChatItemPackage;
+class QMenu;
 
 class MainWindow : public QWidget
 {

@@ -13,7 +13,7 @@ class IChatObject : public QObject {
 
 public:
     explicit IChatObject(QObject* parent = nullptr);
-    virtual ~IChatObject();
+    virtual ~IChatObject() {}
 
     /**
      * @brief 更新标志，用于区分哪些数据需要进行更新
@@ -73,8 +73,8 @@ public:
         AvatarSizeMax = AvatarSize512x512
     };
 
-    inline unsigned int getID(void) const { return mID; }
-    inline void setID(unsigned int id) { mID = id; }
+    //inline unsigned int getID(void) const { return mID; }
+    //inline void setID(unsigned int id) { mID = id; }
 
     inline const QString getMD5(void) const { return mMD5; }
     inline void setMD5(const QString& md5) { mMD5 = md5; }
@@ -193,8 +193,8 @@ Q_SIGNALS:
     //    virtual bool loadCache(void) { return true; }
 
 protected:
-    // 用户ID
-    unsigned int mID;
+    // 用户ID，离线用户不能使用该值作为标识，必须使用UUID
+    //unsigned int mID;
 
     // Uuid，针对于离线使用的用户标识
     QString mUuid;

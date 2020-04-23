@@ -12,6 +12,7 @@ class LanObject : public IChatObject {
     Q_OBJECT
 public:
     LanObject(QObject* parent = nullptr);
+    ~LanObject() override;
 
     void fromJson(const QJsonObject& json, bool cache = true) override;
     QJsonObject toJson() override;

@@ -6,9 +6,6 @@
 #include <QAbstractListModel>
 #include <QPointer>
 
-/** 注册聊天控件类 */
-#define REGISTER_CHATITEM(_ChatItemClassName_) ChatList::RegisterChatItemClass<_ChatItemClassName_>()
-
 class ChatItem;
 class IChatObject;
 
@@ -80,14 +77,8 @@ public:
     /**
      * @brief 获取当前聊天视图的聊天对象
      * @return IChatObject* 返回聊天对象的指针
-     * @note 如果不使用void load(IChatObject* chatObj);方法加载视图，则返回结果为空。即
-     * 设置聊天对象方法应当使用load替代，那么一旦设置后无法更改了。
-     * @see load()
      */
-    inline IChatObject* getChatObject(void) const
-    {
-        return mChatObject.data();
-    }
+    IChatObject* getChatObject() const noexcept;
 
     /**
      * @brief 直接在尾部追加一条项目，不会改变数据库的内容
@@ -138,11 +129,11 @@ public Q_SLOTS:
     void fetchMore(const QModelIndex& parent = QModelIndex()) override;
 
     /**
-     * @brief 是否发送该消息到视图中
+     * @brief 是否能够发送该消息到视图中
      * @param item 准备发送的消息项。内部实现方法的不同可能会将该item抛弃
      * @todo TODO: next version
      */
-    //virtual bool isSend(ChatItem* item);
+    //virtual bool canSend(ChatItem* item);
 
     /**
      * @brief 初始化加载与给定用户的聊天消息

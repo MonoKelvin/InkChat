@@ -26,7 +26,7 @@ public:
     QListView* getChatView() const;
 
 private:
-    void resizeEvent(QResizeEvent* event) override;
+    void resizeEvent(QResizeEvent*) override;
 
 public Q_SLOTS:
     /**

@@ -14,6 +14,11 @@ LanObject::LanObject(QObject* parent)
     mRoleType = LAN;
 }
 
+LanObject::~LanObject()
+{
+    qDebug() << "LanObject Destroyed: " << this;
+}
+
 void LanObject::fromJson(const QJsonObject& json, bool cache) noexcept(false)
 {
     IChatObject::fromJson(json, cache);
@@ -73,7 +78,7 @@ bool LanObject::updateLocalData()
 LanObject* LanObject::DetectLanEnvironment()
 {
     QString mac, netName;
-    const QString& addr = getWirelessAddress(&mac);
+    const QString& addr = getWirelessAddress(&mac, &netName);
 
     // 未检测到局域网环境就返回nullptr
     if (addr.isEmpty()) {
@@ -87,12 +92,10 @@ LanObject* LanObject::DetectLanEnvironment()
     if (nullptr == lan) {
         lan = new LanObject;
 
-        lan->generateUuid();
         lan->mMD5 = md5;
-        lan->mNickName = addr;
+        lan->mNickName = netName;
         lan->mHostAddress = addr;
         lan->mMacAddress = mac;
-        // lan->updateLocalData();
 
         // WARINING: 必须加到用户列表，否则刷新消息视图将出现重复对象
         User::Instance()->addChatObject(lan);

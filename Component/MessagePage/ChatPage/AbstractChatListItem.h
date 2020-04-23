@@ -13,6 +13,7 @@ public:                                                                  \
     unsigned int getChatType(void) const override { return _ChatType_; } \
                                                                          \
 private:                                                                 \
+    friend class MessageManager;                                         \
     enum { ChatType = _ChatType_ };
 
 /**

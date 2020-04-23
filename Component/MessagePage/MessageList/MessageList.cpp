@@ -110,10 +110,8 @@ QSharedPointer<IChatObject> MessageList::GetCurrentChatObject()
 
 MessageItem* MessageList::getMessage(int index) const
 {
-    if (index >= 0 && index < mMessages.size()) {
-        return mMessages.at(index);
-    }
-    return nullptr;
+    Q_ASSERT(index >= 0 && index < mMessages.size());
+    return mMessages.at(index);
 }
 
 QVariant MessageList::data(const QModelIndex& index, int role) const
@@ -174,6 +172,9 @@ void MessageList::ariseMessage(MessageItem* message)
      *  b.如果未置顶：找到置顶的所有消息，把message移动到它下面，并更新其相关数据
      */
     const int sourceIndex = getRow(message);
+    if (sourceIndex == 0) {
+        return;
+    }
 
     int targetIndex = 0;
     if (!message->isTop()) {

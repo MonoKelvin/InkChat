@@ -2,10 +2,6 @@
 
 #include <QStyleOptionViewItem>
 
-NotificationItem::NotificationItem()
-{
-}
-
 void NotificationItem::paintContent(QPainter* painter, const QRect& availableRect)
 {
 }

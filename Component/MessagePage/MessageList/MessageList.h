@@ -126,11 +126,11 @@ public:
 
     /**
      * @brief 给定父元素下的行数量，即消息总数
-     * @param parent 指定的父元素，如果父元素为空，即直接传入QModelIndex()，
+     * @param parent 指定的父元素
      * 得到的是所有元素的数量
      * @return 行数
      */
-    inline int rowCount(const QModelIndex& parent) const override
+    inline int rowCount(const QModelIndex& parent = QModelIndex()) const override
     {
         Q_UNUSED(parent)
         return mMessages.size();
@@ -139,6 +139,27 @@ public:
     //MessageItem* getCurrentSelectedItem(void) const;
 
     //static QSharedPointer<IChatObject> GetCurrentChatObject(void);
+
+    /**
+     * @brief 获得当前选中的item的索引
+     * @return int 选中item的索引
+     */
+    //int getCurrentSelectedIndex(void);
+
+    /**
+     * @brief 调整给定的消息
+     * @note 该message必须存在于列表中
+     * @return 调整完后返回调整后的行索引，调整失败返回-1
+     * TODO: 目前只支持按置顶顺序调整
+     */
+    //int adjust(MessageItem* message /* EMessageSortType type = SortByTopOrder */);
+
+    /**
+     * @brief 提升未置顶消息到未置顶消息的最上方。如果已经是置顶消息，则提升到所有消息的最上方。
+     * @param message 要提升的消息项
+     * @warning 使用该方法时必须保证所有置顶消息在最上方
+     */
+    void ariseMessage(MessageItem* message);
 
 Q_SIGNALS:
     void saved();
@@ -165,27 +186,6 @@ protected:
      * @note 设置后并不会直观的改变列表界面中任何显示的内容
      */
     //void setCurrentSelectedIndex(int index);
-
-    /**
-     * @brief 获得当前选中的item的索引
-     * @return int 选中item的索引
-     */
-    //int getCurrentSelectedIndex(void);
-
-    /**
-     * @brief 调整给定的消息
-     * @note 该message必须存在于列表中
-     * @return 调整完后返回调整后的行索引，调整失败返回-1
-     * TODO: 目前只支持按置顶顺序调整
-     */
-    //int adjust(MessageItem* message /* EMessageSortType type = SortByTopOrder */);
-
-    /**
-     * @brief 提升未置顶消息到未置顶消息的最上方。如果已经是置顶消息，则提升到所有消息的最上方。
-     * @param message 要提升的消息项
-     * @warning 使用该方法时必须保证所有置顶消息在最上方
-     */
-    void ariseMessage(MessageItem* message);
 
 private:
     /** 消息记录文件夹 */

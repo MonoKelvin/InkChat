@@ -4,10 +4,10 @@
 #include <ChatItem.h>
 #include <ChatList.h>
 #include <MessageDatabase.h>
+#include <MessageItem.h>
 #include <User.h>
 
 #include <QDataStream>
-
 #include <QDateTime>
 #include <QUdpSocket>
 
@@ -29,21 +29,6 @@ MessageManager::MessageManager(QObject* parent)
 MessageManager::~MessageManager()
 {
     qDebug() << "MessageManager Destroyed";
-}
-
-template <typename T>
-void MessageManager::RegisterChatItemClass()
-{
-    const auto metaClass = T::staticMetaObject;
-
-    Q_ASSERT(metaClass.inherits(&AbstractChatListItem::staticMetaObject));
-
-    if (mRegistryChatClasses.contains(T::ChatType)) {
-        qWarning("AbstractChatListItem类型已存在，原类型将会被覆盖");
-    }
-
-    qRegisterMetaType<T>(metaClass.className());
-    mRegistryChatClasses.insert(T::ChatType, metaClass.className());
 }
 
 ChatItem* MessageManager::BuildChatItem(int chatType, const SUserChatData& userData, const QVariant& data)
@@ -123,17 +108,12 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     item->setTime(time);
     item->setSendState(ChatItem::Succeed);
     view->appendItem(item);
-    MessageDatabase::Instance()->saveAChatRecord(item, chatObj);
+    MessageDatabase::Instance()->saveAChatRecord(item, User::Instance()->getUuid());
 }
 
 void MessageManager::loadChatRecords(ChatList* view)
 {
     MessageDatabase::Instance()->loadChatItems(view);
-}
-
-void MessageManager::saveAChatRecord(ChatList* view, ChatItem* item) const
-{
-    MessageDatabase::Instance()->saveAChatRecord(item, view->mChatObject.data());
 }
 
 void MessageManager::processPendingDatagrams()

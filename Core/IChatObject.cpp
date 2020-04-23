@@ -11,15 +11,10 @@
 
 IChatObject::IChatObject(QObject* parent)
     : QObject(parent)
-    , mID(0)
+    //, mID(0)
     , mRoleType(Stranger)
     , mOnlineState(NoneState)
 {
-}
-
-IChatObject::~IChatObject()
-{
-    qDebug() << "ChatObject Destroyed: " << this;
 }
 
 const QString IChatObject::getAvatar() const
@@ -60,9 +55,10 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
 {
     Q_UNUSED(cache)
 
-    mID = json.value(QLatin1String("id")).toString().toUInt();
+    //mID = json.value(QLatin1String("id")).toString().toUInt();
     mMD5 = json.value(QLatin1String("md5")).toString();
     mUuid = json.value(QLatin1String("uuid")).toString();
+    mRoleType = ERoleType(json.value(QLatin1String("roleType")).toInt());
     mNickName = json.value(QLatin1String("nickName")).toString();
     mSignature = json.value(QLatin1String("signature")).toString(tr("还没有任何简介"));
     mHostAddress = json.value(QLatin1String("hostAddress")).toString();
@@ -71,9 +67,10 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
 QJsonObject IChatObject::toJson(void)
 {
     QJsonObject json;
-    json.insert(QLatin1String("id"), QString::number(mID));
+    //json.insert(QLatin1String("id"), QString::number(mID));
     json.insert(QLatin1String("md5"), mMD5);
     json.insert(QLatin1String("uuid"), mUuid);
+    json.insert(QLatin1String("roleType"), mRoleType);
     json.insert(QLatin1String("nickName"), mNickName);
     json.insert(QLatin1String("signature"), mSignature);
     json.insert(QLatin1String("hostAddress"), mHostAddress);

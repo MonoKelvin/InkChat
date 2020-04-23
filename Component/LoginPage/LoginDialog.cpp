@@ -32,7 +32,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
     mIsSignUp = false;
     mIsExit = false;
     ui->leRecheckPwd->setHidden(true);
-    AppSettings::Instance()->CurrentUserId = 0;
 
     // TODO: 发布时删除
     ui->leNickName->setText("mono");

@@ -7,6 +7,7 @@
 
 MessageItem::MessageItem(QObject* parent)
     : QObject(parent)
+    , mIsTop(false)
     , mReadFlag(true)
     , mUnreadMsgCount(0)
     , mChatObject(nullptr)
@@ -21,22 +22,23 @@ MessageItem::MessageItem(QObject* parent)
 
 MessageItem::~MessageItem()
 {
-    if (!mChatObject.isNull()) {
+    if (mChatObject) {
         mChatObject.clear();
     }
     qDebug() << "MessageItem Destroyed" << this;
 }
 
-void MessageItem::setChatObject(QSharedPointer<IChatObject> chatObject)
+void MessageItem::setChatObject(IChatObject* chatObject)
 {
-    if (mChatObject) {
-        if (mChatObject == chatObject) {
-            return;
-        }
-    } else if (chatObject) {
-        mChatObject.clear();
-        mChatObject = chatObject;
-    }
+    Q_ASSERT(chatObject);
+
+    mChatObject.clear();
+    mChatObject = chatObject;
+}
+
+void MessageItem::setTime(const QDateTime& time) noexcept
+{
+    mTime = GetMessageTime(time);
 }
 
 void MessageItem::onTopChanged()
@@ -100,13 +102,13 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
             path.lineTo(rect.topRight() - QPointF(10, 0));
             path.lineTo(rect.topRight() + QPointF(0, 10));
             path.lineTo(rect.topRight());
-            painter->setBrush(XTheme.TintColor);
+            painter->setBrush(XTheme.PrimayColor1);
             painter->drawPath(path);
         }
 
         // 绘制头像
         const QRect avtRect(ESize::Narrow, (rect.height() - XTheme.AvatarSize) / 2, XTheme.AvatarSize, XTheme.AvatarSize);
-        Avatar::DrawAvatar(painter, avtRect, itemData->mChatObject->getAvatar(), itemData->mChatObject->getOnlineState(), itemData->mChatObject->getNickName());
+        Avatar::DrawAvatar(painter, avtRect, itemData->mChatObject->getAvatar(), itemData->mChatObject->getNickName(), itemData->mChatObject->getOnlineState());
 
         // 字体
         painter->setFont(XTheme.StdFont);

@@ -54,8 +54,8 @@ public:
     inline ESendState getSendState(void) const { return mSendState; }
     void setSendState(const ESendState &sendState);
 
-    inline int getChatId(void) const { return mChatId; }
-    inline void setChatId(int chatId) { mChatId = chatId; }
+    //inline int getChatId(void) const { return mChatId; }
+    //inline void setChatId(int chatId) { mChatId = chatId; }
 
     inline const QDateTime getTime(void) const { return mTime; }
     inline void setTime(const QDateTime &time) { mTime = time; }
@@ -102,7 +102,7 @@ protected:
      * @brief 消息ID
      * @note 消息ID是用于排列消息顺序的，即最大ID的消息气泡将在聊天视图的最底端
      */
-    int mChatId;
+    //int mChatId;
 
     /**
      * @brief 消息发送或接收的时间

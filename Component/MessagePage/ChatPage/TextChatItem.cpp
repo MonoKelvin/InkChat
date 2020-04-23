@@ -16,7 +16,6 @@ TextChatItem::TextChatItem(QObject* parent)
 
 void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 {
-
     const int& d = ESize::Std;
     const int& sd = ESize::Narrow;
 
@@ -69,5 +68,5 @@ void TextChatItem::updateContentSize(const QStyleOptionViewItem& option)
     const QRect limit(0, 0, int(0.7f * option.rect.width()), 50);
     mContentSize = option.fontMetrics.boundingRect(limit, Qt::TextWrapAnywhere, mData.toString()).size();
     mContentSize.rwidth() += ESize::Std + ESize::Std;
-    mContentSize.rheight() += ESize::Narrow + ESize::Narrow + ESize::Wide;
+    mContentSize.rheight() += ESize::Narrow + ESize::Narrow + ESize::Large;
 }

@@ -28,8 +28,9 @@ public:
     static void DrawAvatar(
         QPainter* painter,
         const QRect& rect,
-        const QPixmap& pixmap, User::EOnlineState state = User::NoneState,
-        const QString& defalultText = QString());
+        const QPixmap& pixmap,
+        const QString& defalultText = QString(),
+        User::EOnlineState state = User::NoneState);
 
     inline QPixmap getAvatar() const
     {

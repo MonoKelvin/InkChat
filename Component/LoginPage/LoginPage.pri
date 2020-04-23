@@ -5,10 +5,8 @@ FORMS += \
 
 HEADERS += \
     $$PWD/LoginDialog.h \
-    $$PWD/AppLoginOperation.h \
-    $$PWD/LoginWithQQMail.h
+    $$PWD/AppLoginOperation.h
 
 SOURCES += \
     $$PWD/LoginDialog.cpp \
-    $$PWD/AppLoginOperation.cpp \
-    $$PWD/LoginWithQQMail.cpp
+    $$PWD/AppLoginOperation.cpp

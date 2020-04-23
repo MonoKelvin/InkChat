@@ -6,7 +6,10 @@
 class NotificationItem : public AbstractChatListItem
 {
 public:
-    NotificationItem();
+    NotificationItem(QObject* parent)
+        : AbstractChatListItem(parent)
+    {
+    }
 
     void paintContent(QPainter* painter, const QRect& availableRect) override;
     void updateContentSize(const QStyleOptionViewItem& option) override;
