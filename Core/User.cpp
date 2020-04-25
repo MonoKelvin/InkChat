@@ -61,6 +61,12 @@ QJsonObject User::toJson()
     return json;
 }
 
+bool User::setAvatar(const QString& fileName)
+{
+    copyFile(fileName, AppSettings::UserDataDir() + QStringLiteral("avatar"));
+    return IPerson::setAvatar(fileName);
+}
+
 LanObject* User::getLanObjectByUuid(const QString& uuid)
 {
     return static_cast<LanObject*>(getChatObjectByUuid(uuid));

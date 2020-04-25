@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-struct SUserChatData;
+struct SChatItemData;
 
 /**
  * @brief 聊天对象基类接口
@@ -63,13 +63,13 @@ public:
 
     /** 头像尺寸枚举 */
     enum EAvatarSize {
-        AvatarSize45x45 = 46,
+        AvatarSize46x46 = 46,
         AvatarSize64x64 = 64,
         AvatarSize128x128 = 128,
         AvatarSize256x256 = 256,
         AvatarSize512x512 = 512,
 
-        AvatarSizeThumb = AvatarSize45x45,
+        AvatarSizeThumb = AvatarSize46x46,
         AvatarSizeMax = AvatarSize512x512
     };
 
@@ -101,7 +101,14 @@ public:
      * @brief 获得本地头像文件路径
      * @return 如果文件存在返回true，否则返回空字符串
      */
-    virtual const QString getAvatar(void) const;
+    virtual const QString getAvatar(void) const noexcept;
+
+    /**
+     * @brief 设置头像。设置头像后会在缓存目录下创建一个 46x46（忽略比例）尺寸的头像缩略图
+     * @param fileName 头像文件名，建议文件比例为 1:1，否则不会进行等比例缩放缓存
+     * @return bool 缓存成功返回true，否则返回false
+     */
+    virtual bool setAvatar(const QString& fileName);
 
     inline EOnlineState getOnlineState(void) const { return mOnlineState; }
     inline void setOnlineState(EOnlineState onlineState)
@@ -155,11 +162,10 @@ public:
      */
     const QString generateUuid(void);
 
-    /**
-     * @brief 获取应用在聊天视图中的可用数据
-     * @return 
-     */
-    const SUserChatData getChatData(void) noexcept;
+    const SChatItemData getChatData(const QVariant& msg) noexcept;
+
+public Q_SLOTS:
+    bool selectAvatarFile();
 
 protected Q_SLOTS:
     /**
@@ -232,6 +238,11 @@ public:
 
     virtual ~IPerson() override;
 
+    inline virtual bool setAvatar(const QString& fileName) override
+    {
+        return IChatObject::setAvatar(fileName);
+    }
+
     inline char getGender(void) const { return mGender; }
     inline void setGender(char gender)
     {
@@ -245,24 +256,5 @@ protected:
     // 性别。1男，0女，'-'（减号）保密或无（组和局域网）
     char mGender;
 };
-
-struct SUserChatData {
-    QString Uuid;
-    QString Name;
-
-    SUserChatData() = default;
-
-    SUserChatData(const QString& uuid, const QString& name)
-        : Uuid(uuid)
-        , Name(name)
-    {
-    }
-
-    Q_DECL_CONSTEXPR inline bool isEmpty(void) const noexcept
-    {
-        return Uuid.isEmpty();
-    }
-};
-Q_DECLARE_METATYPE(SUserChatData);
 
 #endif // ICHATOBJECT_H

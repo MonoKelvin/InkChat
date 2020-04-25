@@ -42,9 +42,9 @@ const QString ChatItem::getMessageTime()
     return GetMessageTime(mTime);
 }
 
-const SUserChatData ChatItem::getSenderData() const noexcept
+const SChatItemData ChatItem::getChatItemData() const noexcept
 {
-    return mData.value<SUserChatData>();
+    return mData.value<SChatItemData>();
 }
 
 ////////////////////////////////////////////////////////////
@@ -66,24 +66,25 @@ void ChatItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
         return;
     }
 
-    const auto& userData = chatItem->getSenderData();
+    const auto& chatData = chatItem->getChatItemData();
     const auto& rect = option.rect; // 聊天内容区域
     const int& t = rect.top(); // 每个item需要以此为顶端
     const int& ch = XTheme.AvatarSize / 2; // 头像中心y高度
     QRect avtRect(rect.x(), t, XTheme.AvatarSize, XTheme.AvatarSize); // 头像矩形位置
 
     painter->save();
+    painter->setFont(XTheme.StdFont);
 
-    if (userData.Uuid == User::Instance()->getUuid()) {
+    if (chatData.Uuid == User::Instance()->getUuid()) {
         avtRect.moveRight(rect.right());
 
         // 内容最右边位置
         const int& cr = avtRect.x() - ESize::Narrow;
 
         // 多人聊天才显示名称
-        if (!userData.Name.isEmpty()) {
-            painter->setPen(XTheme.MainTextColor);
-            painter->drawText(QRect(rect.x(), t, cr, ch), Qt::AlignBottom | Qt::AlignRight, userData.Name);
+        if (!chatData.Name.isEmpty()) {
+            painter->setPen(XTheme.SubTextColor);
+            painter->drawText(QRect(rect.x(), t, cr - rect.x(), ch), Qt::AlignBottom | Qt::AlignRight, chatData.Name);
         }
 
         // 内容控件
@@ -92,16 +93,16 @@ void ChatItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
         // 内容最左边位置
         const int& cl = avtRect.right() + ESize::Narrow;
 
-        if (!userData.Name.isEmpty()) {
-            painter->setPen(XTheme.MainTextColor);
-            painter->drawText(QRect(cl, t, rect.right(), ch), Qt::AlignBottom | Qt::AlignLeft, userData.Name);
+        if (!chatData.Name.isEmpty()) {
+            painter->setPen(XTheme.SubTextColor);
+            painter->drawText(QRect(cl, t, rect.right(), ch), Qt::AlignBottom | Qt::AlignLeft, chatData.Name);
         }
 
         chatItem->paintContent(painter, QRect(cl, t + ch, rect.right() - cl, 1));
     }
 
     // 头像
-    Avatar::DrawAvatar(painter, avtRect, AppSettings::AvatarCacheFile(userData.Uuid), userData.Name);
+    Avatar::DrawAvatar(painter, avtRect, AppSettings::AvatarCacheFile(chatData.Uuid), chatData.Name);
 
     painter->restore();
 }
@@ -114,5 +115,5 @@ QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMode
     }
 
     data->updateContentSize(option);
-    return QSize(option.rect.width(), qMax(data->getContentSize().height() + ESize::Wide + XTheme.AvatarSize / 2, XTheme.AvatarSize));
+    return QSize(option.rect.width(), qMax(data->getContentSize().height() + XTheme.AvatarSize / 2, XTheme.AvatarSize));
 }

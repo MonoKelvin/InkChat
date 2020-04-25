@@ -114,7 +114,7 @@ public:
 
     // Text Color
     const QColor MainTextColor = QColor("#2D3135");
-    const QColor SubTextColor = MainTextColor.lighter(300);
+    const QColor SubTextColor = MainTextColor.lighter(350);
 
     // Helper Color
     const QColor TintColor = QColor("#F5F6FA");

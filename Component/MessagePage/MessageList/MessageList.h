@@ -77,6 +77,16 @@ public:
      */
     void removeMessage(int index);
 
+    inline void removeMessage(MessageItem* message)
+    {
+        removeMessage(mMessages.indexOf(message));
+    }
+
+    inline const QModelIndex itemIndex(MessageItem* message) const
+    {
+        return index(getRow(message));
+    }
+
     /**
      * @brief 在指定位置插入一条消息
      * @param index 行号
@@ -157,9 +167,10 @@ public:
     /**
      * @brief 提升未置顶消息到未置顶消息的最上方。如果已经是置顶消息，则提升到所有消息的最上方。
      * @param message 要提升的消息项
+     * @return int 返回提升消息后的新行数
      * @warning 使用该方法时必须保证所有置顶消息在最上方
      */
-    void ariseMessage(MessageItem* message);
+    int ariseMessage(MessageItem* message);
 
 Q_SIGNALS:
     void saved();

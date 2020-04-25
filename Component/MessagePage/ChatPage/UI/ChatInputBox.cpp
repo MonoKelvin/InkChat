@@ -24,38 +24,31 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     mChatInputer->setObjectName(QStringLiteral("chatInputer"));
     mChatInputer->setCursor(Qt::PointingHandCursor);
     mChatInputer->setPlaceholderText(tr("输入你想说的话..."));
-    gridLayout->addWidget(mChatInputer, 1, 0, 1, 6);
-
-    mBtnText = new QPushButton(this);
-    mBtnText->setObjectName(QStringLiteral("btnText"));
-    mBtnText->setCursor(Qt::PointingHandCursor);
-    mBtnText->setIcon(QIcon::fromTheme(QStringLiteral("edit")));
-    mBtnText->setIconSize(iconSize);
-    gridLayout->addWidget(mBtnText, 0, 0, 1, 1);
+    gridLayout->addWidget(mChatInputer, 1, 0, 1, 5);
 
     mBtnImage = new QPushButton(this);
     mBtnImage->setObjectName(QStringLiteral("btnImage"));
     mBtnImage->setCursor(Qt::PointingHandCursor);
     mBtnImage->setIcon(QIcon::fromTheme(QStringLiteral("image")));
     mBtnImage->setIconSize(iconSize);
-    gridLayout->addWidget(mBtnImage, 0, 1, 1, 1);
+    gridLayout->addWidget(mBtnImage, 0, 0, 1, 1);
 
     mBtnVideo = new QPushButton(this);
     mBtnVideo->setObjectName(QStringLiteral("btnVideo"));
     mBtnVideo->setCursor(Qt::PointingHandCursor);
     mBtnVideo->setIcon(QIcon::fromTheme(QStringLiteral("video")));
     mBtnVideo->setIconSize(iconSize);
-    gridLayout->addWidget(mBtnVideo, 0, 2, 1, 1);
+    gridLayout->addWidget(mBtnVideo, 0, 1, 1, 1);
 
     mBtnFile = new QPushButton(this);
     mBtnFile->setObjectName(QStringLiteral("btnFile"));
     mBtnFile->setCursor(Qt::PointingHandCursor);
     mBtnFile->setIcon(QIcon::fromTheme(QStringLiteral("file")));
     mBtnFile->setIconSize(iconSize);
-    gridLayout->addWidget(mBtnFile, 0, 3, 1, 1);
+    gridLayout->addWidget(mBtnFile, 0, 2, 1, 1);
 
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    gridLayout->addItem(hSpacer, 0, 4, 1, 1);
+    gridLayout->addItem(hSpacer, 0, 3, 1, 1);
 
     mBtnExpand = new QPushButton(this);
     mBtnExpand->setCheckable(true);
@@ -63,7 +56,7 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     mBtnExpand->setCursor(Qt::PointingHandCursor);
     mBtnExpand->setIcon(QIcon::fromTheme(QStringLiteral("down")));
     mBtnExpand->setIconSize(iconSize);
-    gridLayout->addWidget(mBtnExpand, 0, 5, 1, 1);
+    gridLayout->addWidget(mBtnExpand, 0, 4, 1, 1);
 
     mBtnSend = new QPushButton(this->parentWidget());
     mBtnSend->setObjectName(QStringLiteral("btnSend"));
@@ -97,7 +90,6 @@ void ChatInputBox::onFoldup(bool enabled)
         // 设置控件状态
         mBtnSend->setVisible(false);
         mChatInputer->setVisible(false);
-        mBtnText->setEnabled(false);
         mBtnImage->setEnabled(false);
         mBtnVideo->setEnabled(false);
         mBtnFile->setEnabled(false);
@@ -109,7 +101,6 @@ void ChatInputBox::onFoldup(bool enabled)
 
         mBtnSend->setVisible(true);
         mChatInputer->setVisible(true);
-        mBtnText->setEnabled(true);
         mBtnImage->setEnabled(true);
         mBtnVideo->setEnabled(true);
         mBtnFile->setEnabled(true);

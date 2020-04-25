@@ -2,6 +2,7 @@
 #define UTILITY_H
 
 #include <QCryptographicHash>
+#include <QDateTime>
 #include <QDebug>
 #include <QPixmap>
 #include <QStyleOption>
@@ -55,6 +56,14 @@ typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
 
 /** 向上取整，返回的是int类型 */
 #define Ceil(x) int(float(x) + 0.500000f)
+
+#define DUMMY_DELAY_UI(_Number_)   \
+    {                              \
+        int i = _Number_;          \
+        while (i-- > 0) {          \
+            qApp->processEvents(); \
+        }                          \
+    }
 
 /**
  * @brief 给控件附加阴影特效
@@ -242,4 +251,12 @@ void switchIconColorForButton(QAbstractButton* btn, const QColor& color);
  */
 void drawRoundRect(QPainter* painter, const QRect& rect, int lt = 10, int rt = 10, int lb = 10, int rb = 10);
 
+/**
+ * @brief 获得当前时间串，格式为yyyyMMddhhmmss
+ * @return 当前时间串
+ */
+inline const QString getDateTimeString(void) noexcept
+{
+    return QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+}
 #endif // UTILITY_H

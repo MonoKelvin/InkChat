@@ -71,19 +71,20 @@
 /** Menu */
 QMenu {
     background-color: #fff;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border: 1px solid #F5F6FA;
 }
 QMenu::item {
-    padding: 5px 10px 5px 25px;
+    padding: 10px 25px 10px 10px;
     border-left: 10px solid transparent;
+    margin: 1px;
 }
 QMenu::item:selected {
-    color: #fff;
-    background-color: #4d7cfe;
+    background-color: #F5F6FA;
 }
 QMenu::item:pressed {
-    background-color: #4d7cfe;
+    background-color: #E5ECFF;
 }
 QMenu::separator {
     height: 1px;
@@ -92,7 +93,7 @@ QMenu::separator {
     margin-right: 10px;
 }
 QMenu:disabled {
-    color: #a7adbd;
+    color: #A7ADBD;
 }
 
 /** LineEdit */
@@ -228,6 +229,9 @@ Navigation {
 }
 #navButton::checked {
     background-color: #e5ecff;
+}
+#lbUserName {
+    margin-bottom: 8px;
 }
 
 /** Message List */

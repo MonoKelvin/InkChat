@@ -120,7 +120,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="friendPage"/>
+     <widget class="QWidget" name="minePage"/>
     </widget>
    </item>
   </layout>

@@ -22,7 +22,7 @@ const QString SqlQueryChatRecord = QStringLiteral("select type,uuid,time,data fr
 // 插入一条通知消息
 const QString SqlInsertVoidMessageItem = QStringLiteral("insert into message (chat,uuid,roleType,md5) values('1',?,?,?)");
 // 插入一条聊天记录
-const QString SqlInsertChatRecord = QStringLiteral("insert into chatrecord (msgId,type,uuid,time,data) values(?,(select id from message where uuid=?),?,?,?)");
+const QString SqlInsertChatRecord = QStringLiteral("insert into chatrecord (msgId,type,uuid,time,data) values((select id from message where uuid=?),?,?,?,?)");
 // 更新阅读标志
 const QString SqlUpdateReadFlag = QStringLiteral("update message set readFlag=%1 where uuid='%2'");
 // 更新未读消息数目
@@ -223,6 +223,17 @@ bool MessageDatabase::updateUnreadMsgCount(MessageItem* item)
     return false;
 }
 
+bool MessageDatabase::updateTop(MessageItem* item)
+{
+    QSqlQuery q;
+    if (q.exec(SqlUpdateTop.arg(item->mIsTop).arg(item->mChatObject->getUuid()))) {
+        return true;
+    }
+
+    qDebug() << q.lastError() << __LINE__;
+    return false;
+}
+
 bool MessageDatabase::loadChatItems(ChatList* chatView)
 {
     const auto& chatObj = chatView->getChatObject();
@@ -235,12 +246,17 @@ bool MessageDatabase::loadChatItems(ChatList* chatView)
         return false;
     }
 
-    int type = 0;
     while (query.next()) {
-        // type,uuid,time,data
-        type = query.value(0).toInt();
+        ChatItem* item = nullptr;
 
-        ChatItem* item = MessageManager::BuildChatItem(type, { query.value(1).toString(), QString() }, query.value(3));
+        // type,uuid,time,data
+        const QString& uuid = query.value(1).toString();
+        if (uuid == User::Instance()->getUuid()) {
+            item = MessageManager::BuildChatItem(query.value(0).toInt(), { uuid, User::Instance()->getNickName(), query.value(3) });
+        } else {
+            item = MessageManager::BuildChatItem(query.value(0).toInt(), { uuid, query.value(3) });
+        }
+
         if (nullptr == item) {
             continue;
         }
@@ -260,12 +276,13 @@ bool MessageDatabase::saveAChatRecord(ChatItem* item, const QString& chatObjUuid
         return false;
     }
 
-    // msgobj-uuid,type,uuid,time,data
+    // msgId,type,uuid,time,data
+    const auto& itemData = item->getChatItemData();
     query.addBindValue(chatObjUuid);
     query.addBindValue(item->getChatType());
-    query.addBindValue(item->getSenderData().Uuid);
+    query.addBindValue(itemData.Uuid);
     query.addBindValue(item->getTime());
-    query.addBindValue(item->getData());
+    query.addBindValue(itemData.Message);
 
     return query.exec();
 }

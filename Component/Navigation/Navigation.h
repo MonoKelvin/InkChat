@@ -47,6 +47,8 @@ public Q_SLOTS:
      */
     void navigate(int index);
 
+    void selectAvatarFile();
+
 Q_SIGNALS:
     /**
      * @brief 信号：当点击导航按钮或手动触发navigate方法时进行导航时发送的信号

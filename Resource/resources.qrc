@@ -9,7 +9,6 @@
         <file>icons/24x24/delete_friend.png</file>
         <file>icons/24x24/down.png</file>
         <file>icons/24x24/download.png</file>
-        <file>icons/24x24/edit.png</file>
         <file>icons/24x24/eye_off.png</file>
         <file>icons/24x24/eye_open.png</file>
         <file>icons/24x24/file.png</file>
@@ -38,5 +37,6 @@
         <file>icons/24x24/up.png</file>
         <file>icons/24x24/video.png</file>
         <file>icons/24x24/wifi_off.png</file>
+        <file>icons/file_chatitem_64x.png</file>
     </qresource>
 </RCC>

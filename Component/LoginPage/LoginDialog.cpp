@@ -20,7 +20,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // 让界面显示在屏幕中间位置
     QSize lt = QApplication::primaryScreen()->size() - this->size();
     setGeometry(lt.width() / 2, lt.height() / 2, width(), height());
-    setWindowTitle(QStringLiteral("InkChat-v%1.%2.%3").arg(CHAT_MAJOR_VERSION).arg(CHAT_MINOR_VERSION).arg(CHAT_REVERSION));
+    setWindowTitle(QStringLiteral("InkChat-v%1").arg(CHAT_VERSION_STR));
     resize(810, 500);
 
     ui->lbTitle->setObjectName(QStringLiteral("title"));

@@ -164,34 +164,31 @@ int MessageList::getCurrentSelectedIndex()
     return mMessages.indexOf(mCurrentSelectedItem);
 }*/
 
-void MessageList::ariseMessage(MessageItem* message)
+int MessageList::ariseMessage(MessageItem* message)
 {
     /**
      * 如果消息列表中有目标消息项
      *  a.如果置顶：直接更新其相关数据
      *  b.如果未置顶：找到置顶的所有消息，把message移动到它下面，并更新其相关数据
      */
-    const int sourceIndex = getRow(message);
+    const int sourceIndex = mMessages.indexOf(message);
     if (sourceIndex == 0) {
-        return;
+        return sourceIndex;
     }
 
     int targetIndex = 0;
     if (!message->isTop()) {
-        for (auto iter = mMessages.cbegin(); iter != mMessages.cend(); ++iter) {
-            if (!(*iter)->isTop()) {
+        for (; targetIndex < sourceIndex; targetIndex++) {
+            // 找到第一个不是置顶的消息
+            if (!mMessages.at(targetIndex)->isTop()) {
                 break;
             }
-            targetIndex++;
         }
-        // for (; targetIndex < mMessages.size(); targetIndex++) {
-        //     if (!mMessages.at(targetIndex)->mChatObject->getIsTop()) {
-        //         break;
-        //     }
-        // }
     }
 
     moveMessage(sourceIndex, targetIndex);
+
+    return targetIndex;
 }
 
 void MessageList::fetchMore(const QModelIndex& index)

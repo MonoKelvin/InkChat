@@ -41,9 +41,6 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    /** 输入文本的按钮，默认 */
-    QPushButton *mBtnText;
-
     /** 发送图片的按钮 */
     QPushButton *mBtnImage;
 

@@ -32,6 +32,10 @@ private:
      */
     ChatViewWidget* createChatViewWidget(IChatObject* chatObj);
 
+    bool eventFilter(QObject* watched, QEvent* event) override;
+
+    void buildMessageItemMenu(MessageItem* item);
+
 private Q_SLOTS:
 
     /**
@@ -51,6 +55,8 @@ private Q_SLOTS:
 
     void onReceived(const SChatItemPackage& package);
 
+    void clearMessageItemSelection();
+
 private:
     Ui::MainWindow* ui;
 
@@ -62,7 +68,5 @@ private:
      * @note 根据系统设置的最大聊天页面会动态地调整页面次序，并释放内存
      */
     QList<ChatViewWidget*> mChatPages;
-
-    //QMenu* mMessageMenu;
 };
 #endif // MAINWINDOW_H

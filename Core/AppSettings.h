@@ -38,7 +38,7 @@ public:
     // 用户数据文件夹
     inline static const QString UserDataDir() noexcept
     {
-        return UserDir() + QStringLiteral("/User");
+        return UserDir() + QStringLiteral("/User/");
     }
 
     // 用户数据文件
@@ -82,13 +82,13 @@ public:
     // 聊天缓存图片文件夹
     inline static const QString ImageCacheDir() noexcept
     {
-        return UserDir() + QStringLiteral("/Image/");
+        return UserDir() + QStringLiteral("/Images/");
     }
 
     // 聊天缓存文件文件夹
     inline static const QString FileCacheDir() noexcept
     {
-        return UserDir() + QStringLiteral("/File/");
+        return UserDir() + QStringLiteral("/Files/");
     }
 
     // 聊天缓存视频文件夹

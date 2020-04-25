@@ -23,6 +23,8 @@ public:
     void fromJson(const QJsonObject& json, bool cache = true) noexcept(false) override;
     QJsonObject toJson() override;
 
+    bool setAvatar(const QString& fileName) override;
+
     inline const QString getAccount(void) const { return mAccount; }
     inline void setAccount(const QString& value) { mAccount = value; }
 
@@ -41,7 +43,6 @@ public:
     }
 
     LanObject* getLanObjectByUuid(const QString& uuid);
-
     IChatObject* getChatObjectByUuid(const QString& uuid);
 
     static QPointer<User> Instance()

@@ -73,7 +73,7 @@ IChatObject* ChatList::getChatObject() const noexcept
     return mChatObject;
 }
 
-void ChatList::sendChat(int chatType, const QVariant& data)
+void ChatList::sendChat(int chatType, const QVariant& data) noexcept
 {
     MessageManager::Instance()->sendMessage(this, chatType, data);
 }

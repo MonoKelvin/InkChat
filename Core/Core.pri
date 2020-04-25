@@ -8,6 +8,8 @@ SOURCES += \
     $$PWD/MessageDatabase.cpp \
     $$PWD/MessageManager.cpp \
     $$PWD/MyFriend.cpp \
+    $$PWD/TcpClient.cpp \
+    $$PWD/TcpServer.cpp \
     $$PWD/User.cpp \
     $$PWD/Utility.cpp \
     $$PWD/HttpRequest.cpp \
@@ -21,6 +23,8 @@ HEADERS += \
     $$PWD/MessageDatabase.h \
     $$PWD/MessageManager.h \
     $$PWD/MyFriend.h \
+    $$PWD/TcpClient.h \
+    $$PWD/TcpServer.h \
     $$PWD/User.h \
     $$PWD/Configuation.h \
     $$PWD/InkChatApi.h \

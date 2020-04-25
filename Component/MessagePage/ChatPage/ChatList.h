@@ -83,6 +83,7 @@ public:
     /**
      * @brief 直接在尾部追加一条项目，不会改变数据库的内容
      * @param item 要追加的项目
+     * @see sendChat
      */
     inline void appendItem(AbstractChatListItem* item)
     {
@@ -95,8 +96,9 @@ public Q_SLOTS:
      * @param type 消息类型
      * @param data 消息数据
      * @note 该方法为通用方法，可以发送普通文本、富文本、图片和文件等控件
+     * @see appendItem
      */
-    void sendChat(int chatType, const QVariant& data);
+    void sendChat(int chatType, const QVariant& data) noexcept;
 
 protected:
     QVariant data(const QModelIndex& index, int role) const override;

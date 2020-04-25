@@ -12,12 +12,21 @@ MessageItem::MessageItem(QObject* parent)
     , mUnreadMsgCount(0)
     , mChatObject(nullptr)
 {
-    connect(this, &MessageItem::readFlagChanged, [this] {
-        MessageDatabase::Instance()->updateReadFlag(this);
-    });
-    connect(this, &MessageItem::unreadMsgCountChanged, [this] {
-        MessageDatabase::Instance()->updateUnreadMsgCount(this);
-    });
+    connect(
+        this, &MessageItem::readFlagChanged, this, [this] {
+            MessageDatabase::Instance()->updateReadFlag(this);
+        },
+        Qt::QueuedConnection);
+    connect(
+        this, &MessageItem::unreadMsgCountChanged, this, [this] {
+            MessageDatabase::Instance()->updateUnreadMsgCount(this);
+        },
+        Qt::QueuedConnection);
+    connect(
+        this, &MessageItem::topChanged, this, [this] {
+            MessageDatabase::Instance()->updateTop(this);
+        },
+        Qt::QueuedConnection);
 }
 
 MessageItem::~MessageItem()
@@ -84,7 +93,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         painter->setPen(Qt::NoPen);
 
         // 鼠标移过或置顶
-        if (option.state.testFlag(QStyle::State_MouseOver) || itemData->isTop()) {
+        if (option.state.testFlag(QStyle::State_MouseOver) || itemData->mIsTop) {
             painter->setBrush(XTheme.TintColor);
             painter->drawRect(rect);
         }
@@ -96,7 +105,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         }
 
         // 置顶标识
-        if (itemData->isTop()) {
+        if (itemData->mIsTop) {
             QPainterPath path;
             path.moveTo(rect.topRight());
             path.lineTo(rect.topRight() - QPointF(10, 0));
@@ -119,7 +128,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         // 绘制消息数量
         QRect mcRect(rect.width(), ch, 0, 0);
         if (!itemData->mReadFlag) {
-            const QString msgCountStr = QString::number(itemData->mUnreadMsgCount);
+            const auto& msgCountStr = QString::number(itemData->mUnreadMsgCount);
 
             mcRect.setTop(ch);
             mcRect.setRight(rect.width() - ESize::Narrow);
@@ -143,7 +152,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         const QString& msg = itemData->mMessage.isEmpty() ? tr("[暂无最近消息]") : itemData->mMessage;
         msgRect.setLeft(avtRect.right() + ESize::Narrow);
         msgRect.setTop(ch);
-        msgRect.setRight(mcRect.left() + ESize::Std);
+        msgRect.setRight(mcRect.left() - ESize::Narrow);
         msgRect.setBottom(rect.height() - ESize::Std);
         painter->drawText(msgRect, Qt::AlignLeft | Qt::AlignTop, getElidedText(msg, XTheme.StdFont, msgRect.width()));
 

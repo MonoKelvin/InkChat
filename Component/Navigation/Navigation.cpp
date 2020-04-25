@@ -3,6 +3,7 @@
 
 #include <User.h>
 #include <Utility.h>
+#include <Widget/PromptWidget.h>
 
 #include <QButtonGroup>
 #include <QPushButton>
@@ -13,8 +14,11 @@ Navigation::Navigation(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->avatar->setAvatar(User::Instance()->getAvatar());
+
     mButtonGroup = new QButtonGroup(this);
     connect(mButtonGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &Navigation::navigate);
+    connect(ui->avatar, &Avatar::onClick, this, &Navigation::selectAvatarFile);
 }
 
 Navigation::~Navigation()
@@ -54,6 +58,16 @@ void Navigation::navigate(int index)
         }
 
         emit navigated(index);
+    }
+}
+
+void Navigation::selectAvatarFile()
+{
+    if (User::Instance()->selectAvatarFile()) {
+        ui->avatar->setAvatar(User::Instance()->getAvatar());
+        new PromptWidget(tr("更换头像成功"), parentWidget());
+    } else {
+        new PromptWidget(tr("头像设置失败，请重新选择图片文件"), parentWidget(), PromptWidget::Alert);
     }
 }
 

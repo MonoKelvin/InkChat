@@ -78,6 +78,13 @@ public:
     bool updateUnreadMsgCount(MessageItem* item);
 
     /**
+     * @brief 更新置顶
+     * @param item 消息项
+     * @return 更新成功返回true，否则返回false
+     */
+    bool updateTop(MessageItem* item);
+
+    /**
      * @brief 加载聊天消息到聊天视图中
      * @param chatView 聊天视图 @see ChatView
      * @return 加载成功返回true，否则返回false

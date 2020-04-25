@@ -9,6 +9,7 @@ class ChatViewWidget;
 
 class ChatList;
 class QListView;
+class LoadingIndicator;
 
 class ChatViewWidget : public QWidget
 {
@@ -25,9 +26,6 @@ public:
 
     QListView* getChatView() const;
 
-private:
-    void resizeEvent(QResizeEvent*) override;
-
 public Q_SLOTS:
     /**
      * @brief 发送普通的文本消息
@@ -35,10 +33,26 @@ public Q_SLOTS:
      */
     void sendMessage(const QString& msg);
 
+    /**
+     * @brief 由内部算法自动决定是否应该滚动到底部
+     */
+    void autoDetermineScrollToBottom();
+
+private:
+    void resizeEvent(QResizeEvent*) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
+
 private:
     Ui::ChatViewWidget* ui;
 
+    /** 聊天列表视图模型 */
     ChatList* mChatListModel;
+
+    /** 加载指示器 */
+    LoadingIndicator* mLoader;
+
+    /** 鼠标点击时的点 */
+    QPoint mPressedPoint;
 };
 
 #endif // CHATVIEWWIDGET_H

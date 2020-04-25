@@ -2,22 +2,16 @@
 #define MESSAGEMANAGER_H
 
 #include <AbstractChatListItem.h>
+#include <Configuation.h>
 #include <IChatObject.h>
 
 #include <QSharedPointer>
-
-/** 定义端口号类型 */
-typedef quint16 Port;
-
-/** 定义默认局域网UDP协议端口号为2020 */
-#define LAN_UDP_PORT 2020
 
 class ChatItem;
 class QUdpSocket;
 class ChatList;
 class MessageItem;
 struct SChatItemPackage;
-//class TcpServer;
 
 /**
  * @brief 聊天消息管理器，用于收发聊天消息、收发文件、图片等
@@ -44,20 +38,19 @@ public:
      * @brief 构建一个聊天项
      * @param type
      * @param userData
-     * @param data
      * @return
      * @note 构建好的item不会发送到视图、也不会保存到数据库
      */
-    static ChatItem* BuildChatItem(int type, const SUserChatData& userData, const QVariant& data);
+    static ChatItem* BuildChatItem(int type, const SChatItemData& userData);
 
     /**
      * @brief 构建一个由我发送的聊天项
      * @param type
-     * @param data
+     * @param msg
      * @return 
      * @note 构建好的item不会发送到视图、也不会保存到数据库
      */
-    static ChatItem* BuildChatItem(int type, const QVariant& data);
+    static ChatItem* BuildChatItem(int type, const QVariant& msg);
 
     /**
      * @brief 注册一个聊天类。这样在就可使用自定义的聊天类发送或接收消息
@@ -84,7 +77,7 @@ public:
      * @param data 要发送的消息数据
      * @note 发送失败消息通过 @see failed 给出
      */
-    void sendMessage(ChatList* view, int type, const QVariant& data);
+    void sendMessage(ChatList* view, int type, const QVariant& msg);
 
     /**
      * @brief 加载聊天记录到指定视图
@@ -127,12 +120,6 @@ private:
      */
     QUdpSocket* mUdpSocket;
 
-    /**
-     * @brief TCP服务器
-     * 用于发送文件、图片、视频等
-     */
-    //TcpServer* mTcpServer;    // TODO: add TcpServer class
-
     /** 端口号，用于局域网聊天 */
     Port mPort;
 
@@ -142,6 +129,10 @@ private:
      * @type QByteArray 表示类的名称，即在qml中可以访问的类名
      */
     static QHash<int, QByteArray> mRegistryChatClasses;
+
+    /***/
+    //QList<TcpServer*> mTcpServerList;
+    //QList<TcpClient*> mTcpClientList;
 
     char _padding[6];
 };

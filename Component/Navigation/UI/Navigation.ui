@@ -33,7 +33,7 @@
     <number>10</number>
    </property>
    <property name="verticalSpacing">
-    <number>15</number>
+    <number>10</number>
    </property>
    <item row="3" column="1">
     <spacer name="verticalSpacer">
@@ -76,16 +76,17 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="text">
-      <string>Name</string>
-     </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="Avatar" name="avatar" native="true"/>
+    <widget class="Avatar" name="avatar" native="true">
+     <property name="toolTip">
+      <string>更换头像，建议比例为1:1</string>
+     </property>
+    </widget>
    </item>
    <item row="0" column="1">
     <widget class="QLabel" name="lbLogo">

@@ -23,7 +23,7 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
     const auto& user = User::Instance();
     const auto nickName = mapping.value(QStringLiteral("nickName")).toString();
 
-    const auto fileName = AppSettings::AppDataDir() + QStringLiteral("0/%1/User/User.udat").arg(nickName);
+    const auto fileName = AppSettings::AppDataDir() + QStringLiteral("/0/%1/User/User.udat").arg(nickName);
 
     if (!isFileExists(fileName)) {
         emit failed(tr("用户不存在或密码错误"));
@@ -81,7 +81,7 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
 
 bool AppLoginOperation::isUserExists(const QString& userName)
 {
-    const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("0/")).entryList(QDir::Dirs);
+    const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("/0/")).entryList(QDir::Dirs);
 
     for (int i = 0; i < dirs.size(); i++) {
         if (userName.compare(dirs.at(i), Qt::CaseInsensitive) == 0) {

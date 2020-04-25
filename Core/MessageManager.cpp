@@ -31,9 +31,9 @@ MessageManager::~MessageManager()
     qDebug() << "MessageManager Destroyed";
 }
 
-ChatItem* MessageManager::BuildChatItem(int chatType, const SUserChatData& userData, const QVariant& data)
+ChatItem* MessageManager::BuildChatItem(int chatType, const SChatItemData& chatData)
 {
-    if (userData.isEmpty()) {
+    if (chatData.isEmpty()) {
         return nullptr;
     }
 
@@ -48,21 +48,20 @@ ChatItem* MessageManager::BuildChatItem(int chatType, const SUserChatData& userD
             return nullptr;
         }
 
-        chat->fromSenderData(userData);
-        chat->setData(data);
+        chat->setChatItemData(chatData);
     }
 
     return chat;
 }
 
-ChatItem* MessageManager::BuildChatItem(int chatType, const QVariant& data)
+ChatItem* MessageManager::BuildChatItem(int chatType, const QVariant& msg)
 {
-    return BuildChatItem(chatType, User::Instance()->getChatData(), data);
+    return BuildChatItem(chatType, User::Instance()->getChatData(msg));
 }
 
-void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
+void MessageManager::sendMessage(ChatList* view, int type, const QVariant& msg)
 {
-    if (!data.isValid() || data.isNull()) {
+    if (!msg.isValid() || msg.isNull()) {
         emit failed(tr("要发送的消息无效，请尝试重新发送"));
         return;
     }
@@ -72,7 +71,7 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 
     const auto& chatObj = view->mChatObject.data();
     const auto& time = QDateTime::currentDateTime();
-    const auto& item = MessageManager::BuildChatItem(type, data);
+    const auto& item = MessageManager::BuildChatItem(type, msg);
 
     if (nullptr == item) {
         emit failed(tr("消息构建失败，请尝试重新发送"));
@@ -81,12 +80,12 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 
     // 填充数据
     out << User::Instance()->getUuid();
-    out << User::Instance()->getHostAddress();
+    out << view->getChatObject()->getHostAddress();
     out << User::Instance()->getNickName();
     out << chatObj->getRoleType();
     out << type;
     out << time;
-    out << data;
+    out << msg;
 
     // 发送数据
     qint64 result = -1;
@@ -100,7 +99,7 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 
     if (result < 0) {
         emit failed(tr("消息发送失败，请再试一遍"));
-        qDebug() << mUdpSocket->errorString();
+        delete item;
         return;
     }
 
@@ -108,7 +107,7 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     item->setTime(time);
     item->setSendState(ChatItem::Succeed);
     view->appendItem(item);
-    MessageDatabase::Instance()->saveAChatRecord(item, User::Instance()->getUuid());
+    MessageDatabase::Instance()->saveAChatRecord(item, view->getChatObject()->getUuid());
 }
 
 void MessageManager::loadChatRecords(ChatList* view)
@@ -131,16 +130,10 @@ void MessageManager::processPendingDatagrams()
 
         QDataStream in(&datagram, QIODevice::ReadOnly);
 
-        // 首先判断是否是自己发送的数据，如果是则不接收
+        // 有可能是自己发送的数据
         SChatItemPackage package;
-        in >> package.UserChatData.Uuid;
-        if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
-            continue;
-        }
-
-        // 处理数据
-        in >> package.HostAddress >> package.UserChatData.Name
-            >> package.RoleType >> package.ChatType >> package.Time >> package.Data;
+        in >> package.UserChatData.Uuid >> package.HostAddress >> package.UserChatData.Name
+            >> package.RoleType >> package.ChatType >> package.Time >> package.UserChatData.Message;
 
         emit received(package);
     }

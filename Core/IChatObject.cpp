@@ -1,9 +1,10 @@
 ﻿#include "IChatObject.h"
 
 #include <AppSettings.h>
-//#include <HttpRequest.h>
+#include <ChatItem.h>
 #include <QFileInfo>
 
+#include <QFileDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPixmap>
@@ -17,14 +18,25 @@ IChatObject::IChatObject(QObject* parent)
 {
 }
 
-const QString IChatObject::getAvatar() const
+const QString IChatObject::getAvatar() const noexcept
 {
-    const auto fileName = AppSettings::AvatarCacheFile(mUuid);
-    if (QFileInfo::exists(fileName)) {
-        return QStringLiteral("file:///") + fileName;
+    return AppSettings::AvatarCacheFile(mUuid);
+}
+
+bool IChatObject::setAvatar(const QString& fileName)
+{
+    QPixmap pix(fileName);
+    if (pix.isNull()) {
+        return false;
     }
 
-    return QString();
+    isDirExists(AppSettings::UserDir() + QStringLiteral("/Avatar"), true);
+    const auto& thumb = pix.scaled(AvatarSizeThumb, AvatarSizeThumb, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    if (thumb.save(AppSettings::AvatarCacheFile(mUuid), "JPG", 99)) {
+        emit avatarChanged();
+        return true;
+    }
+    return false;
 }
 
 void IChatObject::cacheAvatar(EAvatarSize size)
@@ -83,10 +95,25 @@ const QString IChatObject::generateUuid()
     return mUuid;
 }
 
-const SUserChatData IChatObject::getChatData() noexcept
+const SChatItemData IChatObject::getChatData(const QVariant& msg) noexcept
 {
-    const SUserChatData data { mUuid, mNickName };
-    return data;
+    return { mUuid, mNickName, msg };
+}
+
+bool IChatObject::selectAvatarFile()
+{
+    QFileDialog fd;
+    fd.setWindowTitle(tr("选择头像"));
+    fd.setNameFilter(tr("图片(*.png;*.jpg;*.jpeg)"));
+    fd.setViewMode(QFileDialog::Detail);
+
+    if (fd.exec()) {
+        const auto& files = fd.selectedFiles();
+        if (files.length() > 0 && setAvatar(files.at(0))) {
+            return true;
+        }
+    }
+    return false;
 }
 
 ////////////////////////////////////////////////////
