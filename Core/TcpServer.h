@@ -14,65 +14,40 @@ class QFile;
 class QTcpServer;
 class QTcpSocket;
 
+/**
+ * @brief TCP 服务器，专门用于传输文件，可以是任意普通文件，暂不支持文件夹的传输。
+ */
 class TcpServer : public QObject {
     Q_OBJECT
 public:
     explicit TcpServer(QObject* parent = nullptr);
     ~TcpServer();
 
-    inline void setHostAddress(const QString& hostAddr) noexcept
-    {
-        mHostAddress = hostAddr;
-        newConnect();
-    }
-
-    const SChatItemData& getChatItemData() const
-
-    {
-        return mData;
-    }
+    /**
+     * @brief 设置要发送的文件
+     * @param fileName 文件名，包括路径
+     * @param chatItem 指向的聊天控件地址，用于更新其相关数据
+     */
+    void setFileToSend(const QString& fileName, ChatItem* chatItem);
 
 Q_SIGNALS:
     void failed(const QString& msg);
 
 private Q_SLOTS:
-    /**
-     * @brief 设置要发送的文件
-     * @note 该方法是打开文件对话框来获取文件
-     */
-    void setFileToSend();
 
     /**
-     * @brief 关闭TCP客户端连接
+     * @brief 发送数据
      */
-    void closeTcpServer();
+    void sendMessage(void);
 
     /**
-     * @brief 新建连接
+     * @brief 更新进程
      */
-    void newConnect();
-
-    /**
-     * @brief 读消息
-     */
-    void readMessage();
-
-private Q_SLOTS:
-    void sendMessage();
-    void updateClientProgress(qint64 numBytes);
+    void updateProgress();
 
 private:
-    /** TCP服务端 */
-    QTcpServer* mTcpServer;
-
-    /** TCP服务端与客户端的连接 */
-    QTcpSocket* mTlientConnection;
-
     /** 主机地址 */
     QString mHostAddress;
-
-    /** TCP 端口号 */
-    Port mTcpPort;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QElapsedTimer mTime;
@@ -81,11 +56,29 @@ private:
     QTime mTime;
 #endif
 
-    /** 指向的缓存文件 */
-    QFile* mCacheFile;
+    /** TCP服务端 */
+    QTcpServer* mTcpServer;
 
-    /** 发送的数据 */
-    STcpFileData mData;
+    /** TCP服务端与客户端的连接 */
+    QTcpSocket* mClientConnection;
+
+    /** 要发送的文件 */
+    QFile* mFileToSend;
+
+    /** 文件要传输的实际数据 */
+    QByteArray mFileData;
+
+    /* 剩余还要传输字节 */
+    qint64 mRemainingBytes;
+
+    /** 总共要传输的字节 */
+    qint64 mTotalBytes;
+
+    /** TCP 端口号 */
+    Port mTcpPort;
+
+    /** 保存指向的聊天信息控件 */
+    QPointer<ChatItem> mChatItem;
 };
 
 #endif // TCPSERVER_H

@@ -3,6 +3,7 @@
 
 #include <ChatItem.h>
 #include <ChatList.h>
+#include <MessageManager.h>
 #include <Utility.h>
 #include <Widget/LoadingIndicator.h>
 
@@ -23,8 +24,8 @@ ChatViewWidget::ChatViewWidget(QWidget* parent)
     ui->chatView->viewport()->installEventFilter(this);
     ui->chatView->verticalScrollBar()->setPageStep(5);
 
-    connect(ui->chatInputer, &ChatInputBox::send, this, &ChatViewWidget::sendMessage);
     connect(ui->chatInputer, &ChatInputBox::foldup, this, &ChatViewWidget::autoDetermineScrollToBottom);
+    connect(ui->chatInputer, &ChatInputBox::send, this, &ChatViewWidget::sendChat);
 
     // 调整显示层
     ui->chatView->lower();
@@ -39,6 +40,11 @@ ChatViewWidget::~ChatViewWidget()
 QListView* ChatViewWidget::getChatView() const
 {
     return ui->chatView;
+}
+
+void ChatViewWidget::sendChat(int type, const QVariant& data) noexcept
+{
+    MessageManager::Instance()->sendMessage(mChatListModel, type, data);
 }
 
 void ChatViewWidget::resizeEvent(QResizeEvent*)
@@ -90,12 +96,6 @@ bool ChatViewWidget::eventFilter(QObject* watched, QEvent* event)
         return false;
     }
     return QWidget::eventFilter(watched, event);
-}
-
-void ChatViewWidget::sendMessage(const QString& msg)
-{
-    mChatListModel->sendChat(AbstractChatListItem::Text, msg);
-    ui->chatView->scrollToBottom();
 }
 
 void ChatViewWidget::autoDetermineScrollToBottom()

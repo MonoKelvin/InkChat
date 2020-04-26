@@ -29,9 +29,10 @@ public:
 public Q_SLOTS:
     /**
      * @brief 发送普通的文本消息
-     * @param msg 文本消息
+     * @param int 类型
+     * @param msg 消息
      */
-    void sendMessage(const QString& msg);
+    void sendChat(int type, const QVariant& msg) noexcept;
 
     /**
      * @brief 由内部算法自动决定是否应该滚动到底部

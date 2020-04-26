@@ -13,6 +13,7 @@
 #include <Widget/PromptWidget.h>
 
 // 聊天控件
+#include <FileChatItem.h>
 #include <TextChatItem.h>
 
 #include <QListView>
@@ -52,9 +53,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->messageList, &QListView::clicked, this, &MainWindow::onMessageItemActived);
     connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
     connect(MessageManager::Instance().data(), &MessageManager::received, this, &MainWindow::onReceived, Qt::QueuedConnection);
+    connect(MessageManager::Instance().data(), &MessageManager::failed, this, &MainWindow::onFailed);
 
     // 注册聊天控件，TODO: 添加更多
     MessageManager::RegisterChatItemClass<TextChatItem>();
+    MessageManager::RegisterChatItemClass<FileChatItem>();
 
     // 多线程中传递SChatItemPackage结构需要注册为元对象
     qRegisterMetaType<SChatItemPackage>("SChatItemPackage");
@@ -218,7 +221,7 @@ void MainWindow::onReceived(const SChatItemPackage& package)
     if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
         const auto& curIndex = ui->messageList->currentIndex();
         const auto& item = mMessageListModel->getMessage(curIndex.row());
-        item->setTime(package.Time);
+        item->setTime(QDateTime::currentDateTime());
         item->setMessage(package.UserChatData.Message.toString().left(32));
         ui->messageList->update(curIndex);
         return;
@@ -270,7 +273,7 @@ void MainWindow::onReceived(const SChatItemPackage& package)
             msgItem->setUnreadMsgCount(msgItem->getUnreadMsgCount() + 1);
         }
         msgItem->setMessage(package.UserChatData.Message.toString().left(32));
-        msgItem->setTime(package.Time);
+        msgItem->setTime(QDateTime::currentDateTime());
         mMessageListModel->ariseMessage(msgItem);
         ui->messageList->update(ui->messageList->rect());
 

@@ -5,6 +5,8 @@
 #include <ChatList.h>
 #include <MessageDatabase.h>
 #include <MessageItem.h>
+#include <TcpClient.h>
+#include <TcpServer.h>
 #include <User.h>
 
 #include <QDataStream>
@@ -59,9 +61,9 @@ ChatItem* MessageManager::BuildChatItem(int chatType, const QVariant& msg)
     return BuildChatItem(chatType, User::Instance()->getChatData(msg));
 }
 
-void MessageManager::sendMessage(ChatList* view, int type, const QVariant& msg)
+void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 {
-    if (!msg.isValid() || msg.isNull()) {
+    if (!data.isValid() || data.isNull()) {
         emit failed(tr("要发送的消息无效，请尝试重新发送"));
         return;
     }
@@ -70,8 +72,7 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& msg)
     QDataStream out(&outData, QIODevice::WriteOnly);
 
     const auto& chatObj = view->mChatObject.data();
-    const auto& time = QDateTime::currentDateTime();
-    const auto& item = MessageManager::BuildChatItem(type, msg);
+    const auto& item = MessageManager::BuildChatItem(type, data);
 
     if (nullptr == item) {
         emit failed(tr("消息构建失败，请尝试重新发送"));
@@ -84,27 +85,26 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& msg)
     out << User::Instance()->getNickName();
     out << chatObj->getRoleType();
     out << type;
-    out << time;
-    out << msg;
 
-    // 发送数据
-    qint64 result = -1;
-    if (chatObj->getRoleType() & IChatObject::MultiPerson) {
-        // md5用于验证同一个多人聊天对象
-        //out << chatObj->getMD5();
-        result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, mPort);
+    // 如果要进行TCP类型通信，就新建TCP服务器
+    if (type & ChatItem::TCPP_Protocol) {
+        TcpServer* server = new TcpServer(this);
+        connect(server, &TcpServer::failed, [this](const QString& msg) { emit failed(msg); });
+        server->setFileToSend(data.toString(), item);
+        out << getFileNameFromPath(data.toString());
     } else {
-        result = mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), mPort);
+        out << data;
     }
 
-    if (result < 0) {
-        emit failed(tr("消息发送失败，请再试一遍"));
-        delete item;
-        return;
+    // 发送数据
+    if (chatObj->getRoleType() & IChatObject::MultiPerson) {
+        mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, mPort);
+    } else {
+        mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), mPort);
     }
 
     // 显示到视图中并保存到本地数据库
-    item->setTime(time);
+    item->setTime(QDateTime::currentDateTime());
     item->setSendState(ChatItem::Succeed);
     view->appendItem(item);
     MessageDatabase::Instance()->saveAChatRecord(item, view->getChatObject()->getUuid());
@@ -133,7 +133,7 @@ void MessageManager::processPendingDatagrams()
         // 有可能是自己发送的数据
         SChatItemPackage package;
         in >> package.UserChatData.Uuid >> package.HostAddress >> package.UserChatData.Name
-            >> package.RoleType >> package.ChatType >> package.Time >> package.UserChatData.Message;
+            >> package.RoleType >> package.ChatType >> package.UserChatData.Message;
 
         emit received(package);
     }

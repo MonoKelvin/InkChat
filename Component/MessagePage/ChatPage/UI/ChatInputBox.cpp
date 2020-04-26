@@ -3,11 +3,10 @@
 #include <AppTheme.h>
 #include <Utility.h>
 
+#include <QFileDialog>
 #include <QGridLayout>
 #include <QPlainTextEdit>
-#include <QPropertyAnimation>
 #include <QPushButton>
-#include <QSequentialAnimationGroup>
 #include <QSpacerItem>
 
 ChatInputBox::ChatInputBox(QWidget* parent)
@@ -69,13 +68,17 @@ ChatInputBox::ChatInputBox(QWidget* parent)
 
     connect(mBtnExpand, &QPushButton::toggled, this, &ChatInputBox::onFoldup);
     connect(mBtnSend, &QPushButton::clicked, [this] {
-        if (mChatInputer->toPlainText().isEmpty()) {
-            return;
+        const auto& msg = mChatInputer->toPlainText();
+        if (!msg.isEmpty()) {
+            emit send(AbstractChatListItem::Text, msg);
+            mChatInputer->clear();
         }
-
-        emit send(mChatInputer->toPlainText());
-
-        mChatInputer->clear();
+    });
+    connect(mBtnFile, &QPushButton::clicked, [this] {
+        const QString& fileName = QFileDialog::getOpenFileName(nullptr, tr("选择要发送的文件"));
+        if (!fileName.isEmpty()) {
+            emit send(AbstractChatListItem::File, fileName);
+        }
     });
 
     moveEvent(nullptr);
@@ -120,9 +123,7 @@ void ChatInputBox::moveEvent(QMoveEvent *event)
         y() - mBtnSend->height() - ESize::Std);
 }
 
-void ChatInputBox::paintEvent(QPaintEvent *event)
+void ChatInputBox::paintEvent(QPaintEvent*)
 {
-    Q_UNUSED(event)
-
     USE_STYLE_SHEET
 }

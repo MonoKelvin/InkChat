@@ -12,7 +12,8 @@ class ChatInputBox : public QWidget
 {
     Q_OBJECT
 
-    friend class ChatListView;
+    friend class ChatViewWidget;
+
 public:
     explicit ChatInputBox(QWidget *parent = nullptr);
 
@@ -24,10 +25,11 @@ Q_SIGNALS:
     void foldup(bool enabled);
 
     /**
-     * @brief 当发送（普通文本）消息时
-     * @param content 文本内容
+     * @brief 当发送消息时
+     * @param type 消息类型
+     * @param msg 数据
      */
-    void send(const QString& content);
+    void send(int type, const QVariant& data);
 
 public Q_SLOTS:
     /**
@@ -38,7 +40,7 @@ public Q_SLOTS:
 
 protected:
     void moveEvent(QMoveEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent*) override;
 
 private:
     /** 发送图片的按钮 */
@@ -54,10 +56,10 @@ private:
     QPlainTextEdit *mChatInputer;
 
     /** 发送按钮 */
-    QPushButton *mBtnSend;
+    QPushButton* mBtnSend;
 
     /** 收回\展开 输入框按钮 */
-    QPushButton *mBtnExpand;
+    QPushButton* mBtnExpand;
 
 private:
     /** 在收起之前的高度 */

@@ -34,7 +34,7 @@ public:
      */
     void setCacheFileName(const QString& name);
 
-    const SChatItemData& getChatItemData() const
+    const SChatItemData& getTcpFileData() const
     {
         return mData;
     }
@@ -79,7 +79,7 @@ private:
     QFile* mCacheFile;
 
     /** 接收的数据 */
-    STcpFileData mData;
+    SChatItemData mData;
 };
 
 #endif // TCPCLIENT_H

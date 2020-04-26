@@ -11,8 +11,8 @@ TextChatItem::TextChatItem(QObject* parent)
 
 void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 {
-    const int& d = ESize::Std;
-    const int& sd = ESize::Narrow;
+    constexpr int d = ESize::Std;
+    constexpr int sd = ESize::Narrow;
 
     // 背景
     QRect bg;

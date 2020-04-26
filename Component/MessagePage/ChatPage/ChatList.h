@@ -90,16 +90,6 @@ public:
         insertChat(mChats.size(), item);
     }
 
-public Q_SLOTS:
-    /**
-     * @brief 发送一条聊天消息，会改变数据库的内容
-     * @param type 消息类型
-     * @param data 消息数据
-     * @note 该方法为通用方法，可以发送普通文本、富文本、图片和文件等控件
-     * @see appendItem
-     */
-    void sendChat(int chatType, const QVariant& data) noexcept;
-
 protected:
     QVariant data(const QModelIndex& index, int role) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;

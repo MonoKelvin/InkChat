@@ -5,27 +5,25 @@
 
 class FileChatItem : public ChatItem
 {
+    Q_OBJECT
+
+    CHAT_ITEM_OBJECT(FileChatItem, File)
+
 public:
-    FileChatItem();
+    explicit FileChatItem(QObject* parent = nullptr);
 
-    void paintContent(QPainter* painter, const QRect& availableRect) override;
-    void updateContentSize(const QStyleOptionViewItem&) override;
+    void paintContent(QPainter* painter, const QRect& rect) override;
+    void updateContentSize(const QStyleOptionViewItem& option) override;
 
-    inline void setFileChatItemData(const STcpFileData& fileData)
-    {
-        auto data = mData.value<SChatItemData>();
-        data.Message.setValue(fileData);
-        mData.setValue(data);
-    }
+    /**
+     * @brief 打开文件路径
+     * @return 如果路径失效或文件不存在则返回false，否则返回true
+     */
+    bool openFileDir(void);
 
-    inline const STcpFileData getFileChatItemData(void)
-    {
-        return getChatItemData().Message.value<STcpFileData>();
-    }
-
-private:
-    /** 占百分之几 */
-    short mPercentage;
+public:
+    QString Speed;
+    unsigned char Percentage;
 };
 
 #endif // FILECHATITEM_H

@@ -77,7 +77,7 @@ public:
      * @param data 要发送的消息数据
      * @note 发送失败消息通过 @see failed 给出
      */
-    void sendMessage(ChatList* view, int type, const QVariant& msg);
+    void sendMessage(ChatList* view, int type, const QVariant& data);
 
     /**
      * @brief 加载聊天记录到指定视图

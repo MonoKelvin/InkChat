@@ -259,4 +259,39 @@ inline const QString getDateTimeString(void) noexcept
 {
     return QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
 }
+
+/**
+ * @brief 获得人类可读的字节数字符串
+ * @param bytes 字节数，单位为B
+ * @return 返回可读的字节数字符串，如200B、10.0K、34.0M、2.00G
+ */
+inline const QString getBytesForHumanReadable(qint64 bytes) noexcept
+{
+    if (bytes < 1024) {
+        return QString::number(bytes) + QStringLiteral("B");
+    }
+
+    double b = bytes / 1024.0;
+    if (b < 1024) {
+        return QStringLiteral("%1K").arg(b, 0, 'f', 1);
+    }
+
+    b /= 1024;
+    if (b < 1024) {
+        return QStringLiteral("%1M").arg(b, 0, 'f', 1);
+    }
+
+    return QStringLiteral("%1G").arg(b / 1024, 0, 'f', 2);
+}
+
+/**
+ * @brief 从一个路径中获取文件名，包括基本名和后缀
+ * @param path 给定的路径
+ * @return 返回文件名字
+ */
+inline const QString getFileNameFromPath(const QString& path) noexcept
+{
+    return path.right(path.size() - path.lastIndexOf('/') - 1);
+}
+
 #endif // UTILITY_H

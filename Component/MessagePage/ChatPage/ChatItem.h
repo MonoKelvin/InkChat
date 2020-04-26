@@ -11,26 +11,6 @@
 class QPainter;
 class QStyleOptionViewItem;
 
-struct STcpFileData {
-    QString Uuid;
-    QString Name;
-    QString FileName; // 文件名
-    qint64 TransferredBytes = 0; // 已经传输字节
-    qint64 TotalBytes = 0; // 总共要传输的字节
-    QByteArray FileData; // 文件的实际数据
-
-    STcpFileData() = default;
-
-    STcpFileData(const QString& uuid, const QString& name, const QString& fileName, qint64 total)
-        : Uuid(uuid)
-        , Name(name)
-        , FileName(fileName)
-        , TotalBytes(total)
-    {
-    }
-};
-Q_DECLARE_METATYPE(STcpFileData)
-
 struct SChatItemData {
     QString Uuid;
     QString Name;
@@ -59,19 +39,6 @@ struct SChatItemData {
 Q_DECLARE_METATYPE(SChatItemData)
 
 /**
- * @brief TCP 传输时使用的数据包
- */
-struct STcpPackage {
-    STcpFileData UserChatData;
-    IChatObject::ERoleType RoleType;
-    QString HostAddress;
-    int ChatType;
-    QDateTime Time;
-
-    STcpPackage() = default;
-};
-
-/**
  * @brief UDP 传输时使用的 ChatItem 数据包
  */
 struct SChatItemPackage {
@@ -79,7 +46,6 @@ struct SChatItemPackage {
     IChatObject::ERoleType RoleType;
     QString HostAddress;
     int ChatType;
-    QDateTime Time;
 
     SChatItemPackage() = default;
 };

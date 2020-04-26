@@ -34,16 +34,19 @@ public:
      */
     enum EBaseChatType {
         /** 用户有关 */
-        Text = 1, // 普通文本
-        RichText, // 富文本
-        File, // 文件
-        Image, // 图片
-        MultiImages, // 多张图片
-        Video, // 视频
-        Audio, // 音频
+        Text = 0x00001, // 普通文本
+        RichText = 0x00002, // 富文本
+        File = 0x00004, // 文件
+        Image = 0x00008, // 图片
+        Video = 0x00010, // 视频
+        Audio = 0x00020, // 音频
+        //MultiImages = 0x00040, // 多张图片
 
         /** 用户无关 */
-        Notification, // 系统通知项
+        Notification = 0x01000, // 系统通知项
+
+        UDP_Protocol = Text | RichText, // 需要进行UDP协议传输的类型
+        TCPP_Protocol = File | Image | Video | Audio, // 需要进行TCP协议传输的类型
     };
 
     virtual unsigned int getChatType(void) const { return ChatType; }
@@ -84,8 +87,8 @@ public:
         return false;
     }
 
-    inline void setData(const QVariant& data) { mData = data; }
-    inline const QVariant& getData(void) const { return mData; }
+    inline void setData(const QVariant& data) noexcept { mData = data; }
+    inline const QVariant& getData(void) const noexcept { return mData; }
 
 protected:
     /**
