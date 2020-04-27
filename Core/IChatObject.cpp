@@ -30,7 +30,7 @@ bool IChatObject::setAvatar(const QString& fileName)
         return false;
     }
 
-    isDirExists(AppSettings::UserDir() + QStringLiteral("/Avatar"), true);
+    IsDirExists(AppSettings::UserDir() + QStringLiteral("/Avatar"), true);
     const auto& thumb = pix.scaled(AvatarSizeThumb, AvatarSizeThumb, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     if (thumb.save(AppSettings::AvatarCacheFile(mUuid), "JPG", 99)) {
         emit avatarChanged();
@@ -73,7 +73,6 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
     mRoleType = ERoleType(json.value(QLatin1String("roleType")).toInt());
     mNickName = json.value(QLatin1String("nickName")).toString();
     mSignature = json.value(QLatin1String("signature")).toString(tr("还没有任何简介"));
-    mHostAddress = json.value(QLatin1String("hostAddress")).toString();
 }
 
 QJsonObject IChatObject::toJson(void)
@@ -85,7 +84,6 @@ QJsonObject IChatObject::toJson(void)
     json.insert(QLatin1String("roleType"), mRoleType);
     json.insert(QLatin1String("nickName"), mNickName);
     json.insert(QLatin1String("signature"), mSignature);
-    json.insert(QLatin1String("hostAddress"), mHostAddress);
     return json;
 }
 

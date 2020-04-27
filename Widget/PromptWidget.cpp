@@ -72,5 +72,5 @@ void PromptWidget::buildUI(const QString &prompt)
 
     hbLayout->addWidget(lbContents);
 
-    this->resize(getFontPixelWidth(lbContents->font(), prompt) + 2 * ESize::Large, lbContents->height() + ESize::Narrow);
+    this->resize(GetFontPixelWidth(lbContents->font(), prompt) + 2 * ESize::Large, lbContents->height() + ESize::Narrow);
 }

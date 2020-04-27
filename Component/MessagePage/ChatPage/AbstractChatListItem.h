@@ -33,20 +33,25 @@ public:
      * @note 用户不可重定义
      */
     enum EBaseChatType {
-        /** 用户有关 */
-        Text = 0x00001, // 普通文本
-        RichText = 0x00002, // 富文本
-        File = 0x00004, // 文件
-        Image = 0x00008, // 图片
-        Video = 0x00010, // 视频
-        Audio = 0x00020, // 音频
-        //MultiImages = 0x00040, // 多张图片
+        /** 用户数据有关 */
+        Text = 0x000001, // 普通文本
+        RichText = 0x000002, // 富文本
+        File = 0x000004, // 文件
+        Image = 0x000008, // 图片
+        Video = 0x000010, // 视频
+        Audio = 0x000020, // 音频
+        //MultiImages = 0x000040, // 多张图片
 
-        /** 用户无关 */
-        Notification = 0x01000, // 系统通知项
+        /** 用户行为相关 */
+        UserJoin = 0x000100,
+        UserLeft = 0x000200,
 
         UDP_Protocol = Text | RichText, // 需要进行UDP协议传输的类型
-        TCPP_Protocol = File | Image | Video | Audio, // 需要进行TCP协议传输的类型
+        TCP_Protocol = File | Image | Video | Audio, // 需要进行TCP协议传输的类型
+        UserBehavior = UserJoin | UserLeft, // 用户行为
+
+        /** 用户无关 */
+        Notification = 0x010000 | UserBehavior, // 系统通知项
     };
 
     virtual unsigned int getChatType(void) const { return ChatType; }

@@ -12,7 +12,7 @@
 
 #include <regex>
 
-void attachShadowEffect(QWidget *widget, double xoffset, double yoffset, double radius, const QColor &color)
+void AttachShadowEffect(QWidget *widget, double xoffset, double yoffset, double radius, const QColor &color)
 {
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(widget);
     effect->setOffset(xoffset, yoffset);
@@ -21,7 +21,7 @@ void attachShadowEffect(QWidget *widget, double xoffset, double yoffset, double 
     widget->setGraphicsEffect(effect);
 }
 
-void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode)
+void GetElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode)
 {
     label->setFixedWidth(maxWidth);
 
@@ -32,7 +32,7 @@ void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode)
     label->adjustSize();
 }
 
-bool isDirExists(const QString& fullPath, bool makeIfNull, bool recursion)
+bool IsDirExists(const QString& fullPath, bool makeIfNull, bool recursion)
 {
     if (QDir(fullPath).exists()) {
         return true;
@@ -50,14 +50,14 @@ bool isDirExists(const QString& fullPath, bool makeIfNull, bool recursion)
     return false;
 }
 
-bool isFileExists(const QString& fileName, bool makeIfNull, bool recursion)
+bool IsFileExists(const QString& fileName, bool makeIfNull, bool recursion)
 {
     QFileInfo fileInfo(fileName);
     if (fileInfo.isFile()) {
         return true;
     }
 
-    isDirExists(fileInfo.path(), makeIfNull, recursion);
+    IsDirExists(fileInfo.path(), makeIfNull, recursion);
 
     QFile file(fileName);
     bool ok = file.open(QFile::WriteOnly);
@@ -104,7 +104,7 @@ const QString GetMessageTime(const QDateTime& time)
     }
 }
 
-quint16 selectAvailablePort(quint16 defaultPort, int maxCount)
+quint16 SelectAvailablePort(quint16 defaultPort, int maxCount)
 {
     Q_UNUSED(defaultPort)
     Q_UNUSED(maxCount)
@@ -112,7 +112,7 @@ quint16 selectAvailablePort(quint16 defaultPort, int maxCount)
     return 0;
 }
 
-const QString getWirelessAddress(QString* mac, QString* netName)
+const QString GetWirelessAddress(QString* mac, QString* netName)
 {
     const auto addList = QNetworkInterface::allInterfaces();
     QString hrn;
@@ -146,13 +146,13 @@ const QString getWirelessAddress(QString* mac, QString* netName)
     return QString();
 }
 
-bool hasIllegalCharInFile(const QString& str)
+bool HasIllegalCharInFile(const QString& str)
 {
     std::regex reg("[\\s\\\\/:\\*\\?\\\"<>\\|]");
     return std::regex_search(str.toStdString(), reg);
 }
 
-bool copyFile(const QString& source, const QString& newFile, bool isOverWrite)
+bool CopyFile(const QString& source, const QString& newFile, bool isOverWrite)
 {
     QFile file(source);
     if (!file.exists()) {
@@ -174,7 +174,7 @@ void switchIconColorForButton(QAbstractButton* btn, const QColor& color)
     // TODO
 }
 
-void drawRoundRect(QPainter* painter, const QRect& rect, int lt, int rt, int lb, int rb)
+void DrawRoundRect(QPainter* painter, const QRect& rect, int lt, int rt, int lb, int rb)
 {
     if (rect.width() == 0 || rect.height() == 0) {
         return;
@@ -194,4 +194,17 @@ void drawRoundRect(QPainter* painter, const QRect& rect, int lt, int rt, int lb,
 
     painter->fillPath(path, painter->brush());
     painter->drawPath(path);
+}
+
+const QString GetHostIP(void)
+{
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+
+    foreach (QHostAddress address, list) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+            return address.toString();
+        }
+    }
+
+    return QString();
 }

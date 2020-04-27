@@ -27,11 +27,9 @@ public:
      * @brief 设置要发送的文件
      * @param fileName 文件名，包括路径
      * @param chatItem 指向的聊天控件地址，用于更新其相关数据
+     * @param 如果文件路径正确并且成功建立TCP连接就返回true，否则返回false
      */
-    void setFileToSend(const QString& fileName, ChatItem* chatItem);
-
-Q_SIGNALS:
-    void failed(const QString& msg);
+    bool setFileToSend(const QString& fileName, ChatItem* chatItem);
 
 private Q_SLOTS:
 
@@ -46,16 +44,6 @@ private Q_SLOTS:
     void updateProgress();
 
 private:
-    /** 主机地址 */
-    QString mHostAddress;
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    QElapsedTimer mTime;
-#else
-    /** 时间戳 */
-    QTime mTime;
-#endif
-
     /** TCP服务端 */
     QTcpServer* mTcpServer;
 
@@ -65,6 +53,13 @@ private:
     /** 要发送的文件 */
     QFile* mFileToSend;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QElapsedTimer mTime;
+#else
+    /** 时间戳 */
+    QTime mTime;
+#endif
+
     /** 文件要传输的实际数据 */
     QByteArray mFileData;
 
@@ -73,9 +68,6 @@ private:
 
     /** 总共要传输的字节 */
     qint64 mTotalBytes;
-
-    /** TCP 端口号 */
-    Port mTcpPort;
 
     /** 保存指向的聊天信息控件 */
     QPointer<ChatItem> mChatItem;

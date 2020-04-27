@@ -11,10 +11,13 @@
 
 TcpServer::TcpServer(QObject* parent)
     : QObject(parent)
+    , mClientConnection(nullptr)
+    , mFileToSend(nullptr)
+    , mRemainingBytes(0)
+    , mTotalBytes(0)
 {
     mTcpServer = new QTcpServer(this);
 
-    mTcpPort = LAN_TCP_PORT;
     connect(mTcpServer, &QTcpServer::newConnection, this, &TcpServer::sendMessage);
 
     mTcpServer->close();
@@ -22,55 +25,52 @@ TcpServer::TcpServer(QObject* parent)
 
 TcpServer::~TcpServer()
 {
+    qDebug() << "TcpServer Destroyed: " << this;
+
     if (mTcpServer->isListening()) {
         mTcpServer->close();
         if (mFileToSend->isOpen()) {
             mFileToSend->close();
         }
-        mClientConnection->abort();
+        if (mClientConnection) {
+            mClientConnection->abort();
+        }
     }
 
     SAFE_DELETE(mFileToSend);
 
     // mClientConnection will be automatically deleted when the mTcpServer is destroyed.
     // SAFE_DELETE(mClientConnection);
-    qDebug() << "TCP Server Abort: " << this;
 }
 
-void TcpServer::setFileToSend(const QString& fileName, ChatItem* chatItem)
+bool TcpServer::setFileToSend(const QString& fileName, ChatItem* chatItem)
 {
-    if (!isFileExists(fileName)) {
-        emit failed(tr("文件不存在"));
-        return;
+    mFileToSend = new QFile(fileName);
+    if (!mFileToSend->open((QFile::ReadOnly))) {
+        deleteLater();
+        return false;
+    }
+
+    // 开始监听
+    if (!mTcpServer->listen(QHostAddress::Any, LAN_TCP_PORT)) {
+        deleteLater();
+        return false;
     }
 
     mChatItem = chatItem;
-    mChatItem->setData(fileName);
 
-    if (!mTcpServer->listen(QHostAddress::Any, mTcpPort)) //开始监听
-    {
-        emit failed(tr("文件发送失败，请重试！"));
-        this->deleteLater();
-        return;
-    }
+    return true;
 }
 
 void TcpServer::sendMessage()
 {
-    const QString& fn = mChatItem->getData().toString();
+    const QString& fn = mChatItem->getChatItemData().Message.toString();
     if (fn.isEmpty()) {
-        emit failed(tr("没有文件要发送"));
         return;
     }
 
     mClientConnection = mTcpServer->nextPendingConnection();
     connect(mClientConnection, &QTcpSocket::bytesWritten, this, &TcpServer::updateProgress);
-
-    mFileToSend = new QFile(fn);
-    if (!mFileToSend->open((QFile::ReadOnly))) {
-        emit failed(tr("应用程序无法读取文件%1\n错误原因：%2").arg(fn).arg(mFileToSend->errorString()));
-        return;
-    }
 
     mTotalBytes = mFileToSend->size();
     QDataStream sendOut(&mFileData, QIODevice::WriteOnly);
@@ -78,13 +78,12 @@ void TcpServer::sendMessage()
     // 开始计时
     mTime.start();
 
-    // 先传输文件名，一定不能包括路径
-    sendOut << qint64(0) << qint64(0) << getFileNameFromPath(fn);
-    mTotalBytes += mFileData.size();
+    // 传输00请求同步信号
+    sendOut << qint64(0) << qint64(0);
 
     // 传输总字节数
-    sendOut.device()->seek(0);
-    sendOut << mTotalBytes << (mFileData.size() - qint64(sizeof(qint64) * 2));
+    //sendOut.device()->seek(0);
+    sendOut << mTotalBytes;
 
     // 计算剩余要发送的数据
     mRemainingBytes = mTotalBytes - mClientConnection->write(mFileData);
@@ -111,7 +110,7 @@ void TcpServer::updateProgress()
         const auto& fci = static_cast<FileChatItem*>(mChatItem.data());
         const auto& written = mTotalBytes - mRemainingBytes;
         const auto& useTime = int(mTime.elapsed() / 1000);
-        fci->Speed = getBytesForHumanReadable(written / useTime) + QStringLiteral("/s");
+        fci->Speed = written / useTime;
         fci->Percentage = static_cast<unsigned char>(written / mTotalBytes);
         break;
     }

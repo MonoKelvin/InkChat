@@ -64,7 +64,7 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     mBtnSend->setIcon(QIcon::fromTheme(QStringLiteral("send")));
     mBtnSend->setIconSize(QSize(24, 24));
     mBtnSend->raise();
-    attachShadowEffect(mBtnSend, 0, 5.0, 20.0, QColor("#4D7CFE").lighter(120));
+    AttachShadowEffect(mBtnSend, 0, 5.0, 20.0, QColor("#4D7CFE").lighter(120));
 
     connect(mBtnExpand, &QPushButton::toggled, this, &ChatInputBox::onFoldup);
     connect(mBtnSend, &QPushButton::clicked, [this] {

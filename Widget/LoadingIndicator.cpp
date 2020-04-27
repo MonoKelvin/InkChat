@@ -8,9 +8,9 @@ LoadingIndicator::LoadingIndicator(QWidget* parent)
     , mStartAngle(90)
 {
     resize(INDICATOR_SIZE, INDICATOR_SIZE);
-    move((parent->width() - INDICATOR_SIZE) / 2, -INDICATOR_SIZE - 2);
+    move((parent->width() - INDICATOR_SIZE) / 2, -INDICATOR_SIZE);
     setStyleSheet("background:white; border-radius: 14px;");
-    attachShadowEffect(this, 0, 4.0, 15.0);
+    AttachShadowEffect(this, 0, 4.0, 15.0);
 
     mTimer = new QTimer(this);
     connect(mTimer, &QTimer::timeout, this, &LoadingIndicator::updateIndicator);

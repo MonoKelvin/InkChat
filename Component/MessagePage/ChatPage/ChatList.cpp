@@ -92,7 +92,7 @@ void ChatList::fetchMore(const QModelIndex& parent)
 {
     Q_UNUSED(parent)
 
-    isFileExists(AppSettings::MessageDBFile(), true);
+    IsFileExists(AppSettings::MessageDBFile(), true);
     MessageManager::Instance()->loadChatRecords(this);
 }
 

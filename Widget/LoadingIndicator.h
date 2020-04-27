@@ -6,7 +6,7 @@
 
 #define INDICATOR_RING_WIDTH 2
 #define INDICATOR_SIZE 28
-#define INDICATOR_PULLDOWN_LIMIT 60
+#define INDICATOR_PULLDOWN_LIMIT 100
 
 /**
  * @brief 加载指示器控件
@@ -17,7 +17,7 @@ class LoadingIndicator : public QWidget {
 public:
     explicit LoadingIndicator(QWidget* parent);
 
-    inline void start() noexcept
+    inline void start() const noexcept
     {
         mTimer->start(20);
     }
@@ -27,6 +27,11 @@ public:
         mTimer->stop();
         setVisible(false);
         deleteLater();
+    }
+
+    inline bool isLoading(void) const noexcept
+    {
+        return mTimer->isActive();
     }
 
 private:

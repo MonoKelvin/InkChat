@@ -2,8 +2,6 @@
 #define MESSAGEMANAGER_H
 
 #include <AbstractChatListItem.h>
-#include <Configuation.h>
-#include <IChatObject.h>
 
 #include <QSharedPointer>
 
@@ -12,6 +10,7 @@ class QUdpSocket;
 class ChatList;
 class MessageItem;
 struct SChatItemPackage;
+struct SChatItemData;
 
 /**
  * @brief 聊天消息管理器，用于收发聊天消息、收发文件、图片等
@@ -36,21 +35,29 @@ public:
 
     /**
      * @brief 构建一个聊天项
-     * @param type
+     * @param chatType
      * @param userData
      * @return
      * @note 构建好的item不会发送到视图、也不会保存到数据库
      */
-    static ChatItem* BuildChatItem(int type, const SChatItemData& userData);
+    static ChatItem* BuildChatItem(int chatType, const SChatItemData& userData);
 
     /**
      * @brief 构建一个由我发送的聊天项
-     * @param type
-     * @param msg
+     * @param chatType
+     * @param data
      * @return 
      * @note 构建好的item不会发送到视图、也不会保存到数据库
      */
-    static ChatItem* BuildChatItem(int type, const QVariant& msg);
+    static ChatItem* BuildChatItem(int chatType, const QVariant& data);
+
+    /**
+     * @brief BuildChatListItem
+     * @param type
+     * @param data
+     * @return 
+     */
+    static AbstractChatListItem* BuildChatListItem(int chatType, const QVariant& data);
 
     /**
      * @brief 注册一个聊天类。这样在就可使用自定义的聊天类发送或接收消息
@@ -113,6 +120,10 @@ Q_SIGNALS:
 
     void failed(const QString& msg);
 
+    //void userJoin(AbstractChatListItem* joined);
+
+    //void userLeft(AbstractChatListItem* joined);
+
 private:
     /** 
      * @brief 用于消息收发的UDP套接字
@@ -120,21 +131,12 @@ private:
      */
     QUdpSocket* mUdpSocket;
 
-    /** 端口号，用于局域网聊天 */
-    Port mPort;
-
     /**
      * @brief 注册的聊天类容器
      * @type int 表示类的 ChatType
      * @type QByteArray 表示类的名称，即在qml中可以访问的类名
      */
     static QHash<int, QByteArray> mRegistryChatClasses;
-
-    /***/
-    //QList<TcpServer*> mTcpServerList;
-    //QList<TcpClient*> mTcpClientList;
-
-    char _padding[6];
 };
 
 #endif // MESSAGEMANAGER_H

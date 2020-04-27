@@ -74,7 +74,7 @@ typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
  * @param color 阴影颜色
  * @note 阴影会附加到widget的每一个子控件
  */
-void attachShadowEffect(QWidget* widget,
+void AttachShadowEffect(QWidget* widget,
     double xoffset = 0.0,
     double yoffset = 0.0,
     double radius = 20.0,
@@ -88,15 +88,15 @@ void attachShadowEffect(QWidget* widget,
  * @param mode 省略模式
  * @return 省略处理后的字符串
  */
-inline const QString getElidedText(const QString &text,
-                                   const QFont &font,
-                                   int maxWidth,
-                                   Qt::TextElideMode mode = Qt::ElideRight)
+inline const QString GetElidedText(const QString& text,
+    const QFont& font,
+    int maxWidth,
+    Qt::TextElideMode mode = Qt::ElideRight)
 {
     return QFontMetrics(font).elidedText(text, mode, maxWidth);
 }
 
-inline int getFontPixelWidth(const QFont& font, const QString& text)
+inline int GetFontPixelWidth(const QFont& font, const QString& text)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     return QFontMetrics(font).horizontalAdvance(text);
@@ -105,7 +105,7 @@ inline int getFontPixelWidth(const QFont& font, const QString& text)
 #endif
 }
 
-inline int getFontPixelHeight(const QFont& font)
+inline int GetFontPixelHeight(const QFont& font)
 {
     return QFontMetrics(font).height();
 }
@@ -116,7 +116,7 @@ inline int getFontPixelHeight(const QFont& font)
  * @param maxWidth 最大宽度，当控件字体像素宽度超过该值后就显示省略号
  * @param mode 省略模式
  */
-void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode = Qt::ElideRight);
+void GetElidedText(QLabel* label, int maxWidth, Qt::TextElideMode mode = Qt::ElideRight);
 
 /**
  * @brief 更新widget控件的布局，让子控件重新适应布局
@@ -125,7 +125,7 @@ void getElidedText(QLabel *label, int maxWidth, Qt::TextElideMode mode = Qt::Eli
  * @param isHeightStrategy 是否为调整高度的更新策略
  * @note 只针对有子布局的控件可以取到很好的效果，可以很好的取代 adjustSize() 方法
  */
-inline void updateLayout(QWidget* widget, bool isWidthStrategy = true, bool isHeightStrategy = false)
+inline void UpdateLayout(QWidget* widget, bool isWidthStrategy = true, bool isHeightStrategy = false)
 {
     const auto& s = widget->size();
     if (isWidthStrategy) {
@@ -150,7 +150,7 @@ inline void updateLayout(QWidget* widget, bool isWidthStrategy = true, bool isHe
  * @note 该方法总是先判断路径是否存在，存在则返回true，之后不做任何事情。
  * @note isFileExists
  */
-bool isDirExists(const QString& fullPath, bool makeIfNull = false, bool recursion = true);
+bool IsDirExists(const QString& fullPath, bool makeIfNull = false, bool recursion = true);
 
 /**
  * @brief 文件是否存在，并提供不存在时创建文件的选项
@@ -165,7 +165,7 @@ bool isDirExists(const QString& fullPath, bool makeIfNull = false, bool recursio
  * @note 该方法总是先判断文件是否存在，存在则返回true，之后不做任何事情。
  * @see isDirExists
  */
-bool isFileExists(const QString& fileName, bool makeIfNull = false, bool recursion = true);
+bool IsFileExists(const QString& fileName, bool makeIfNull = false, bool recursion = true);
 
 /**
  * @brief 复制一个文件
@@ -175,7 +175,7 @@ bool isFileExists(const QString& fileName, bool makeIfNull = false, bool recursi
  * @return 复制成功返回true，否则返回false
  * @note 复制文件时会递归创建文件路径
  */
-bool copyFile(const QString& source, const QString& newFile, bool isOverWrite = true);
+bool CopyFile(const QString& source, const QString& newFile, bool isOverWrite = true);
 
 /**
  * @brief 从网络获取图片
@@ -190,7 +190,7 @@ void getPixmapFromNetwork(const QString& url, DealWithPixmapFunc callBack);
  * @param isHalf 是否只得到16位的字符串
  * @return 返回加密好的字符串
  */
-inline const QString encryptTextByMD5(const QString& source, bool isHalf = false)
+inline const QString EncryptTextByMD5(const QString& source, bool isHalf = false)
 {
     QCryptographicHash hash(QCryptographicHash::Md5);
     hash.addData(source.toLatin1());
@@ -216,7 +216,7 @@ const QString GetMessageTime(const QDateTime& time);
  * 减少次数为该值。
  * @return 返回一个未被占用的端口号。如果超过maxCount还是未找到未被占用的端口，则返回0
  */
-quint16 selectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
+quint16 SelectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
 
 /**
  * @brief 获取连接并激活的无线网IP地址
@@ -224,14 +224,14 @@ quint16 selectAvailablePort(quint16 defaultPort = 2020, int maxCount = 20);
  * @param netName 传出的无线网名，比如“wireless_32768”
  * @return 返回连接并激活的无线网IP地址，如果没有连接无线网则返回空字符串
  */
-const QString getWirelessAddress(QString* mac = nullptr, QString* netName = nullptr);
+const QString GetWirelessAddress(QString* mac = nullptr, QString* netName = nullptr);
 
 /**
  * @brief 检测是否含有文件非法字符
  * @param str 用于检测的字符串
  * @return 如果存在：\ / \ " * ? < > | 者9个非法字符则返回true，否则返回false
  */
-bool hasIllegalCharInFile(const QString& str);
+bool HasIllegalCharInFile(const QString& str);
 
 /**
  * @brief 为按钮切换icon颜色
@@ -249,13 +249,13 @@ void switchIconColorForButton(QAbstractButton* btn, const QColor& color);
  * @param lb 左下角圆弧
  * @param rb 右下角圆弧
  */
-void drawRoundRect(QPainter* painter, const QRect& rect, int lt = 10, int rt = 10, int lb = 10, int rb = 10);
+void DrawRoundRect(QPainter* painter, const QRect& rect, int lt = 10, int rt = 10, int lb = 10, int rb = 10);
 
 /**
  * @brief 获得当前时间串，格式为yyyyMMddhhmmss
  * @return 当前时间串
  */
-inline const QString getDateTimeString(void) noexcept
+inline const QString GetDateTimeString(void) noexcept
 {
     return QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
 }
@@ -265,7 +265,7 @@ inline const QString getDateTimeString(void) noexcept
  * @param bytes 字节数，单位为B
  * @return 返回可读的字节数字符串，如200B、10.0K、34.0M、2.00G
  */
-inline const QString getBytesForHumanReadable(qint64 bytes) noexcept
+inline const QString GetReadableBytes(qint64 bytes) noexcept
 {
     if (bytes < 1024) {
         return QString::number(bytes) + QStringLiteral("B");
@@ -289,9 +289,15 @@ inline const QString getBytesForHumanReadable(qint64 bytes) noexcept
  * @param path 给定的路径
  * @return 返回文件名字
  */
-inline const QString getFileNameFromPath(const QString& path) noexcept
+inline const QString GetFileNameFromPath(const QString& path) noexcept
 {
     return path.right(path.size() - path.lastIndexOf('/') - 1);
 }
+
+/**
+ * @brief 获取主机IPv4地址
+ * @return const QString 返回主机IPv4地址
+ */
+const QString GetHostIP(void);
 
 #endif // UTILITY_H

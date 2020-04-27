@@ -3,6 +3,8 @@
 
 #include <ChatItem.h>
 
+#include <QFileInfo>
+
 class FileChatItem : public ChatItem
 {
     Q_OBJECT
@@ -21,9 +23,14 @@ public:
      */
     bool openFileDir(void);
 
+    void setChatItemData(const SChatItemData& data) noexcept override;
+
 public:
-    QString Speed;
+    float Speed;
     unsigned char Percentage;
+
+private:
+    QFileInfo mFileInfo;
 };
 
 #endif // FILECHATITEM_H

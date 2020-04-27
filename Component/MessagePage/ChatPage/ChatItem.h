@@ -109,7 +109,7 @@ public:
      */
     virtual void updateContentSize(const QStyleOptionViewItem&) override = 0;
 
-    inline void setChatItemData(const SChatItemData& data) noexcept
+    inline virtual void setChatItemData(const SChatItemData& data) noexcept
     {
         mData.setValue(data);
     }

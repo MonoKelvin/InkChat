@@ -7,6 +7,7 @@
 #include <MessageItem.h>
 #include <MessageList.h>
 #include <MessageManager.h>
+#include <TcpClient.h>
 #include <UI/ChatViewWidget.h>
 #include <User.h>
 #include <Utility.h>
@@ -14,6 +15,7 @@
 
 // 聊天控件
 #include <FileChatItem.h>
+//#include <NotificationItem.h>
 #include <TextChatItem.h>
 
 #include <QListView>
@@ -58,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 注册聊天控件，TODO: 添加更多
     MessageManager::RegisterChatItemClass<TextChatItem>();
     MessageManager::RegisterChatItemClass<FileChatItem>();
+    //MessageManager::RegisterChatItemClass<NotificationItem>();
 
     // 多线程中传递SChatItemPackage结构需要注册为元对象
     qRegisterMetaType<SChatItemPackage>("SChatItemPackage");
@@ -217,12 +220,36 @@ void MainWindow::onReceived(const SChatItemPackage& package)
      *   i.一定打开了聊天视图、选中了某个消息项：直接更新那个消息项
      */
 
+    /*switch (package.ChatType) {
+    case AbstractChatListItem::Text:
+        break;
+    case AbstractChatListItem::UserJoin:
+        break;
+    case AbstractChatListItem::UserLeft:
+        break;
+    case AbstractChatListItem::File:
+        break;
+    }*/
+
+    // 消息概要
+    QString brief = package.UserChatData.Message.toString();
+    if (brief.isEmpty()) {
+        brief = tr("[暂无最近消息]");
+    } else {
+        switch (package.ChatType) {
+        case ChatItem::File:
+            brief = QStringLiteral("[文件]") + GetFileNameFromPath(brief);
+            break;
+        }
+        brief = brief.left(32);
+    }
+
     // II.i
     if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
         const auto& curIndex = ui->messageList->currentIndex();
-        const auto& item = mMessageListModel->getMessage(curIndex.row());
-        item->setTime(QDateTime::currentDateTime());
-        item->setMessage(package.UserChatData.Message.toString().left(32));
+        const auto& msgItem = mMessageListModel->getMessage(curIndex.row());
+        msgItem->setTime(QDateTime::currentDateTime());
+        msgItem->setMessage(brief);
         ui->messageList->update(curIndex);
         return;
     }
@@ -242,12 +269,17 @@ void MainWindow::onReceived(const SChatItemPackage& package)
 
     // 构建消息
     ChatItem* item = MessageManager::BuildChatItem(package.ChatType, package.UserChatData);
-    if (!item) {
-        // 无效消息
-        item = new TextChatItem;
-        item->setSendState(TextChatItem::Failed);
-        item->setData(QStringLiteral("[消息失效]"));
+    if (item) {
+        item->setParent(this);
+    } else {
         return;
+    }
+
+    if (package.ChatType & ChatItem::TCP_Protocol) {
+        if (package.HostAddress == User::Instance()->getHostAddress()) {
+            TcpClient* client = new TcpClient(this);
+            client->connectToHost(package.HostAddress, item);
+        }
     }
 
     // I.i
@@ -261,18 +293,18 @@ void MainWindow::onReceived(const SChatItemPackage& package)
     } else {
         const auto& msgItem = mMessageListModel->getMessage(i);
         const int& tarRow = mMessageListModel->getRow(msgItem);
-        const auto& selected = ui->messageList->selectionModel();
 
         // I.ii.a
-        if (selected->isSelected(mMessageListModel->index(tarRow))) {
+        if (ui->messageList->selectionModel()->isSelected(mMessageListModel->index(tarRow))) {
             mChatPages.first()->getChatListModel()->appendItem(item);
             mChatPages.first()->autoDetermineScrollToBottom();
         } else {
-            // If I.ii.b
+            // I.ii.b
             msgItem->setReadFlag(false);
             msgItem->setUnreadMsgCount(msgItem->getUnreadMsgCount() + 1);
         }
-        msgItem->setMessage(package.UserChatData.Message.toString().left(32));
+
+        msgItem->setMessage(brief);
         msgItem->setTime(QDateTime::currentDateTime());
         mMessageListModel->ariseMessage(msgItem);
         ui->messageList->update(ui->messageList->rect());

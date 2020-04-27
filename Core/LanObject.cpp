@@ -27,7 +27,7 @@ void LanObject::fromJson(const QJsonObject& json, bool cache) noexcept(false)
 
     if (cache) {
         const auto fileName = AppSettings::ChatObjectCacheFile(mUuid);
-        if (!isFileExists(fileName, true)) {
+        if (!IsFileExists(fileName, true)) {
             throw tr("局域网缓存数据创建失败");
         }
 
@@ -58,7 +58,7 @@ bool LanObject::updateLocalData()
 {
     const auto& fileName = AppSettings::ChatObjectCacheFile(mUuid);
 
-    if (!isFileExists(fileName, true)) {
+    if (!IsFileExists(fileName, true)) {
         return false;
     }
 
@@ -78,14 +78,14 @@ bool LanObject::updateLocalData()
 LanObject* LanObject::DetectLanEnvironment()
 {
     QString mac, netName;
-    const QString& addr = getWirelessAddress(&mac, &netName);
+    const QString& addr = GetWirelessAddress(&mac, &netName);
 
     // 未检测到局域网环境就返回nullptr
     if (addr.isEmpty()) {
         return nullptr;
     }
 
-    const auto& md5 = encryptTextByMD5(addr + mac, true);
+    const auto& md5 = EncryptTextByMD5(addr + mac, true);
     LanObject* lan = MessageDatabase::Instance()->getCachedLanObject(md5);
 
     // 先从缓存中获取，不存在就新建一个局域网

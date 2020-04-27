@@ -49,7 +49,7 @@ void ChatViewWidget::sendChat(int type, const QVariant& data) noexcept
 
 void ChatViewWidget::resizeEvent(QResizeEvent*)
 {
-    updateLayout(ui->chatView, true, true);
+    UpdateLayout(ui->chatView, true, true);
 }
 
 bool ChatViewWidget::eventFilter(QObject* watched, QEvent* event)
@@ -63,26 +63,28 @@ bool ChatViewWidget::eventFilter(QObject* watched, QEvent* event)
                 mousePressed = true;
             }
             return true;
-        } else if (event->type() == QEvent::MouseMove) {
+        }
+        if (event->type() == QEvent::MouseMove) {
             const auto& mevt = static_cast<QMouseEvent*>(event);
             const int& d = mevt->y() - mPressedPoint.y();
             const int& sv = ui->chatView->verticalScrollBar()->value();
             // 视图滚动到了顶部
             if (sv == 0) {
                 if (mLoader) {
-                    mLoader->move(mLoader->x(), qMin(INDICATOR_PULLDOWN_LIMIT, d));
+                    mLoader->move(mLoader->x(), qMin(INDICATOR_PULLDOWN_LIMIT, d) - INDICATOR_SIZE);
                 } else if (mousePressed) {
                     mLoader = new LoadingIndicator(ui->chatView->viewport());
                     mLoader->show();
                 }
             }
             return true;
-        } else if (event->type() == QEvent::MouseButtonRelease) {
-            if (mLoader) {
+        }
+        if (event->type() == QEvent::MouseButtonRelease) {
+            if (mLoader && !mLoader->isLoading()) {
                 mLoader->start();
-                DUMMY_DELAY_UI(100000)
                 if (mLoader->y() > INDICATOR_PULLDOWN_LIMIT / 2 && mousePressed) {
                     const auto& index = mChatListModel->index(0);
+                    DUMMY_DELAY_UI(100000)
                     mChatListModel->fetchMore();
                     ui->chatView->scrollTo(index);
                 }

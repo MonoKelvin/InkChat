@@ -5,17 +5,25 @@
 
 class NotificationItem : public AbstractChatListItem
 {
+    Q_OBJECT
+
+    CHAT_ITEM_OBJECT(NotificationItem, Notification)
 public:
-    NotificationItem(QObject* parent)
+    NotificationItem(QObject* parent = nullptr)
         : AbstractChatListItem(parent)
     {
     }
 
-    void paintContent(QPainter* painter, const QRect& availableRect) override;
+    NotificationItem(const QVariant& notice, QObject* parent = nullptr)
+        : AbstractChatListItem(parent)
+    {
+        mData = notice;
+    }
+
+    void paintContent(QPainter* painter, const QRect& rect) override;
     void updateContentSize(const QStyleOptionViewItem& option) override;
 
-private:
-    QString mContent;
+    inline bool selfPaint() override { return true; }
 };
 
 #endif // NOTIFICATIONITEM_H

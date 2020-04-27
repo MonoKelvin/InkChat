@@ -123,7 +123,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         painter->setFont(XTheme.StdFont);
 
         const int ch = avtRect.center().y(); // 矩形中心线高度
-        const int timeWidth = getFontPixelWidth(XTheme.StdFont, itemData->mTime); //时间字体的宽度
+        const int timeWidth = GetFontPixelWidth(XTheme.StdFont, itemData->mTime); //时间字体的宽度
 
         // 绘制消息数量
         QRect mcRect(rect.width(), ch, 0, 0);
@@ -132,8 +132,8 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
             mcRect.setTop(ch);
             mcRect.setRight(rect.width() - ESize::Narrow);
-            mcRect.setHeight(getFontPixelHeight(XTheme.StdFont));
-            mcRect.setWidth(getFontPixelWidth(XTheme.StdFont, msgCountStr) + ESize::Narrow);
+            mcRect.setHeight(GetFontPixelHeight(XTheme.StdFont));
+            mcRect.setWidth(GetFontPixelWidth(XTheme.StdFont, msgCountStr) + ESize::Narrow);
 
             painter->setPen(Qt::white);
             painter->setBrush(XTheme.PrimayColor1);
@@ -149,12 +149,11 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
         // 绘制消息概要
         QRect msgRect;
-        const QString& msg = itemData->mMessage.isEmpty() ? tr("[暂无最近消息]") : itemData->mMessage;
         msgRect.setLeft(avtRect.right() + ESize::Narrow);
         msgRect.setTop(ch);
         msgRect.setRight(mcRect.left() - ESize::Narrow);
         msgRect.setBottom(rect.height() - ESize::Std);
-        painter->drawText(msgRect, Qt::AlignLeft | Qt::AlignTop, getElidedText(msg, XTheme.StdFont, msgRect.width()));
+        painter->drawText(msgRect, Qt::AlignLeft | Qt::AlignTop, GetElidedText(itemData->mMessage, XTheme.StdFont, msgRect.width()));
 
         // 绘制名称
         QRect nameRect;

@@ -13,7 +13,7 @@ User::User(QObject* parent)
     : IPerson(parent)
 {
     mRoleType = ERoleType::Me;
-    mHostAddress = getWirelessAddress();
+    mHostAddress = GetWirelessAddress();
 }
 
 User::~User()
@@ -31,7 +31,7 @@ void User::fromJson(const QJsonObject& json, bool cache)
 
     if (cache) {
         const auto fileName = AppSettings::UserDataFile();
-        if (!isFileExists(fileName, true)) {
+        if (!IsFileExists(fileName, true)) {
             throw tr("用户文件创建失败");
         }
 
@@ -63,7 +63,7 @@ QJsonObject User::toJson()
 
 bool User::setAvatar(const QString& fileName)
 {
-    copyFile(fileName, AppSettings::UserDataDir() + QStringLiteral("avatar"));
+    CopyFile(fileName, AppSettings::UserDataDir() + QStringLiteral("avatar"));
     return IPerson::setAvatar(fileName);
 }
 

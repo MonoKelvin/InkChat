@@ -25,7 +25,7 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
 
     const auto fileName = AppSettings::AppDataDir() + QStringLiteral("/0/%1/User/User.udat").arg(nickName);
 
-    if (!isFileExists(fileName)) {
+    if (!IsFileExists(fileName)) {
         emit failed(tr("用户不存在或密码错误"));
         return;
     }
@@ -39,6 +39,7 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
             user->fromJson(jsonDoc.object());
             if (user->getPassword() == mapping.value(QStringLiteral("password"))
                 && user->getNickName() == nickName) {
+                user->setHostAddress(GetHostIP());
                 emit verified();
             } else {
                 emit failed(tr("用户名或密码错误"));
@@ -56,7 +57,7 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
     const QString name = mapping.value(QStringLiteral("nickName")).toString();
     const QString pwd = mapping.value(QStringLiteral("password")).toString();
 
-    if (hasIllegalCharInFile(name)) {
+    if (HasIllegalCharInFile(name)) {
         emit failed(tr("数据目录创建失败，用户名可能包含以下非法字符：\\/\"*?<>|"));
     } else if (name.trimmed().length() == 0) {
         emit failed(tr("用户名不可为空"));

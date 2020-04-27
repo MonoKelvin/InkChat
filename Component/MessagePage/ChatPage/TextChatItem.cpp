@@ -13,6 +13,7 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 {
     constexpr int d = ESize::Std;
     constexpr int sd = ESize::Narrow;
+    const auto& data = getChatItemData();
 
     // 背景
     QRect bg;
@@ -24,13 +25,13 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
     painter->setRenderHint(QPainter::Antialiasing);
 
     // 绘制气泡背景
-    if (getChatItemData().Uuid == User::Instance()->getUuid()) {
+    if (data.Uuid == User::Instance()->getUuid()) {
         bg.moveRight(rect.right());
 
         // 背景
         painter->setPen(XTheme.RightBubbleStyle.BorderColor);
         painter->setBrush(XTheme.RightBubbleStyle.BubbleColor);
-        drawRoundRect(painter, bg, sd, 0, sd, sd);
+        DrawRoundRect(painter, bg, sd, 0, sd, sd);
         painter->setRenderHint(QPainter::Antialiasing, false);
 
         // 时间
@@ -44,7 +45,7 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
     } else {
         painter->setPen(XTheme.LeftBubbleStyle.BorderColor);
         painter->setBrush(XTheme.LeftBubbleStyle.BubbleColor);
-        drawRoundRect(painter, bg, 0, sd, sd, sd);
+        DrawRoundRect(painter, bg, 0, sd, sd, sd);
         painter->setRenderHint(QPainter::Antialiasing, false);
 
         const QRect timeRect(bg.x(), bg.bottom() + ESize::Tiny, qMax(50, mContentSize.width()), ESize::Std);
@@ -57,7 +58,7 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 
     // 绘制文本
     painter->setFont(XTheme.StdFont);
-    painter->drawText(bg.adjusted(d, sd, -d, -sd), Qt::TextWrapAnywhere, getChatItemData().Message.toString());
+    painter->drawText(bg.adjusted(d, sd, -d, -sd), Qt::TextWrapAnywhere, data.Message.toString());
     painter->restore();
 }
 

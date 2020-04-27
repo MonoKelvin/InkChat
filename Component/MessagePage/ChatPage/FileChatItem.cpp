@@ -6,63 +6,69 @@
 
 FileChatItem::FileChatItem(QObject* parent)
     : ChatItem(parent)
-    , Speed(QStringLiteral("0.0M/s"))
+    , Speed(0.0f)
     , Percentage(0)
 {
 }
 
 void FileChatItem::paintContent(QPainter* painter, const QRect& rect)
 {
-    constexpr int d = ESize::Std;
-    constexpr int sd = ESize::Narrow;
+    const auto& data = getChatItemData();
 
     // 背景
     QRect bg;
     bg.setTopLeft(rect.topLeft());
     bg.setWidth(mContentSize.width());
-    bg.setHeight(mContentSize.height() - d);
+    bg.setHeight(mContentSize.height() - ESize::Std);
 
     painter->save();
+    painter->setFont(XTheme.SmallFont);
+    painter->setPen(XTheme.SubTextColor);
+    painter->setBrush(XTheme.TintColor);
 
-    if (getChatItemData().Uuid == User::Instance()->getUuid()) {
+    if (data.Uuid == User::Instance()->getUuid()) {
         bg.moveRight(rect.right());
 
         // 时间
         const QRect timeRect(bg.x(), bg.bottom() + ESize::Tiny, qMax(50, mContentSize.width()), ESize::Std);
-        painter->setPen(XTheme.SubTextColor);
-        painter->setFont(XTheme.SmallFont);
         painter->drawText(timeRect, Qt::AlignTop | Qt::AlignLeft, getMessageTime());
+
+        // 背景
+        painter->setPen(Qt::NoPen);
+        painter->setRenderHint(QPainter::Antialiasing);
+        DrawRoundRect(painter, bg, 10, 0, 10, 10);
     } else {
         const QRect timeRect(bg.x(), bg.bottom() + ESize::Tiny, qMax(50, mContentSize.width()), ESize::Std);
-        painter->setPen(XTheme.SubTextColor);
-        painter->setFont(XTheme.SmallFont);
         painter->drawText(timeRect, Qt::AlignTop | Qt::AlignRight, getMessageTime());
+
+        painter->setPen(Qt::NoPen);
+        painter->setRenderHint(QPainter::Antialiasing);
+        DrawRoundRect(painter, bg, 0, 10, 10, 10);
     }
 
-    // 背景
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(XTheme.TintColor);
-    painter->setRenderHint(QPainter::Antialiasing);
-    drawRoundRect(painter, bg, sd, 0, sd, sd);
-
     // 图标
-    const QRect iconRect(bg.left() + d, bg.top() + 10, 50, 50);
+    const QRect iconRect(bg.left() + ESize::Std, bg.top() + 10, 50, 50);
     painter->drawPixmap(iconRect, QPixmap(QStringLiteral(":/icons/file_chatitem_64x.png")));
 
     // 进度条
-    QRect proRect(iconRect.right() + d, bg.top() + 50, 145, 4);
+    QRect proRect(iconRect.right() + ESize::Std, bg.top() + 56, 145, 4);
     painter->setBrush(XTheme.getPrimarySubColor(1));
-    drawRoundRect(painter, proRect, 2, 2, 2, 2);
+    DrawRoundRect(painter, proRect, 2, 2, 2, 2);
     proRect.setWidth(int(Percentage * 1.55f));
     painter->setBrush(XTheme.PrimayColor1);
-    drawRoundRect(painter, proRect, 2, 2, 2, 2);
+    DrawRoundRect(painter, proRect, 2, 2, 2, 2);
+
+    // 文件大小
+    const QRect sizeRect(proRect.right(), bg.top() + 35, 145, 21);
+    painter->setPen(XTheme.SubTextColor);
+    painter->drawText(sizeRect, Qt::AlignLeft | Qt::AlignVCenter, QStringLiteral("文件大小：") + GetReadableBytes(mFileInfo.size()));
 
     // 文件名
-    const QRect nameRect(proRect.left(), bg.top(), 145, 35);
+    const QRect nameRect(proRect.right(), bg.top(), 145, 35);
     painter->setPen(XTheme.PrimayColor1);
     painter->setFont(XTheme.StdFont);
     painter->setRenderHint(QPainter::Antialiasing, false);
-    painter->drawText(nameRect, Qt::AlignBottom | Qt::AlignLeft, getElidedText(getFileNameFromPath(mData.toString()), painter->font(), 145));
+    painter->drawText(nameRect, Qt::AlignBottom | Qt::AlignLeft, GetElidedText(mFileInfo.fileName(), painter->font(), 145));
 
     painter->restore();
 }
@@ -78,4 +84,10 @@ void FileChatItem::updateContentSize(const QStyleOptionViewItem& option)
 bool FileChatItem::openFileDir()
 {
     return true;
+}
+
+void FileChatItem::setChatItemData(const SChatItemData& data) noexcept
+{
+    mFileInfo.setFile(data.Message.toString());
+    return ChatItem::setChatItemData(data);
 }
