@@ -77,8 +77,8 @@ bool LanObject::updateLocalData()
 
 LanObject* LanObject::DetectLanEnvironment()
 {
-    QString mac, netName;
-    const QString& addr = GetWirelessAddress(&mac, &netName);
+    QString mac;
+    const QString& addr = GetWirelessAddress(&mac);
 
     // 未检测到局域网环境就返回nullptr
     if (addr.isEmpty()) {
@@ -93,7 +93,7 @@ LanObject* LanObject::DetectLanEnvironment()
         lan = new LanObject;
 
         lan->mMD5 = md5;
-        lan->mNickName = netName;
+        lan->mNickName = addr;
         lan->mHostAddress = addr;
         lan->mMacAddress = mac;
 

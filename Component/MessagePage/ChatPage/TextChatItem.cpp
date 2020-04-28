@@ -4,11 +4,6 @@
 #include <User.h>
 #include <Utility.h>
 
-TextChatItem::TextChatItem(QObject* parent)
-    : ChatItem(parent)
-{
-}
-
 void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 {
     constexpr int d = ESize::Std;

@@ -130,8 +130,13 @@ const QString GetWirelessAddress(QString* mac, QString* netName)
 
         // 挑选激活并使用的IP地址
         if (ni.flags() & (QNetworkInterface::IsUp | QNetworkInterface::IsRunning)) {
-            // entry.at(0) 是IPv6信息
-            const auto ip = ni.addressEntries().at(1).ip();
+#ifdef Q_OS_LINUX
+            // linux环境下 entry.at(1) 是IPv6信息
+            const auto& ip = ni.addressEntries().at(0).ip();
+#else
+            // windows环境下 entry.at(0) 是IPv6信息
+            const auto& ip = ni.addressEntries().at(1).ip();
+#endif
             if (ip.protocol() == QAbstractSocket::IPv4Protocol
                 && -1 != ni.name().indexOf(QLatin1String("wireless"))) {
                 if (mac)

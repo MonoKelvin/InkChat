@@ -15,7 +15,7 @@
 
 // 聊天控件
 #include <FileChatItem.h>
-//#include <NotificationItem.h>
+#include <NotificationItem.h>
 #include <TextChatItem.h>
 
 #include <QListView>
@@ -91,10 +91,15 @@ ChatViewWidget* MainWindow::createChatViewWidget(IChatObject* chatObj)
         mChatPages.last()->deleteLater();
         mChatPages.removeLast();
     }
-    mChatPages.append(cvw);
+    mChatPages.prepend(cvw);
 
     cvw->getChatListModel()->initLoad(chatObj);
     cvw->getChatView()->scrollToBottom();
+
+    // 多人聊天就发送用户进入消息
+    if (cvw->getChatListModel()->getChatObject()->getRoleType() & IChatObject::MultiPerson) {
+        MessageManager::Instance()->sendUserBehavior(chatObj->getHostAddress(), ChatItem::UserJoin);
+    }
 
     return cvw;
 }
@@ -220,29 +225,18 @@ void MainWindow::onReceived(const SChatItemPackage& package)
      *   i.一定打开了聊天视图、选中了某个消息项：直接更新那个消息项
      */
 
-    /*switch (package.ChatType) {
-    case AbstractChatListItem::Text:
-        break;
-    case AbstractChatListItem::UserJoin:
-        break;
-    case AbstractChatListItem::UserLeft:
-        break;
-    case AbstractChatListItem::File:
-        break;
-    }*/
+    // 如果是用户的行为状态
+    if (package.ChatType & AbstractChatListItem::UserBehavior) {
+        if (!mChatPages.isEmpty() && mChatPages.first()->getChatListModel()->getChatObject()->getHostAddress() == package.HostAddress) {
+            const auto& notice = new NotificationItem(MessageManager::GetUserBehavior(package.ChatType, package.UserChatData.Name));
+            mChatPages.first()->getChatListModel()->appendItem(notice);
+            mChatPages.first()->autoDetermineScrollToBottom();
+        }
+        return;
+    }
 
     // 消息概要
-    QString brief = package.UserChatData.Message.toString();
-    if (brief.isEmpty()) {
-        brief = tr("[暂无最近消息]");
-    } else {
-        switch (package.ChatType) {
-        case ChatItem::File:
-            brief = QStringLiteral("[文件]") + GetFileNameFromPath(brief);
-            break;
-        }
-        brief = brief.left(32);
-    }
+    const auto& brief = dealWithMessageBrief(package.RoleType, package.UserChatData.Message.toString());
 
     // II.i
     if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
@@ -275,11 +269,15 @@ void MainWindow::onReceived(const SChatItemPackage& package)
         return;
     }
 
-    if (package.ChatType & ChatItem::TCP_Protocol) {
+    switch (package.ChatType) {
+    case AbstractChatListItem::File:
         if (package.HostAddress == User::Instance()->getHostAddress()) {
             TcpClient* client = new TcpClient(this);
             client->connectToHost(package.HostAddress, item);
         }
+        break;
+    case AbstractChatListItem::Text:
+        break;
     }
 
     // I.i
@@ -321,4 +319,24 @@ void MainWindow::clearMessageItemSelection()
     for (int i = 0; i < mChatPages.length(); i++) {
         mChatPages.at(i)->setVisible(false);
     }
+}
+
+const QString MainWindow::dealWithMessageBrief(int type, const QString& message) noexcept
+{
+    QString brief;
+    switch (type) {
+    case AbstractChatListItem::File:
+        brief = QStringLiteral("[文件]") + GetFileNameFromPath(brief);
+    case AbstractChatListItem::Text:
+        brief = brief.left(32);
+        break;
+    case AbstractChatListItem::UserJoin:
+        brief = QStringLiteral("[新用户加入]");
+        break;
+    case AbstractChatListItem::UserLeft:
+        brief = QStringLiteral("[有用户离开]");
+        break;
+    }
+
+    return brief;
 }

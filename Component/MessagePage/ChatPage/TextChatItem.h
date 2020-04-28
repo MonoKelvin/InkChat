@@ -14,7 +14,10 @@ class TextChatItem : public ChatItem
 
     CHAT_ITEM_OBJECT(TextChatItem, Text)
 public:
-    explicit TextChatItem(QObject* parent = nullptr);
+    explicit TextChatItem(QObject* parent = nullptr)
+        : ChatItem(parent)
+    {
+    }
 
     void paintContent(QPainter* painter, const QRect& rect) override;
     void updateContentSize(const QStyleOptionViewItem& option) override;

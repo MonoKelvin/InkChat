@@ -1,21 +1,17 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QStack>
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class ChatList;
-class ChatItem;
 class ChatViewWidget;
 class MessageList;
 class MessageItem;
 class IChatObject;
 struct SChatItemPackage;
-class QMenu;
 
 class MainWindow : public QWidget
 {
@@ -56,6 +52,8 @@ private Q_SLOTS:
     void onReceived(const SChatItemPackage& package);
 
     void clearMessageItemSelection();
+
+    const QString dealWithMessageBrief(int type, const QString& message) noexcept;
 
 private:
     Ui::MainWindow* ui;

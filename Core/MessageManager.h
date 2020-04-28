@@ -9,8 +9,9 @@ class ChatItem;
 class QUdpSocket;
 class ChatList;
 class MessageItem;
-struct SChatItemPackage;
+class IChatObject;
 struct SChatItemData;
+struct SChatItemPackage;
 
 /**
  * @brief 聊天消息管理器，用于收发聊天消息、收发文件、图片等
@@ -77,6 +78,18 @@ public:
         mRegistryChatClasses.insert(T::ChatType, metaClass.className());
     }
 
+    inline static const QString GetUserBehavior(int type, const QString& name) noexcept
+    {
+        if (type == AbstractChatListItem::UserJoin) {
+            return QObject::tr("用户 %1 加入").arg(name);
+        }
+        if (type == AbstractChatListItem::UserLeft) {
+            return QObject::tr("用户 %1 离开").arg(name);
+        }
+
+        return QString();
+    }
+
     /**
      * @brief 发送消息
      * @param view 聊天视图。消息将被发送到UI界面呈现
@@ -84,7 +97,9 @@ public:
      * @param data 要发送的消息数据
      * @note 发送失败消息通过 @see failed 给出
      */
-    void sendMessage(ChatList* view, int type, const QVariant& data);
+    void sendMessage(ChatList* view, int type, const QVariant& data = QVariant());
+
+    void sendUserBehavior(const QString& addr, int type = AbstractChatListItem::UserJoin);
 
     /**
      * @brief 加载聊天记录到指定视图
@@ -119,10 +134,6 @@ Q_SIGNALS:
     void received(const SChatItemPackage& package);
 
     void failed(const QString& msg);
-
-    //void userJoin(AbstractChatListItem* joined);
-
-    //void userLeft(AbstractChatListItem* joined);
 
 private:
     /** 

@@ -19,12 +19,12 @@ public:
     explicit ChatViewWidget(QWidget* parent = nullptr);
     ~ChatViewWidget() override;
 
-    ChatList* getChatListModel(void) const
+    ChatList* getChatListModel(void) const noexcept
     {
         return mChatListModel;
     }
 
-    QListView* getChatView() const;
+    QListView* getChatView(void) const;
 
 public Q_SLOTS:
     /**

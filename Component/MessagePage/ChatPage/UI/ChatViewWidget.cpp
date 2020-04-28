@@ -37,7 +37,7 @@ ChatViewWidget::~ChatViewWidget()
     delete ui;
 }
 
-QListView* ChatViewWidget::getChatView() const
+QListView* ChatViewWidget::getChatView(void) const
 {
     return ui->chatView;
 }

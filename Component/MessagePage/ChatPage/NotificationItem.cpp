@@ -9,7 +9,8 @@ void NotificationItem::paintContent(QPainter* painter, const QRect& rect)
 {
     QRect bg;
     bg.setSize(mContentSize);
-    bg.moveCenter(rect.center());
+    bg.moveTop(rect.top());
+    bg.moveLeft((rect.width() - bg.width()) / 2);
 
     painter->save();
     painter->setPen(Qt::NoPen);
@@ -18,9 +19,9 @@ void NotificationItem::paintContent(QPainter* painter, const QRect& rect)
     DrawRoundRect(painter, bg, 4, 4, 4, 4);
 
     painter->setFont(XTheme.StdFont);
-    painter->setPen(XTheme.SubTextColor);
+    painter->setPen(XTheme.PrimayColor1);
     painter->setRenderHint(QPainter::Antialiasing, false);
-    painter->drawText(bg.adjusted(ESize::Std, ESize::Narrow, -ESize::Std, -ESize::Narrow), Qt::AlignCenter, mData.toString());
+    painter->drawText(bg.adjusted(ESize::Narrow, ESize::Tiny, -ESize::Narrow, -ESize::Tiny), Qt::AlignCenter, mData.toString());
     painter->restore();
 }
 
@@ -28,6 +29,6 @@ void NotificationItem::updateContentSize(const QStyleOptionViewItem& option)
 {
     const QRect limit(0, 0, int(0.7f * option.rect.width()), 0);
     mContentSize = option.fontMetrics.boundingRect(limit, Qt::TextWrapAnywhere, mData.toString()).size();
-    mContentSize.rwidth() += ESize::Std + ESize::Std;
-    mContentSize.rheight() += ESize::Narrow + ESize::Narrow;
+    mContentSize.rwidth() += ESize::Narrow + ESize::Narrow;
+    mContentSize.rheight() += ESize::Tiny + ESize::Tiny;
 }

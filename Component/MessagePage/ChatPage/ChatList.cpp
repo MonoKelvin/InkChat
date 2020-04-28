@@ -101,6 +101,7 @@ void ChatList::initLoad(IChatObject* chatObj)
     Q_ASSERT(nullptr != chatObj);
 
     mChatObject = chatObj;
+
     fetchMore();
 }
 

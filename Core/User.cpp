@@ -1,7 +1,9 @@
 ﻿#include "User.h"
 
+#include <AbstractChatListItem.h>
 #include <AppSettings.h>
 #include <LanObject.h>
+#include <MessageManager.h>
 #include <MyFriend.h>
 
 #include <QDir>
@@ -13,11 +15,16 @@ User::User(QObject* parent)
     : IPerson(parent)
 {
     mRoleType = ERoleType::Me;
-    mHostAddress = GetWirelessAddress();
 }
 
 User::~User()
 {
+    for (const auto& i : mMyChatObjects) {
+        if (i->getRoleType() & MultiPerson) {
+            MessageManager::Instance()->sendUserBehavior(i->getHostAddress(), AbstractChatListItem::UserLeft);
+        }
+    }
+
     qDebug() << "User Destroyed: " << this;
     mMyChatObjects.clear();
 }

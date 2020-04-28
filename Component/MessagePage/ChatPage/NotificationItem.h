@@ -9,12 +9,12 @@ class NotificationItem : public AbstractChatListItem
 
     CHAT_ITEM_OBJECT(NotificationItem, Notification)
 public:
-    NotificationItem(QObject* parent = nullptr)
+    explicit NotificationItem(QObject* parent = nullptr)
         : AbstractChatListItem(parent)
     {
     }
 
-    NotificationItem(const QVariant& notice, QObject* parent = nullptr)
+    explicit NotificationItem(const QString& notice, QObject* parent = nullptr)
         : AbstractChatListItem(parent)
     {
         mData = notice;
