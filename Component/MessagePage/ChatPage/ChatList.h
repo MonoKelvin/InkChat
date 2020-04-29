@@ -30,18 +30,6 @@ public:
     bool insertChat(int row, AbstractChatListItem* item);
 
     /**
-     * @brief 清空所有的聊天记录，同时也会清空本地聊天数据库中的对应记录。谨慎使用
-     * @note 如果只清空视图界面的聊天元素，不关联数据库，使用 @see clear
-     */
-    void clearChatRecord();
-
-    /**
-     * @brief 清空所有的聊天记录，不会清空本地聊天数据库中的对应记录。
-     * @note 如果还要清空本地聊天数据库中的对应记录，使用 @see clearChatRecord
-     */
-    void clear();
-
-    /**
      * @brief 给定行号返回聊天项
      * @param row 聊天项所在行数
      * @param onlyChat 是否只计算聊天消息的行数
@@ -119,6 +107,11 @@ public Q_SLOTS:
      * @param parent 可以忽视该参数
      */
     void fetchMore(const QModelIndex& parent = QModelIndex()) override;
+
+    /**
+     * @brief 清空所有的聊天记录，不会清空本地聊天数据库中的对应记录。
+     */
+    void clear();
 
     /**
      * @brief 是否能够发送该消息到视图中

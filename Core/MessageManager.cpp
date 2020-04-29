@@ -30,7 +30,7 @@ MessageManager::~MessageManager()
     qDebug() << "MessageManager Destroyed";
 }
 
-ChatItem* MessageManager::BuildChatItem(int chatType, const SChatItemData& chatData)
+ChatItem* MessageManager::BuildChatItem(int chatType, const SUserBaseData& chatData)
 {
     if (chatData.isEmpty()) {
         return nullptr;
@@ -85,13 +85,13 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     out << User::Instance()->getNickName();
     out << chatObj->getHostAddress();
 
+    item = BuildChatItem(type, data);
+    item->setTime(QDateTime::currentDateTime());
+    //item->setSendState(ChatItem::Succeed);
+    view->appendItem(item);
+
     switch (type) {
     case AbstractChatListItem::File: {
-        item = BuildChatItem(type, data);
-        item->setTime(QDateTime::currentDateTime());
-        //item->setSendState(ChatItem::Succeed);
-        view->appendItem(item);
-
         // 新建TCP服务器
         TcpServer* server = new TcpServer(this);
         if (!server->setFileToSend(data.toString(), item)) {
@@ -121,6 +121,9 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     } else {
         mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), LAN_UDP_PORT);
     }
+
+    // TODO: 如果发送失败
+    //item->setSendState(ChatItem::Failed);
 }
 
 void MessageManager::sendUserBehavior(const QString& addr, int type)
@@ -134,11 +137,6 @@ void MessageManager::sendUserBehavior(const QString& addr, int type)
     out << addr;
 
     mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, LAN_UDP_PORT);
-}
-
-void MessageManager::loadChatRecords(ChatList* view)
-{
-    MessageDatabase::Instance()->loadChatItems(view);
 }
 
 void MessageManager::processPendingDatagrams()
@@ -164,7 +162,7 @@ void MessageManager::processPendingDatagrams()
         switch (package.ChatType) {
         case AbstractChatListItem::Text:
         case AbstractChatListItem::File:
-            in >> package.RoleType >> package.UserChatData.Message;
+            in >> package.RoleType >> package.UserChatData.Data;
             break;
         }
 

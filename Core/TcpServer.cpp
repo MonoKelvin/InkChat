@@ -1,6 +1,5 @@
 ﻿#include "TcpServer.h"
 
-#include <Configuation.h>
 #include <FileChatItem.h>
 #include <Utility.h>
 
@@ -64,7 +63,7 @@ bool TcpServer::setFileToSend(const QString& fileName, ChatItem* chatItem)
 
 void TcpServer::sendMessage()
 {
-    const QString& fn = mChatItem->getChatItemData().Message.toString();
+    const QString& fn = mChatItem->getChatItemData().Data.toString();
     if (fn.isEmpty()) {
         return;
     }

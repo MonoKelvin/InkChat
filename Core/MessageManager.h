@@ -10,7 +10,7 @@ class QUdpSocket;
 class ChatList;
 class MessageItem;
 class IChatObject;
-struct SChatItemData;
+struct SUserBaseData;
 struct SChatItemPackage;
 
 /**
@@ -41,7 +41,7 @@ public:
      * @return
      * @note 构建好的item不会发送到视图、也不会保存到数据库
      */
-    static ChatItem* BuildChatItem(int chatType, const SChatItemData& userData);
+    static ChatItem* BuildChatItem(int chatType, const SUserBaseData& userData);
 
     /**
      * @brief 构建一个由我发送的聊天项
@@ -100,12 +100,6 @@ public:
     void sendMessage(ChatList* view, int type, const QVariant& data = QVariant());
 
     void sendUserBehavior(const QString& addr, int type = AbstractChatListItem::UserJoin);
-
-    /**
-     * @brief 加载聊天记录到指定视图
-     * @param view 聊天视图
-     */
-    void loadChatRecords(ChatList* view);
 
 private Q_SLOTS:
     /**

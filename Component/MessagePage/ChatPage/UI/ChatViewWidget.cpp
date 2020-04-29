@@ -3,10 +3,13 @@
 
 #include <ChatItem.h>
 #include <ChatList.h>
+#include <MessageDatabase.h>
 #include <MessageManager.h>
+#include <UI/MemberListViewWidget.h>
 #include <Utility.h>
 #include <Widget/LoadingIndicator.h>
 
+#include <QMenu>
 #include <QMouseEvent>
 #include <QScrollBar>
 
@@ -19,6 +22,13 @@ ChatViewWidget::ChatViewWidget(QWidget* parent)
     mChatListModel = new ChatList(this);
     mLoader = nullptr;
 
+    // 菜单
+    STD_ICON_SETTER(ui->btnMenu, "menu");
+
+    // 弹出信息按钮
+    STD_ICON_SETTER(ui->btnInfo, "layout_info");
+
+    // 视图
     ui->chatView->setItemDelegate(new ChatItemDelegate(this));
     ui->chatView->setModel(mChatListModel);
     ui->chatView->viewport()->installEventFilter(this);
@@ -26,6 +36,8 @@ ChatViewWidget::ChatViewWidget(QWidget* parent)
 
     connect(ui->chatInputer, &ChatInputBox::foldup, this, &ChatViewWidget::autoDetermineScrollToBottom);
     connect(ui->chatInputer, &ChatInputBox::send, this, &ChatViewWidget::sendChat);
+    connect(ui->btnMenu, &QPushButton::clicked, this, &ChatViewWidget::builChatViewWidgetMenu);
+    connect(ui->btnInfo, &QPushButton::clicked, this, &ChatViewWidget::openChatObjectInfo);
 
     // 调整显示层
     ui->chatView->lower();
@@ -35,6 +47,11 @@ ChatViewWidget::ChatViewWidget(QWidget* parent)
 ChatViewWidget::~ChatViewWidget()
 {
     delete ui;
+}
+
+void ChatViewWidget::setTitle(const QString& name) noexcept
+{
+    ui->lbTitle->setText(name);
 }
 
 QListView* ChatViewWidget::getChatView(void) const
@@ -118,4 +135,48 @@ void ChatViewWidget::autoDetermineScrollToBottom()
     }
 
     ui->chatView->scrollToBottom();
+}
+
+void ChatViewWidget::builChatViewWidgetMenu()
+{
+    QMenu menu;
+    QAction* refreshAction = new QAction(ICON("refresh_black"), tr("刷新"), &menu);
+    QAction* clearAction = new QAction(ICON("trash_black"), tr("清屏"), &menu);
+    QAction* removeAction = new QAction(ICON("remove"), tr("删除聊天记录"), &menu);
+    menu.addAction(refreshAction);
+    menu.addAction(clearAction);
+    menu.addSeparator();
+    menu.addAction(removeAction);
+
+    connect(refreshAction, &QAction::triggered, [this] { mChatListModel->fetchMore(); });
+    connect(clearAction, &QAction::triggered, mChatListModel, &ChatList::clear);
+    connect(removeAction, &QAction::triggered, this, &ChatViewWidget::clearRecord);
+
+    menu.exec(cursor().pos());
+}
+
+void ChatViewWidget::clearRecord()
+{
+    // TODO: 弹出对话框
+    mChatListModel->clear();
+
+    MessageDatabase::Instance()->clearChatRecord(mChatListModel->getChatObject()->getUuid());
+}
+
+void ChatViewWidget::openChatObjectInfo()
+{
+    switch (mChatListModel->getChatObject()->getRoleType()) {
+    case IChatObject::LAN: {
+        ui->btnInfo->setEnabled(false);
+
+        MemberListViewWidget* mvw = new MemberListViewWidget(this);
+
+        mvw->move(ui->btnInfo->x() - mvw->width(), ui->btnInfo->geometry().bottom());
+        connect(mvw, &MemberListViewWidget::destroyed, [this] { ui->btnInfo->setEnabled(true); });
+    } break;
+    case IChatObject::Friend:
+        break;
+    default:
+        break;
+    }
 }

@@ -31,6 +31,9 @@ public:
 private:
     // 物理地址，通过和IPv4地址来表示一个唯一局域网对象
     QString mMacAddress;
+
+    /** 所有成员信息 */
+    //QList<SUserBaseData> mMembers;
 };
 
 #endif // LANOBJECT_H

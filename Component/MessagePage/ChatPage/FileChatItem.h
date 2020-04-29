@@ -23,7 +23,7 @@ public:
      */
     bool openFileDir(void);
 
-    void setChatItemData(const SChatItemData& data) noexcept override;
+    void setChatItemData(const SUserBaseData& data) noexcept override;
 
 public:
     float Speed;

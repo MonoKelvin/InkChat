@@ -1,7 +1,7 @@
 ﻿#ifndef AVATAR_H
 #define AVATAR_H
 
-#include <User.h>
+#include <IChatObject.h>
 
 #include <QWidget>
 
@@ -19,7 +19,7 @@ public:
         update();
     }
 
-    void setOnlineState(User::EOnlineState state)
+    void setOnlineState(IChatObject::EOnlineState state)
     {
         mOnlineState = state;
         update();
@@ -30,7 +30,7 @@ public:
         const QRect& rect,
         const QPixmap& pixmap,
         const QString& defalultText = QString(),
-        User::EOnlineState state = User::NoneState);
+        IChatObject::EOnlineState state = IChatObject::NoneState);
 
     inline QPixmap getAvatar() const
     {
@@ -47,7 +47,7 @@ protected:
 private:
     QPixmap mAvatar;
 
-    User::EOnlineState mOnlineState;
+    IChatObject::EOnlineState mOnlineState;
 };
 
 #endif // AVATAR_H

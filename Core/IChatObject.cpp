@@ -1,13 +1,10 @@
 ﻿#include "IChatObject.h"
 
 #include <AppSettings.h>
-#include <ChatItem.h>
-#include <QFileInfo>
 
 #include <QFileDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QPixmap>
 #include <QUuid>
 
 IChatObject::IChatObject(QObject* parent)
@@ -93,7 +90,7 @@ const QString IChatObject::generateUuid()
     return mUuid;
 }
 
-const SChatItemData IChatObject::getChatData(const QVariant& msg) noexcept
+const SUserBaseData IChatObject::getChatData(const QVariant& msg) noexcept
 {
     return { mUuid, mNickName, msg };
 }

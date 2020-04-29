@@ -2,6 +2,7 @@
 #define MESSAGEDATABASE_H
 
 #include <IChatObject.h>
+
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
@@ -101,7 +102,9 @@ public:
      */
     bool saveAChatRecord(ChatItem* item, const QString& chatObjUuid);
 
-    QSqlDatabase& getDatabase(void) { return mDatabase; }
+    const QSqlDatabase& getDatabase(void) { return mDatabase; }
+
+    void clearChatRecord(const QString& uuid) noexcept;
 
 public Q_SLOTS:
     /**

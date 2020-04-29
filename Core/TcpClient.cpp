@@ -3,7 +3,6 @@
 #include <AppSettings.h>
 #include <FileChatItem.h>
 
-#include <QFile>
 #include <QTcpSocket>
 
 TcpClient::TcpClient(QObject* parent)
@@ -28,7 +27,7 @@ TcpClient::~TcpClient()
 
 void TcpClient::connectToHost(const QString& hostAddr, ChatItem* item)
 {
-    const QString& name = item->getChatItemData().Message.toString();
+    const QString& name = item->getChatItemData().Data.toString();
 
     mChatItem = item;
     mCachedFile = new QFile(AppSettings::FileCacheDir() + name);

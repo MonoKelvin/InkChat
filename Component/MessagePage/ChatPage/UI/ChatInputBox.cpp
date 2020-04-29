@@ -1,5 +1,6 @@
 ﻿#include "ChatInputBox.h"
 
+#include <AbstractChatListItem.h>
 #include <AppTheme.h>
 #include <Utility.h>
 
@@ -15,8 +16,6 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     setFixedHeight(150);
     setAutoFillBackground(true);
 
-    const QSize iconSize(20, 20);
-
     QGridLayout *gridLayout = new QGridLayout(this);
 
     mChatInputer = new QPlainTextEdit(this);
@@ -26,24 +25,15 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     gridLayout->addWidget(mChatInputer, 1, 0, 1, 5);
 
     mBtnImage = new QPushButton(this);
-    mBtnImage->setObjectName(QStringLiteral("btnImage"));
-    mBtnImage->setCursor(Qt::PointingHandCursor);
-    mBtnImage->setIcon(QIcon::fromTheme(QStringLiteral("image")));
-    mBtnImage->setIconSize(iconSize);
+    STD_ICON_SETTER(mBtnImage, "image");
     gridLayout->addWidget(mBtnImage, 0, 0, 1, 1);
 
     mBtnVideo = new QPushButton(this);
-    mBtnVideo->setObjectName(QStringLiteral("btnVideo"));
-    mBtnVideo->setCursor(Qt::PointingHandCursor);
-    mBtnVideo->setIcon(QIcon::fromTheme(QStringLiteral("video")));
-    mBtnVideo->setIconSize(iconSize);
+    STD_ICON_SETTER(mBtnVideo, "video");
     gridLayout->addWidget(mBtnVideo, 0, 1, 1, 1);
 
     mBtnFile = new QPushButton(this);
-    mBtnFile->setObjectName(QStringLiteral("btnFile"));
-    mBtnFile->setCursor(Qt::PointingHandCursor);
-    mBtnFile->setIcon(QIcon::fromTheme(QStringLiteral("file")));
-    mBtnFile->setIconSize(iconSize);
+    STD_ICON_SETTER(mBtnFile, "file");
     gridLayout->addWidget(mBtnFile, 0, 2, 1, 1);
 
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -51,20 +41,13 @@ ChatInputBox::ChatInputBox(QWidget* parent)
 
     mBtnExpand = new QPushButton(this);
     mBtnExpand->setCheckable(true);
-    mBtnExpand->setObjectName(QStringLiteral("btnExpand"));
-    mBtnExpand->setCursor(Qt::PointingHandCursor);
-    mBtnExpand->setIcon(QIcon::fromTheme(QStringLiteral("down")));
-    mBtnExpand->setIconSize(iconSize);
+    STD_ICON_SETTER(mBtnExpand, "down");
     gridLayout->addWidget(mBtnExpand, 0, 4, 1, 1);
 
     mBtnSend = new QPushButton(this->parentWidget());
     mBtnSend->setObjectName(QStringLiteral("btnSend"));
-    mBtnSend->setCursor(Qt::PointingHandCursor);
-    mBtnSend->setFixedSize(40, 40);
-    mBtnSend->setIcon(QIcon::fromTheme(QStringLiteral("send")));
-    mBtnSend->setIconSize(QSize(24, 24));
+    SHADOW_ICON_SETTER(mBtnSend, "send", XTheme.getPrimarySubColor(1, 120));
     mBtnSend->raise();
-    AttachShadowEffect(mBtnSend, 0, 5.0, 20.0, QColor("#4D7CFE").lighter(120));
 
     connect(mBtnExpand, &QPushButton::toggled, this, &ChatInputBox::onFoldup);
     connect(mBtnSend, &QPushButton::clicked, [this] {

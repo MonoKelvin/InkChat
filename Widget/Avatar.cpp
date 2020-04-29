@@ -3,18 +3,18 @@
 #include <AppTheme.h>
 #include <Utility.h>
 
-Avatar::Avatar(QWidget *parent)
+Avatar::Avatar(QWidget* parent)
     : QWidget(parent)
-    , mOnlineState(User::Offline)
+    , mOnlineState(IChatObject::Offline)
 {
     setAutoFillBackground(true);
     setFixedSize(XTheme.AvatarSize, XTheme.AvatarSize);
     setCursor(Qt::PointingHandCursor);
 }
 
-Avatar::Avatar(const QPixmap &pixmap, QWidget *parent)
+Avatar::Avatar(const QPixmap& pixmap, QWidget* parent)
     : QWidget(parent)
-    , mOnlineState(User::Offline)
+    , mOnlineState(IChatObject::Offline)
 {
     setAutoFillBackground(true);
     setAvatar(pixmap);
@@ -26,7 +26,7 @@ Avatar::~Avatar()
 {
 }
 
-void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pixmap, const QString& defalultText, User::EOnlineState state)
+void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pixmap, const QString& defalultText, IChatObject::EOnlineState state)
 {
     painter->save();
 
@@ -52,8 +52,7 @@ void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pix
         painter->drawPixmap(rect, pixmap);
     }
 
-    if (state != User::NoneState)
-    {
+    if (state != IChatObject::NoneState) {
         qreal d = ESize::Narrow;
         qreal offset = 0.8535 * rect.width() - 0.5 * d;
         QRectF rt(offset, offset, d, d);
@@ -62,13 +61,13 @@ void Avatar::DrawAvatar(QPainter* painter, const QRect& rect, const QPixmap& pix
 
         switch (state)
         {
-        case User::Online:
+        case IChatObject::Online:
             painter->setBrush(QBrush(XTheme.PrimayColor1));
             break;
-        case User::Offline:
+        case IChatObject::Offline:
             painter->setBrush(QBrush(XTheme.SubTextColor));
             break;
-        case User::Busy:
+        case IChatObject::Busy:
             painter->setBrush(QBrush(XTheme.PrimayColor2));
             break;
         default:

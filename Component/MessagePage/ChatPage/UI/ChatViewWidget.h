@@ -19,6 +19,8 @@ public:
     explicit ChatViewWidget(QWidget* parent = nullptr);
     ~ChatViewWidget() override;
 
+    void setTitle(const QString& name) noexcept;
+
     ChatList* getChatListModel(void) const noexcept
     {
         return mChatListModel;
@@ -38,6 +40,11 @@ public Q_SLOTS:
      * @brief 由内部算法自动决定是否应该滚动到底部
      */
     void autoDetermineScrollToBottom();
+
+private Q_SLOTS:
+    void builChatViewWidgetMenu();
+    void clearRecord();
+    void openChatObjectInfo();
 
 private:
     void resizeEvent(QResizeEvent*) override;

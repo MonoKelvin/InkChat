@@ -10,8 +10,6 @@
 #include <MessageManager.h>
 #include <User.h>
 
-#include <QDateTime>
-#include <QFile>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -282,7 +280,13 @@ bool MessageDatabase::saveAChatRecord(ChatItem* item, const QString& chatObjUuid
     query.addBindValue(item->getChatType());
     query.addBindValue(itemData.Uuid);
     query.addBindValue(item->getTime());
-    query.addBindValue(itemData.Message);
+    query.addBindValue(itemData.Data);
 
     return query.exec();
+}
+
+void MessageDatabase::clearChatRecord(const QString& uuid) noexcept
+{
+    QSqlQuery query;
+    query.exec(QStringLiteral("delete from chatrecord where msgId=(select id from message where uuid='%1')").arg(uuid));
 }

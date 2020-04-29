@@ -1,8 +1,6 @@
 ﻿#ifndef CHATINPUTBOX_H
 #define CHATINPUTBOX_H
 
-#include <ChatItem.h>
-
 #include <QWidget>
 
 class QPushButton;

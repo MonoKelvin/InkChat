@@ -12,7 +12,7 @@
 class ChatItem;
 class QFile;
 class QTcpSocket;
-struct SChatItemData;
+struct SUserBaseData;
 
 class TcpClient : public QObject
 {

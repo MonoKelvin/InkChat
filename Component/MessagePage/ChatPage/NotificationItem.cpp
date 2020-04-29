@@ -9,8 +9,8 @@ void NotificationItem::paintContent(QPainter* painter, const QRect& rect)
 {
     QRect bg;
     bg.setSize(mContentSize);
-    bg.moveTop(rect.top());
     bg.moveLeft((rect.width() - bg.width()) / 2);
+    bg.moveTop(rect.top());
 
     painter->save();
     painter->setPen(Qt::NoPen);

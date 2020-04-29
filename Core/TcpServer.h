@@ -1,9 +1,9 @@
 ﻿#ifndef TCPSERVER_H
 #define TCPSERVER_H
 
-#include <ChatItem.h>
 #include <Configuation.h>
 
+#include <QPointer>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 #include <QElapsedTimer>
 #else
@@ -11,6 +11,7 @@
 #endif
 
 class QFile;
+class ChatItem;
 class QTcpServer;
 class QTcpSocket;
 

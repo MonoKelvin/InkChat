@@ -1,9 +1,55 @@
 ﻿#ifndef ICHATOBJECT_H
 #define ICHATOBJECT_H
 
-#include <QObject>
+#include <QVariant>
 
-struct SChatItemData;
+struct SUserBaseData {
+    QString Uuid;
+    QString Name;
+    QVariant Data;
+
+    SUserBaseData() = default;
+
+    /*inline SUserBaseData(const SUserBaseData& userData)
+    {
+        Uuid = userData.Uuid;
+        Name = userData.Name;
+        Data = userData.Data;
+    }*/
+
+    inline SUserBaseData(const QString& uuid, const QVariant& msg)
+        : Uuid(uuid)
+        , Data(msg)
+    {
+    }
+
+    inline SUserBaseData(const QString& uuid, const QString& name, const QVariant& msg)
+        : Uuid(uuid)
+        , Name(name)
+        , Data(msg)
+    {
+    }
+
+    inline bool operator==(const SUserBaseData& userData) const
+    {
+        return Uuid == userData.Uuid;
+    }
+
+    /*inline SUserBaseData& operator=(const SUserBaseData& userData)
+    {
+        Uuid = userData.Uuid;
+        Name = userData.Name;
+        Data = userData.Data;
+
+        return *this;
+    }*/
+
+    Q_DECL_CONSTEXPR inline bool isEmpty(void) const noexcept
+    {
+        return Uuid.isEmpty();
+    }
+};
+Q_DECLARE_METATYPE(SUserBaseData)
 
 /**
  * @brief 聊天对象基类接口
@@ -162,7 +208,7 @@ public:
      */
     const QString generateUuid(void);
 
-    const SChatItemData getChatData(const QVariant& msg) noexcept;
+    const SUserBaseData getChatData(const QVariant& msg) noexcept;
 
 public Q_SLOTS:
     bool selectAvatarFile();

@@ -116,12 +116,13 @@ MessageItem* MessageList::getMessage(int index) const
 
 QVariant MessageList::data(const QModelIndex& index, int role) const
 {
+    if (!index.isValid())
+        return QVariant();
+
     Q_UNUSED(role)
 
-    if (index.row() >= 0 && index.row() < mMessages.size()) {
-        if (role & IChatObject::AllUser) {
-            return QVariant::fromValue(mMessages.at(index.row()));
-        }
+    if (role & IChatObject::AllUser) {
+        return QVariant::fromValue(mMessages.at(index.row()));
     }
 
     return QVariant();

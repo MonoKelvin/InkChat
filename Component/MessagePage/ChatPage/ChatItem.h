@@ -6,43 +6,12 @@
 
 #include <QAbstractItemDelegate>
 #include <QDateTime>
-#include <QPointer>
-
-class QPainter;
-class QStyleOptionViewItem;
-
-struct SChatItemData {
-    QString Uuid;
-    QString Name;
-    QVariant Message;
-
-    SChatItemData() = default;
-
-    SChatItemData(const QString& uuid, const QVariant& msg)
-        : Uuid(uuid)
-        , Message(msg)
-    {
-    }
-
-    SChatItemData(const QString& uuid, const QString& name, const QVariant& msg)
-        : Uuid(uuid)
-        , Name(name)
-        , Message(msg)
-    {
-    }
-
-    Q_DECL_CONSTEXPR inline bool isEmpty(void) const noexcept
-    {
-        return Uuid.isEmpty();
-    }
-};
-Q_DECLARE_METATYPE(SChatItemData)
 
 /**
  * @brief UDP 传输时使用的 ChatItem 数据包
  */
 struct SChatItemPackage {
-    SChatItemData UserChatData;
+    SUserBaseData UserChatData;
     IChatObject::ERoleType RoleType;
     QString HostAddress;
     int ChatType;
@@ -109,12 +78,12 @@ public:
      */
     virtual void updateContentSize(const QStyleOptionViewItem&) override = 0;
 
-    inline virtual void setChatItemData(const SChatItemData& data) noexcept
+    inline virtual void setChatItemData(const SUserBaseData& data) noexcept
     {
         mData.setValue(data);
     }
 
-    const SChatItemData getChatItemData() const noexcept;
+    const SUserBaseData getChatItemData() const noexcept;
 
 Q_SIGNALS:
     void sendStateChanged();

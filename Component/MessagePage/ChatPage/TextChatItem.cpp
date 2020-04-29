@@ -53,14 +53,14 @@ void TextChatItem::paintContent(QPainter* painter, const QRect& rect)
 
     // 绘制文本
     painter->setFont(XTheme.StdFont);
-    painter->drawText(bg.adjusted(d, sd, -d, -sd), Qt::TextWrapAnywhere, data.Message.toString());
+    painter->drawText(bg.adjusted(d, sd, -d, -sd), Qt::TextWrapAnywhere, data.Data.toString());
     painter->restore();
 }
 
 void TextChatItem::updateContentSize(const QStyleOptionViewItem& option)
 {
     const QRect limit(0, 0, int(0.7f * option.rect.width()), 0);
-    mContentSize = option.fontMetrics.boundingRect(limit, Qt::TextWrapAnywhere, getChatItemData().Message.toString()).size();
+    mContentSize = option.fontMetrics.boundingRect(limit, Qt::TextWrapAnywhere, getChatItemData().Data.toString()).size();
     mContentSize.rwidth() += ESize::Std + ESize::Std;
     mContentSize.rheight() += ESize::Narrow + ESize::Narrow + ESize::Wide;
 }

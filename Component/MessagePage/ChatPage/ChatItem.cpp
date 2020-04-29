@@ -2,7 +2,7 @@
 
 #include <AppSettings.h>
 #include <AppTheme.h>
-#include <Utility.h>
+#include <User.h>
 
 #include <QPainter>
 #include <Widget/Avatar.h>
@@ -42,9 +42,9 @@ const QString ChatItem::getMessageTime()
     return GetMessageTime(mTime);
 }
 
-const SChatItemData ChatItem::getChatItemData() const noexcept
+const SUserBaseData ChatItem::getChatItemData() const noexcept
 {
-    return mData.value<SChatItemData>();
+    return mData.value<SUserBaseData>();
 }
 
 ////////////////////////////////////////////////////////////
@@ -115,5 +115,9 @@ QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMode
     }
 
     data->updateContentSize(option);
-    return QSize(option.rect.width(), qMax(data->getContentSize().height() + XTheme.AvatarSize / 2, XTheme.AvatarSize));
+    if (data->selfPaint()) {
+        return QSize(option.rect.width(), data->getContentSize().height());
+    } else {
+        return QSize(option.rect.width(), qMax(data->getContentSize().height() + XTheme.AvatarSize / 2, XTheme.AvatarSize));
+    }
 }

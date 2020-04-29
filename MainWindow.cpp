@@ -32,6 +32,15 @@ MainWindow::MainWindow(QWidget *parent)
     resize(1080, 640);
     setWindowTitle(QStringLiteral("InkChat-v%1 - %2").arg(CHAT_VERSION_STR).arg(User::Instance()->getNickName()));
 
+    // 注册聊天控件，TODO: 添加更多
+    MessageManager::RegisterChatItemClass<TextChatItem>();
+    MessageManager::RegisterChatItemClass<FileChatItem>();
+    //MessageManager::RegisterChatItemClass<NotificationItem>();
+
+    // 注册元对象，这样这些自定义数据就可以在信号和槽中作为参数使用
+    qRegisterMetaType<SChatItemPackage>("SChatItemPackage");
+    //qRegisterMetaType<SUserBaseData>("SUserBaseData");
+
     //ui->chatView->lower();
     ui->messageList->raise();
     ui->msgTitle->raise();
@@ -56,14 +65,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mMessageListModel, &MessageList::failed, this, &MainWindow::onFailed);
     connect(MessageManager::Instance().data(), &MessageManager::received, this, &MainWindow::onReceived, Qt::QueuedConnection);
     connect(MessageManager::Instance().data(), &MessageManager::failed, this, &MainWindow::onFailed);
-
-    // 注册聊天控件，TODO: 添加更多
-    MessageManager::RegisterChatItemClass<TextChatItem>();
-    MessageManager::RegisterChatItemClass<FileChatItem>();
-    //MessageManager::RegisterChatItemClass<NotificationItem>();
-
-    // 多线程中传递SChatItemPackage结构需要注册为元对象
-    qRegisterMetaType<SChatItemPackage>("SChatItemPackage");
 
     // 加载缓存消息，必须放在最后，因为加载数据需要关联各种信号并先注册号聊天类等。
     mMessageListModel->load();
@@ -95,6 +96,7 @@ ChatViewWidget* MainWindow::createChatViewWidget(IChatObject* chatObj)
 
     cvw->getChatListModel()->initLoad(chatObj);
     cvw->getChatView()->scrollToBottom();
+    cvw->setTitle(chatObj->getNickName());
 
     // 多人聊天就发送用户进入消息
     if (cvw->getChatListModel()->getChatObject()->getRoleType() & IChatObject::MultiPerson) {
@@ -126,7 +128,7 @@ void MainWindow::buildMessageItemMenu(MessageItem* item)
     QMenu menu;
     QAction* topAction = new QAction(&menu);
     QAction* readAction = new QAction(&menu);
-    QAction* removeAction = new QAction(QIcon::fromTheme(QStringLiteral("trash")), tr("从列表中移除"), &menu);
+    QAction* removeAction = new QAction(QIcon::fromTheme(QStringLiteral("trash_black")), tr("从列表中移除"), &menu);
     menu.addAction(topAction);
     menu.addAction(readAction);
     menu.addAction(removeAction);
@@ -236,7 +238,7 @@ void MainWindow::onReceived(const SChatItemPackage& package)
     }
 
     // 消息概要
-    const auto& brief = dealWithMessageBrief(package.RoleType, package.UserChatData.Message.toString());
+    const auto& brief = dealWithMessageBrief(package.RoleType, package.UserChatData.Data.toString());
 
     // II.i
     if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
@@ -323,20 +325,16 @@ void MainWindow::clearMessageItemSelection()
 
 const QString MainWindow::dealWithMessageBrief(int type, const QString& message) noexcept
 {
-    QString brief;
     switch (type) {
     case AbstractChatListItem::File:
-        brief = QStringLiteral("[文件]") + GetFileNameFromPath(brief);
+        return (QStringLiteral("[文件]") + GetFileNameFromPath(message)).left(32);
     case AbstractChatListItem::Text:
-        brief = brief.left(32);
-        break;
+        return message.left(32);
     case AbstractChatListItem::UserJoin:
-        brief = QStringLiteral("[新用户加入]");
-        break;
+        return QStringLiteral("[新用户加入]");
     case AbstractChatListItem::UserLeft:
-        brief = QStringLiteral("[有用户离开]");
-        break;
+        return QStringLiteral("[有用户离开]");
     }
 
-    return brief;
+    return message;
 }

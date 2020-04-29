@@ -1,6 +1,5 @@
 ﻿#include "User.h"
 
-#include <AbstractChatListItem.h>
 #include <AppSettings.h>
 #include <LanObject.h>
 #include <MessageManager.h>

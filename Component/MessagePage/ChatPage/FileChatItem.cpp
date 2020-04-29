@@ -86,8 +86,8 @@ bool FileChatItem::openFileDir()
     return true;
 }
 
-void FileChatItem::setChatItemData(const SChatItemData& data) noexcept
+void FileChatItem::setChatItemData(const SUserBaseData& data) noexcept
 {
-    mFileInfo.setFile(data.Message.toString());
+    mFileInfo.setFile(data.Data.toString());
     return ChatItem::setChatItemData(data);
 }

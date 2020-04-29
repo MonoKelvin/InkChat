@@ -2,7 +2,7 @@
 
 #include <AppSettings.h>
 #include <ChatItem.h>
-#include <MessageManager.h>
+#include <MessageDatabase.h>
 #include <User.h>
 
 ChatList::ChatList(QObject* parent)
@@ -73,13 +73,6 @@ IChatObject* ChatList::getChatObject() const noexcept
     return mChatObject;
 }
 
-void ChatList::clearChatRecord()
-{
-    clear();
-
-    // TODO: 删除数据库中对应的记录
-}
-
 void ChatList::clear()
 {
     beginResetModel();
@@ -93,7 +86,7 @@ void ChatList::fetchMore(const QModelIndex& parent)
     Q_UNUSED(parent)
 
     IsFileExists(AppSettings::MessageDBFile(), true);
-    MessageManager::Instance()->loadChatRecords(this);
+    MessageDatabase::Instance()->loadChatItems(this);
 }
 
 void ChatList::initLoad(IChatObject* chatObj)
@@ -107,15 +100,12 @@ void ChatList::initLoad(IChatObject* chatObj)
 
 QVariant ChatList::data(const QModelIndex& index, int role) const
 {
+    if (!index.isValid())
+        return QVariant();
+
     Q_UNUSED(role)
 
-    if (index.row() >= 0 && index.row() < mChats.size()) {
-        if (role >= 0) {
-            return QVariant::fromValue(mChats.at(index.row()).data());
-        }
-    }
-
-    return QVariant();
+    return QVariant::fromValue(mChats.at(index.row()).data());
 }
 
 bool ChatList::setData(const QModelIndex& index, const QVariant& value, int role)

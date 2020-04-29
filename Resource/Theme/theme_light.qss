@@ -73,7 +73,7 @@ QMenu {
     background-color: #fff;
     padding-top: 4px;
     padding-bottom: 4px;
-    border: 1px solid #F5F6FA;
+    border: 1px solid #f5f6fa;
 }
 QMenu::item {
     padding: 10px 25px 10px 5px;
@@ -81,19 +81,16 @@ QMenu::item {
     margin: 1px;
 }
 QMenu::item:selected {
-    background-color: #F5F6FA;
+    background-color: #f5f6fa;
 }
 QMenu::item:pressed {
-    background-color: #E5ECFF;
+    background-color: #e5ecff;
 }
 QMenu::separator {
     height: 1px;
     background: #e5ecff;
     margin-left: 10px;
     margin-right: 10px;
-}
-QMenu:disabled {
-    color: #A7ADBD;
 }
 
 /** LineEdit */
@@ -171,6 +168,32 @@ QScrollBar::sub-line:horizontal {
     font-size: 13pt;
     font-weight: bold;
     color: #a7adbd;
+}
+
+#iconBtn {
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 24px;
+    max-height: 24px;
+    border-radius: 4px;
+    padding: 2px;
+}
+#iconBtn:hover {
+    background-color: #f5f6fa;
+}
+#iconBtn:pressed {
+    background-color: #E5ECFF;
+}
+
+QPushButton[type='shadowIcon'] {
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    border-radius: 20px;
+}
+QPushButton:disabled {
+    background-color: #E9E9E9;
 }
 
 /************************/
@@ -265,9 +288,11 @@ Avatar {
 /** Chat List */
 ChatViewWidget #lbTitle {
     font-size: 12pt;
+    font-weight: bold;
     background-color: #ffffff;
-    min-height: 55px;
-    border-bottom: 2px solid #f5f6fa;
+}
+ChatViewWidget QListView {
+    border-top: 2px solid #f5f6fa;
 }
 #lbEmptyChat {
     font-size: 14pt;
@@ -281,22 +306,24 @@ ChatViewWidget #lbTitle {
     padding-right: 20px;
 }
 
-/** Chat Item */
-TextChatItem #chatItem_ta {
-    color: #ffffff;
-    background-color: #4d7cfe;
-    border-top-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 8px;
+/** Member List */
+#btnChat {
+    background-color: #2d3135;
 }
-TextChatItem #chatItem_me {
-    color: #3b4151;
-    background-color: #f5f6fa;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 8px;
+#btnChat:hover {
+    background-color: #414549;
+}
+#benChat:pressed {
+    background-color: #2d3135;
+}
+#btnClose {
+    background-color: #fe2b52;
+}
+#btnClose:hover {
+    background-color: #ff3c5f;
+}
+#benClose:pressed {
+    background-color: #fe2b52;
 }
 
 /** Chat Inpu tBox */
@@ -306,25 +333,8 @@ ChatInputBox {
 ChatInputBox QPlainTextEdit {
     font-size: 10pt;
 }
-ChatInputBox QPushButton {
-    min-width: 24px;
-    min-height: 24px;
-    max-width: 24px;
-    max-height: 24px;
-    border-radius: 4px;
-    padding: 2px;
-}
-ChatInputBox QPushButton:hover {
-    background-color: #f5f6fa;
-}
-ChatInputBox QPushButton:pressed {
-    background-color: #e5ecff;
-}
 #btnSend {
     background-color: #4d7cfe;
-    border-radius: 20px;
-    min-height: 40px;
-    min-width: 40px;
 }
 #btnSend:hover {
     background-color: #658eff;

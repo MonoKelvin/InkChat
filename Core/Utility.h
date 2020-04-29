@@ -40,6 +40,21 @@ typedef void (*DealWithPixmapFunc)(const QPixmap& pixmap, const QString& error);
             emit _FailSignal_(QStringLiteral("SERVER_NO_RESPONSE"));        \
     } while (0)
 
+#define ICON(_Name_) QIcon::fromTheme(QStringLiteral(_Name_))
+
+#define STD_ICON_SETTER(_Btn_, _IconName_)                        \
+    _Btn_->setObjectName(QStringLiteral("iconBtn"));              \
+    _Btn_->setCursor(Qt::PointingHandCursor);                     \
+    _Btn_->setIcon(QIcon::fromTheme(QStringLiteral(_IconName_))); \
+    _Btn_->setIconSize(QSize(20, 20))
+
+#define SHADOW_ICON_SETTER(_Btn_, _IconName_, _ShadowColor_)      \
+    _Btn_->setProperty("type", "shadowIcon");                     \
+    _Btn_->setCursor(Qt::PointingHandCursor);                     \
+    _Btn_->setIcon(QIcon::fromTheme(QStringLiteral(_IconName_))); \
+    _Btn_->setIconSize(QSize(24, 24));                            \
+    AttachShadowEffect(_Btn_, 0, 5.0, 20.0, _ShadowColor_)
+
 /**
  * @brief 继承自QWidget的类如果不实现自己的paintEvent方法，那么该类就无法使用样式表
  * 改变样式。通过该宏可以在样式表中改变当前控件的样式
