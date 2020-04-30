@@ -109,17 +109,15 @@ QLabel {
 
 /** ToolTip */
 QToolTip {
-    color: rgb(30, 40, 70);
-    border: 1px solid #a7adbd;
-    padding: 5px;
-    border-radius: 4px;
-    opacity: 150;
+    color: #2D3135;
+    border: 1px solid #F5F6FA;
+    padding: 2px;
 }
 
 /** QPlainTextEdit */
 QPlainTextEdit {
     font-size: 16px;
-    color: #3b4151;
+    color: #2D3135;
     border-radius: 10px;
     padding: 6px;
     background-color: #f5f6fa;
@@ -182,7 +180,7 @@ QScrollBar::sub-line:horizontal {
     background-color: #f5f6fa;
 }
 #iconBtn:pressed {
-    background-color: #E5ECFF;
+    background-color: #e5ecff;
 }
 
 QPushButton[type='shadowIcon'] {
@@ -193,7 +191,7 @@ QPushButton[type='shadowIcon'] {
     border-radius: 20px;
 }
 QPushButton:disabled {
-    background-color: #E9E9E9;
+    background-color: #e9e9e9;
 }
 
 /************************/
@@ -307,23 +305,24 @@ ChatViewWidget QListView {
 }
 
 /** Member List */
+MemberViewWidget QListView {
+    margin-bottom: 6px;
+}
+MemberViewWidget #shadowWidget {
+    border: 1px solid #f5f6fa;
+    border-radius: 6px;
+}
 #btnChat {
     background-color: #2d3135;
 }
 #btnChat:hover {
     background-color: #414549;
 }
-#benChat:pressed {
-    background-color: #2d3135;
+#btnChat:pressed {
+    background-color: #232629;
 }
-#btnClose {
-    background-color: #fe2b52;
-}
-#btnClose:hover {
-    background-color: #ff3c5f;
-}
-#benClose:pressed {
-    background-color: #fe2b52;
+#btnChat:disabled {
+    background-color: #979797;
 }
 
 /** Chat Inpu tBox */
@@ -337,13 +336,13 @@ ChatInputBox QPlainTextEdit {
     background-color: #4d7cfe;
 }
 #btnSend:hover {
-    background-color: #658eff;
+    background-color: #6e94ff;
 }
-#benSend:pressed {
-    background-color: #3f6eee;
+#btnSend:pressed {
+    background-color: #3163ec;
 }
 
-/** Badge */
+/** Badge
 Badge {
     padding: 0 6px;
 }
@@ -361,6 +360,7 @@ Badge {
     border-radius: 4px;
     background-color: #4d7cfe;
 }
+*/
 
 /** Prompt Widget */
 PromptWidget {
@@ -377,7 +377,7 @@ PromptWidget QLabel {
 /*********************/
 /** Friend Info Card */
 /*********************/
-FriendInfoCard #avatar {
+/*riendInfoCard #avatar {
     max-width: 80px;
     max-height: 80px;
 }
@@ -432,3 +432,4 @@ FriendInfoCard #line {
     font-size: 12pt;
     color: #3b4151;
 }
+*/

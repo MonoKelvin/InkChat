@@ -43,22 +43,17 @@ void ChatList::removeChatItem(int row, bool cascade)
     }
 }
 
-bool ChatList::insertChat(int row, AbstractChatListItem* item)
+void ChatList::insertChat(int row, AbstractChatListItem* item)
 {
-    if (row >= 0 && row <= mChats.size()) {
-        beginInsertRows(QModelIndex(), row, row);
-        mChats.insert(row, item);
-        endInsertRows();
+    beginInsertRows(QModelIndex(), row, row);
+    mChats.insert(row, item);
+    endInsertRows();
 
-        if (mChats.size() > 100) {
-            removeChatItem(0);
-        }
-
-        emit chatAdded(row);
-        return true;
+    if (mChats.size() > 100) {
+        removeChatItem(0);
     }
 
-    return false;
+    emit chatAdded(row);
 }
 
 int ChatList::rowCount(const QModelIndex& parent) const

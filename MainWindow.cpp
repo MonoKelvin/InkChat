@@ -3,6 +3,7 @@
 
 #include <AppSettings.h>
 #include <ChatList.h>
+#include <LanObject.h>
 #include <MessageDatabase.h>
 #include <MessageItem.h>
 #include <MessageList.h>
@@ -10,7 +11,6 @@
 #include <TcpClient.h>
 #include <UI/ChatViewWidget.h>
 #include <User.h>
-#include <Utility.h>
 #include <Widget/PromptWidget.h>
 
 // 聊天控件
@@ -18,11 +18,8 @@
 #include <NotificationItem.h>
 #include <TextChatItem.h>
 
-#include <QListView>
 #include <QMenu>
 #include <QMouseEvent>
-#include <QScrollBar>
-#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -98,9 +95,10 @@ ChatViewWidget* MainWindow::createChatViewWidget(IChatObject* chatObj)
     cvw->getChatView()->scrollToBottom();
     cvw->setTitle(chatObj->getNickName());
 
-    // 多人聊天就发送用户进入消息
+    // 多人聊天就发送用户进入消息，并请求所有其他用户的信息
     if (cvw->getChatListModel()->getChatObject()->getRoleType() & IChatObject::MultiPerson) {
-        MessageManager::Instance()->sendUserBehavior(chatObj->getHostAddress(), ChatItem::UserJoin);
+        MessageManager::Instance()->sendMessage(chatObj, ChatItem::UserJoin);
+        MessageManager::Instance()->sendMessage(chatObj, ChatItem::RequestUserInfo);
     }
 
     return cvw;
@@ -116,6 +114,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
             return true;
         }
     }
+
     return QWidget::eventFilter(watched, event);
 }
 
@@ -228,13 +227,32 @@ void MainWindow::onReceived(const SChatItemPackage& package)
      */
 
     // 如果是用户的行为状态
-    if (package.ChatType & AbstractChatListItem::UserBehavior) {
-        if (!mChatPages.isEmpty() && mChatPages.first()->getChatListModel()->getChatObject()->getHostAddress() == package.HostAddress) {
-            const auto& notice = new NotificationItem(MessageManager::GetUserBehavior(package.ChatType, package.UserChatData.Name));
-            mChatPages.first()->getChatListModel()->appendItem(notice);
-            mChatPages.first()->autoDetermineScrollToBottom();
+    if (package.ChatType & AbstractChatListItem::UserBehavior && !mChatPages.isEmpty()) {
+        // 如果多人聊天的（局域网）地址匹配
+        const auto& chatObj = mChatPages.first()->getChatListModel()->getChatObject();
+        if (chatObj->getHostAddress() == package.IPAddress) {
+            switch (package.ChatType) {
+                // 用户进入进出
+            case ChatItem::UserJoin:
+            case ChatItem::UserLeft: {
+                const auto& notice = new NotificationItem(MessageManager::BehaviorString(package.ChatType, package.UserChatData.Name));
+                mChatPages.first()->getChatListModel()->appendItem(notice);
+                mChatPages.first()->autoDetermineScrollToBottom();
+            } // 不要加break
+            case ChatItem::ReplyUserInfo: // 我的请求得到回复，则更新列表
+                if (chatObj->getRoleType() & IChatObject::LAN) {
+                    const auto& lan = static_cast<LanObject*>(chatObj);
+                    lan->setMemberBehavior(package.ChatType, { package.UserChatData.Uuid, package.UserChatData.Name });
+                }
+                break;
+                // 有人请求要获取我的数据
+            case ChatItem::RequestUserInfo:
+                MessageManager::Instance()->sendMessage(chatObj, ChatItem::ReplyUserInfo);
+                break;
+            }
+
+            return;
         }
-        return;
     }
 
     // 消息概要
@@ -255,7 +273,7 @@ void MainWindow::onReceived(const SChatItemPackage& package)
     const int len = mMessageListModel->rowCount();
     for (; i < len; i++) {
         if (package.RoleType & IChatObject::MultiPerson) {
-            if (package.HostAddress == mMessageListModel->getMessage(i)->getChatObject()->getHostAddress()) {
+            if (package.IPAddress == mMessageListModel->getMessage(i)->getChatObject()->getHostAddress()) {
                 break;
             }
         } else if (package.UserChatData.Uuid == mMessageListModel->getMessage(i)->getChatObject()->getUuid()) {
@@ -273,9 +291,9 @@ void MainWindow::onReceived(const SChatItemPackage& package)
 
     switch (package.ChatType) {
     case AbstractChatListItem::File:
-        if (package.HostAddress == User::Instance()->getHostAddress()) {
+        if (package.IPAddress == User::Instance()->getHostAddress()) {
             TcpClient* client = new TcpClient(this);
-            client->connectToHost(package.HostAddress, item);
+            client->connectToHost(package.IPAddress, item);
         }
         break;
     case AbstractChatListItem::Text:

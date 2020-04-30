@@ -1,7 +1,6 @@
 ﻿#include "AppLoginOperation.h"
 
 #include <AppSettings.h>
-#include <LoginWithQQMail.h>
 #include <MessageDatabase.h>
 
 #include <QDir>

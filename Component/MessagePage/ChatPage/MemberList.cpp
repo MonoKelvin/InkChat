@@ -2,38 +2,22 @@
 
 #include <AppSettings.h>
 #include <AppTheme.h>
+#include <LanObject.h>
 #include <Widget/Avatar.h>
 
 #include <QPainter>
 
-MemberList::MemberList(QObject* parent)
+MemberList::MemberList(LanObject* lan, QObject* parent)
     : QAbstractListModel(parent)
+    , mLanObject(lan)
 {
 }
 
-void MemberList::addMember(const SUserBaseData& member)
+const QModelIndex MemberList::getIndexByUuid(const QString& uuid)
 {
-    beginInsertRows(QModelIndex(), mMembers.size(), mMembers.size());
-    mMembers.insert(mMembers.size(), member);
-    endInsertRows();
-}
-
-void MemberList::removeMember(const QString& uuid)
-{
-    for (int i = 0; i < mMembers.size(); ++i) {
-        if (mMembers.at(i).Uuid == uuid) {
-            beginRemoveRows(QModelIndex(), i, i);
-            mMembers.removeAt(i);
-            endRemoveRows();
-            break;
-        }
-    }
-}
-
-const QModelIndex MemberList::getIndexFormUuid(const QString& uuid)
-{
-    for (int i = 0; i < mMembers.length(); ++i) {
-        if (mMembers.at(i).Uuid == uuid) {
+    const auto& members = mLanObject->getMembers();
+    for (int i = 0; i < members.size(); ++i) {
+        if (members.at(i).Uuid == uuid) {
             return index(i);
         }
     }
@@ -41,11 +25,16 @@ const QModelIndex MemberList::getIndexFormUuid(const QString& uuid)
     return QModelIndex();
 }
 
+LanObject* MemberList::getLanObject() const noexcept
+{
+    return mLanObject;
+}
+
 int MemberList::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
 
-    return mMembers.size();
+    return mLanObject->getMembers().size();
 }
 
 QVariant MemberList::data(const QModelIndex& index, int role) const
@@ -55,13 +44,13 @@ QVariant MemberList::data(const QModelIndex& index, int role) const
 
     Q_UNUSED(role)
 
-    return QVariant::fromValue(mMembers.at(index.row()));
+    return QVariant::fromValue(mLanObject->getMembers().at(index.row()));
 }
 
 QSize MemberItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(index)
-    return QSize(option.rect.width(), 70);
+    return QSize(option.rect.width(), 55);
 }
 
 void MemberItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -75,16 +64,18 @@ void MemberItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         painter->setPen(Qt::NoPen);
 
         // 鼠标移过
-        if (option.state.testFlag(QStyle::State_MouseOver)) {
+        if (option.state.testFlag(QStyle::State_Selected) || option.state.testFlag(QStyle::State_MouseOver)) {
             painter->setBrush(XTheme.TintColor);
             painter->drawRect(rect);
-        } else if (option.state.testFlag(QStyle::State_Selected)) { // 选中
-            painter->setBrush(XTheme.getPrimarySubColor(1));
-            painter->drawRect(rect);
+        }
+        if (option.state.testFlag(QStyle::State_Selected)) { // 选中
+            painter->setBrush(XTheme.PrimayColor1);
+            const QRect bar(0, rect.top(), 4, rect.height());
+            painter->drawRect(bar);
         }
 
         // 绘制头像
-        const QRect avtRect(ESize::Narrow, rect.top() + (rect.height() - XTheme.AvatarSize) / 2, XTheme.AvatarSize, XTheme.AvatarSize);
+        const QRect avtRect(ESize::Std, rect.top() + (rect.height() - 36) / 2, 36, 36);
         Avatar::DrawAvatar(painter, avtRect, AppSettings::AvatarCacheFile(itemData.Uuid), itemData.Name);
 
         // 绘制名称

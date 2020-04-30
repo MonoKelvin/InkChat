@@ -27,7 +27,7 @@ public:
      * @warning 实际情况中尽量不要使用该函数，因为消息的增加几乎发生在从聊天视图的底部推送。
      * @see sendChat、appendChat
      */
-    bool insertChat(int row, AbstractChatListItem* item);
+    void insertChat(int row, AbstractChatListItem* item);
 
     /**
      * @brief 给定行号返回聊天项

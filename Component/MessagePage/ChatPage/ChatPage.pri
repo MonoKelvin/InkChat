@@ -10,7 +10,7 @@ HEADERS += \
     $$PWD/TextChatItem.h \
     $$PWD/UI/ChatInputBox.h \
     $$PWD/UI/ChatViewWidget.h \
-    $$PWD/UI/MemberListViewWidget.h
+    $$PWD/UI/MemberViewWidget.h
 
 SOURCES += \
     $$PWD/AbstractChatListItem.cpp \
@@ -22,7 +22,7 @@ SOURCES += \
     $$PWD/TextChatItem.cpp \
     $$PWD/UI/ChatInputBox.cpp \
     $$PWD/UI/ChatViewWidget.cpp \
-    $$PWD/UI/MemberListViewWidget.cpp
+    $$PWD/UI/MemberViewWidget.cpp
 
 FORMS += \
     $$PWD/UI/chatviewwidget.ui

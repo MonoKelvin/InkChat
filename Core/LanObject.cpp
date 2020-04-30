@@ -1,5 +1,6 @@
 ﻿#include "LanObject.h"
 
+#include <AbstractChatListItem.h>
 #include <AppSettings.h>
 #include <MessageDatabase.h>
 #include <User.h>
@@ -17,6 +18,7 @@ LanObject::LanObject(QObject* parent)
 LanObject::~LanObject()
 {
     qDebug() << "LanObject Destroyed: " << this;
+    mMembers.clear();
 }
 
 void LanObject::fromJson(const QJsonObject& json, bool cache) noexcept(false)
@@ -73,6 +75,23 @@ bool LanObject::updateLocalData()
 
     file.close();
     return true;
+}
+
+void LanObject::setMemberBehavior(int type, const SUserBaseData& userData)
+{
+    const int& index = mMembers.indexOf(userData);
+    switch (type) {
+    case AbstractChatListItem::UserJoin:
+        if (index == -1) {
+            mMembers.append(userData);
+        }
+        break;
+    case AbstractChatListItem::UserLeft:
+        if (index >= 0) {
+            mMembers.removeAt(index);
+        }
+        break;
+    }
 }
 
 LanObject* LanObject::DetectLanEnvironment()

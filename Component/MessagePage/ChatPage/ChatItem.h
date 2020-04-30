@@ -13,7 +13,8 @@
 struct SChatItemPackage {
     SUserBaseData UserChatData;
     IChatObject::ERoleType RoleType;
-    QString HostAddress;
+    QString IPAddress; // 聊天对象IP地址，如果是单用户则该值等于HostAddress
+    QString HostAddress; // 用户主机地址
     int ChatType;
 
     SChatItemPackage() = default;

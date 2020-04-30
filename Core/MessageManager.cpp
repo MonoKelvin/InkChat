@@ -3,6 +3,7 @@
 #include <AppSettings.h>
 #include <ChatItem.h>
 #include <ChatList.h>
+#include <LanObject.h>
 #include <MessageDatabase.h>
 #include <MessageItem.h>
 #include <NotificationItem.h>
@@ -76,22 +77,24 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 {
     QByteArray outData;
     QDataStream out(&outData, QIODevice::WriteOnly);
-
-    const auto& chatObj = view->mChatObject.data();
-    ChatItem* item = nullptr;
+    const auto& chatObj = view->mChatObject;
 
     out << type;
     out << User::Instance()->getUuid();
     out << User::Instance()->getNickName();
     out << chatObj->getHostAddress();
 
-    item = BuildChatItem(type, data);
+    // 构建界面使用的item
+    ChatItem* item = BuildChatItem(type, data);
+    if (!item) {
+        emit failed(tr("消息构建失败！"));
+        return;
+    }
     item->setTime(QDateTime::currentDateTime());
     //item->setSendState(ChatItem::Succeed);
     view->appendItem(item);
 
-    switch (type) {
-    case AbstractChatListItem::File: {
+    if (type & ChatItem::TCP_Protocol) {
         // 新建TCP服务器
         TcpServer* server = new TcpServer(this);
         if (!server->setFileToSend(data.toString(), item)) {
@@ -102,16 +105,42 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
             return;
         }
     }
-    case AbstractChatListItem::Text:
-        // 填充数据
-        out << chatObj->getRoleType();
-        out << data;
 
-        // 保存到本地数据库
-        MessageDatabase::Instance()->saveAChatRecord(item, view->getChatObject()->getUuid());
+    // 填充数据
+    out << chatObj->getRoleType();
+    out << data;
 
+    // 发送数据
+    if (chatObj->getRoleType() & IChatObject::MultiPerson) {
+        mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, LAN_UDP_PORT);
+    } else {
+        mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), LAN_UDP_PORT);
+    }
+
+    // 保存到本地数据库
+    MessageDatabase::Instance()->saveAChatRecord(item, chatObj->getUuid());
+}
+
+void MessageManager::sendMessage(IChatObject* chatObj, int type)
+{
+    QByteArray outData;
+    QDataStream out(&outData, QIODevice::WriteOnly);
+    const auto& uuid = User::Instance()->getUuid();
+
+    out << type;
+    out << uuid;
+    out << User::Instance()->getNickName();
+    out << chatObj->getHostAddress();
+
+    switch (type) {
+    case AbstractChatListItem::RequestUserInfo:
+        out << User::Instance()->getHostAddress();
         break;
-    default:
+    case AbstractChatListItem::ReplyUserInfo:
+        out << User::Instance()->getHostAddress();
+        // 不要加 break
+    case AbstractChatListItem::UserJoin:
+        out << QPixmap(AppSettings::AvatarCacheFile(uuid));
         break;
     }
 
@@ -121,49 +150,52 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     } else {
         mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress(chatObj->getHostAddress()), LAN_UDP_PORT);
     }
-
-    // TODO: 如果发送失败
-    //item->setSendState(ChatItem::Failed);
-}
-
-void MessageManager::sendUserBehavior(const QString& addr, int type)
-{
-    QByteArray outData;
-    QDataStream out(&outData, QIODevice::WriteOnly);
-
-    out << type;
-    out << User::Instance()->getUuid();
-    out << User::Instance()->getNickName();
-    out << addr;
-
-    mUdpSocket->writeDatagram(outData, outData.length(), QHostAddress::Broadcast, LAN_UDP_PORT);
 }
 
 void MessageManager::processPendingDatagrams()
 {
     while (mUdpSocket->hasPendingDatagrams()) {
         QByteArray datagram;
-
-        // 读数据
         const int dataSize = int(mUdpSocket->pendingDatagramSize());
-        if (dataSize <= 0) {
+        if (dataSize <= 0)
             continue;
-        }
         datagram.resize(dataSize);
         mUdpSocket->readDatagram(datagram.data(), datagram.size());
-
         QDataStream in(&datagram, QIODevice::ReadOnly);
 
         // 有可能是自己发送的数据
         SChatItemPackage package;
         in >> package.ChatType >> package.UserChatData.Uuid
-            >> package.UserChatData.Name >> package.HostAddress;
+            >> package.UserChatData.Name >> package.IPAddress;
 
         switch (package.ChatType) {
         case AbstractChatListItem::Text:
         case AbstractChatListItem::File:
             in >> package.RoleType >> package.UserChatData.Data;
             break;
+        case AbstractChatListItem::RequestUserInfo:
+            // 如果接收到自己的请求信号就直接返回继续
+            if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
+                continue;
+            }
+            in >> package.HostAddress;
+            break;
+        case AbstractChatListItem::ReplyUserInfo:
+            // 如果接收到自己的应答信号就直接返回继续
+            if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
+                continue;
+            }
+
+            in >> package.HostAddress;
+            // 不要加break
+        case AbstractChatListItem::UserJoin: {
+            QPixmap avatar;
+            in >> avatar;
+            if (!avatar.isNull()) {
+                IsDirExists(AppSettings::UserDir() + QStringLiteral("/Avatar"), true);
+                avatar.save(AppSettings::AvatarCacheFile(package.UserChatData.Uuid), "JPG", 99);
+            }
+        } break;
         }
 
         emit received(package);

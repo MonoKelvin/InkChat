@@ -3,9 +3,10 @@
 
 #include <ChatItem.h>
 #include <ChatList.h>
+#include <LanObject.h>
 #include <MessageDatabase.h>
 #include <MessageManager.h>
-#include <UI/MemberListViewWidget.h>
+#include <UI/MemberViewWidget.h>
 #include <Utility.h>
 #include <Widget/LoadingIndicator.h>
 
@@ -46,6 +47,9 @@ ChatViewWidget::ChatViewWidget(QWidget* parent)
 
 ChatViewWidget::~ChatViewWidget()
 {
+    delete ui->btnInfo;
+    ui->btnInfo = nullptr;
+
     delete ui;
 }
 
@@ -123,7 +127,7 @@ void ChatViewWidget::autoDetermineScrollToBottom()
     QModelIndex index;
 
     // 从上面依次搜索找到第一个item
-    for (int i = 2 * sp; i >= sp; i--) {
+    for (int i = 2 * sp; i >= sp; --i) {
         index = ui->chatView->indexAt(QPoint(sp + 1, i));
         if (index.isValid()) {
             // 如果用户浏览倒数第4条之前的聊天记录就不要滚动到最低部
@@ -169,13 +173,22 @@ void ChatViewWidget::openChatObjectInfo()
     case IChatObject::LAN: {
         ui->btnInfo->setEnabled(false);
 
-        MemberListViewWidget* mvw = new MemberListViewWidget(this);
+        MemberViewWidget* mvw = new MemberViewWidget(static_cast<LanObject*>(mChatListModel->getChatObject()), this);
 
-        mvw->move(ui->btnInfo->x() - mvw->width(), ui->btnInfo->geometry().bottom());
-        connect(mvw, &MemberListViewWidget::destroyed, [this] { ui->btnInfo->setEnabled(true); });
+        // 尽早显示
+        mvw->show();
+
+        QRect r(ui->btnInfo->x() - 300, ui->btnInfo->geometry().bottom(), 0, 0);
+        r.setWidth(360);
+        r.setHeight(qMax(height() - r.top(), 200));
+        mvw->setGeometry(r);
+
+        connect(mvw, &MemberViewWidget::destroyed, [this] {
+            if (ui->btnInfo) {
+                ui->btnInfo->setEnabled(true);
+            }
+        });
     } break;
-    case IChatObject::Friend:
-        break;
     default:
         break;
     }

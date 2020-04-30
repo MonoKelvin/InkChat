@@ -43,15 +43,17 @@ public:
         //MultiImages = 0x000040, // 多张图片
 
         /** 用户行为相关 */
-        UserJoin = 0x000100,
-        UserLeft = 0x000200,
+        UserJoin = 0x000100, // 用户加入
+        UserLeft = 0x000200, // 用户离开
+        RequestUserInfo = 0x000400, // 请求获取用户信息
+        ReplyUserInfo = 0x000800, // 响应请求用户信息
 
         UDP_Protocol = Text | RichText, // 需要进行UDP协议传输的类型
         TCP_Protocol = File | Image | Video | Audio, // 需要进行TCP协议传输的类型
-        UserBehavior = UserJoin | UserLeft, // 用户行为
+        UserBehavior = UserJoin | UserLeft | RequestUserInfo | ReplyUserInfo, // 用户行为
 
-        /** 用户无关 */
-        Notification = 0x010000 | UserBehavior, // 系统通知项
+        /** 用户数据无关 */
+        Notification = UserBehavior, // 系统通知项
     };
 
     virtual unsigned int getChatType(void) const { return ChatType; }

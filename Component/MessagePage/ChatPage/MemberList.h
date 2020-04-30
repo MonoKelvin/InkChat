@@ -5,26 +5,34 @@
 
 #include <QAbstractItemDelegate>
 #include <QAbstractListModel>
+#include <QPointer>
 
+class LanObject;
+
+/**
+ * @brief 成员列表模型
+ */
 class MemberList : public QAbstractListModel {
     Q_OBJECT
 
 public:
-    explicit MemberList(QObject* parent = nullptr);
+    explicit MemberList(LanObject* lan, QObject* parent = nullptr);
 
-    void addMember(const SUserBaseData& member);
-    void removeMember(const QString& uuid);
+    const QModelIndex getIndexByUuid(const QString& uuid);
 
-    const QModelIndex getIndexFormUuid(const QString& uuid);
+    LanObject* getLanObject(void) const noexcept;
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
 private:
-    /** 成员数据 */
-    QList<SUserBaseData> mMembers;
+    /** 局域网对象指针数据 */
+    QPointer<LanObject> mLanObject;
 };
 
+/**
+ * @brief 成员项代理
+ */
 class MemberItemDelegate : public QAbstractItemDelegate {
 public:
     explicit MemberItemDelegate(QObject* parent = nullptr)

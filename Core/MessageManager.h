@@ -78,7 +78,7 @@ public:
         mRegistryChatClasses.insert(T::ChatType, metaClass.className());
     }
 
-    inline static const QString GetUserBehavior(int type, const QString& name) noexcept
+    inline static const QString BehaviorString(int type, const QString& name) noexcept
     {
         if (type == AbstractChatListItem::UserJoin) {
             return QObject::tr("用户 %1 加入").arg(name);
@@ -91,15 +91,20 @@ public:
     }
 
     /**
-     * @brief 发送消息
+     * @brief 发送消息，同时构建对应消息项到聊天视图中
      * @param view 聊天视图。消息将被发送到UI界面呈现
      * @param type 消息类型
      * @param data 要发送的消息数据
      * @note 发送失败消息通过 @see failed 给出
      */
-    void sendMessage(ChatList* view, int type, const QVariant& data = QVariant());
+    void sendMessage(ChatList* view, int type, const QVariant& data);
 
-    void sendUserBehavior(const QString& addr, int type = AbstractChatListItem::UserJoin);
+    /**
+     * @brief 发送消息，不会构建消息项到聊天视图，一般发送界面无关的数据
+     * @param chatObj 聊天对象
+     * @param type 消息类型
+     */
+    void sendMessage(IChatObject* chatObj, int type);
 
 private Q_SLOTS:
     /**

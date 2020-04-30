@@ -20,7 +20,7 @@ User::~User()
 {
     for (const auto& i : mMyChatObjects) {
         if (i->getRoleType() & MultiPerson) {
-            MessageManager::Instance()->sendUserBehavior(i->getHostAddress(), AbstractChatListItem::UserLeft);
+            MessageManager::Instance()->sendMessage(i, AbstractChatListItem::UserLeft);
         }
     }
 

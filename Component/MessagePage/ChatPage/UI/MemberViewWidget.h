@@ -1,17 +1,17 @@
-﻿#ifndef MEMBERLISTVIEWWIDGET_H
-#define MEMBERLISTVIEWWIDGET_H
+﻿#ifndef MEMBERVIEWWIDGET_H
+#define MEMBERVIEWWIDGET_H
 
 #include <QWidget>
 
 class QListView;
 class QPushButton;
 class MemberList;
+class LanObject;
 
-class MemberListViewWidget : public QWidget
-{
+class MemberViewWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit MemberListViewWidget(QWidget* parent = nullptr);
+    explicit MemberViewWidget(LanObject* lan, QWidget* parent = nullptr);
 
     void popup(const QPoint& pos);
 
@@ -22,23 +22,24 @@ public:
 
 private Q_SLOTS:
     void updateChatEnabled(const QModelIndex& index);
-    void requestChatPage(void);
+    void requestChatPage();
+    void refresh();
 
 private:
-    void showEvent(QShowEvent*) override;
+    void resizeEvent(QResizeEvent*) override;
 
 private:
     /** 成员列表 */
     QListView* mMemberList;
 
+    /** 阴影背景 */
+    QWidget* mShadowWidget;
+
     /** 成员列表视图 */
     MemberList* mMemberListModel;
-
-    /** 关闭面板的按钮 */
-    QPushButton* mBtnClose;
 
     /** 进行聊天的按钮 */
     QPushButton* mBtnChat;
 };
 
-#endif // MEMBERLISTVIEWWIDGET_H
+#endif // MEMBERVIEWWIDGET_H

@@ -17,6 +17,12 @@ struct SUserBaseData {
         Data = userData.Data;
     }*/
 
+    inline SUserBaseData(const QString& uuid, const QString& name)
+        : Uuid(uuid)
+        , Name(name)
+    {
+    }
+
     inline SUserBaseData(const QString& uuid, const QVariant& msg)
         : Uuid(uuid)
         , Data(msg)
