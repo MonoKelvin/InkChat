@@ -13,8 +13,6 @@ class MemberViewWidget : public QWidget {
 public:
     explicit MemberViewWidget(LanObject* lan, QWidget* parent = nullptr);
 
-    void popup(const QPoint& pos);
-
     inline MemberList* getMemberListModel(void) const noexcept
     {
         return mMemberListModel;

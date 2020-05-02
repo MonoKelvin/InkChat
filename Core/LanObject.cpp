@@ -52,29 +52,9 @@ QJsonObject LanObject::toJson()
     auto json = IChatObject::toJson();
 
     json.insert(QLatin1String("mac"), mMacAddress);
+    json.insert(QLatin1String("hostAddress"), mHostAddress);
 
     return json;
-}
-
-bool LanObject::updateLocalData()
-{
-    const auto& fileName = AppSettings::ChatObjectCacheFile(mUuid);
-
-    if (!IsFileExists(fileName, true)) {
-        return false;
-    }
-
-    QFile file(fileName);
-    if (file.open(QFile::WriteOnly | QFile::Text)) {
-        QJsonDocument jsonDoc(toJson());
-        if (file.write(jsonDoc.toJson(QJsonDocument::Compact)) == -1) {
-            file.close();
-            return false;
-        }
-    }
-
-    file.close();
-    return true;
 }
 
 void LanObject::setMemberBehavior(int type, const SUserBaseData& userData)
@@ -104,20 +84,24 @@ LanObject* LanObject::DetectLanEnvironment()
         return nullptr;
     }
 
-    const auto& md5 = EncryptTextByMD5(addr + mac, true);
-    LanObject* lan = MessageDatabase::Instance()->getCachedLanObject(md5);
+    const auto& md5_16 = EncryptTextByMD5(addr + mac, true);
+    LanObject* lan = MessageDatabase::Instance()->getCachedLanObject(md5_16);
 
     // 先从缓存中获取，不存在就新建一个局域网
     if (nullptr == lan) {
         lan = new LanObject;
 
-        lan->mMD5 = md5;
+        lan->mMD5 = md5_16;
         lan->mNickName = addr;
         lan->mHostAddress = addr;
         lan->mMacAddress = mac;
 
         // WARINING: 必须加到用户列表，否则刷新消息视图将出现重复对象
         User::Instance()->addChatObject(lan);
+    } else {
+        lan->mMD5 = md5_16;
+        lan->mMacAddress = mac;
+        lan->mHostAddress = addr;
     }
 
     return lan;

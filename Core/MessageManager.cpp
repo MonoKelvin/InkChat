@@ -75,15 +75,6 @@ AbstractChatListItem* MessageManager::BuildChatListItem(int chatType, const QVar
 
 void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
 {
-    QByteArray outData;
-    QDataStream out(&outData, QIODevice::WriteOnly);
-    const auto& chatObj = view->mChatObject;
-
-    out << type;
-    out << User::Instance()->getUuid();
-    out << User::Instance()->getNickName();
-    out << chatObj->getHostAddress();
-
     // 构建界面使用的item
     ChatItem* item = BuildChatItem(type, data);
     if (!item) {
@@ -106,7 +97,14 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
         }
     }
 
-    // 填充数据
+    QByteArray outData;
+    QDataStream out(&outData, QIODevice::WriteOnly);
+    const auto& chatObj = view->mChatObject;
+
+    out << type;
+    out << User::Instance()->getUuid();
+    out << User::Instance()->getNickName();
+    out << chatObj->getHostAddress();
     out << chatObj->getRoleType();
     out << data;
 
@@ -131,6 +129,7 @@ void MessageManager::sendMessage(IChatObject* chatObj, int type)
     out << uuid;
     out << User::Instance()->getNickName();
     out << chatObj->getHostAddress();
+    out << chatObj->getRoleType();
 
     switch (type) {
     case AbstractChatListItem::RequestUserInfo:
@@ -166,12 +165,12 @@ void MessageManager::processPendingDatagrams()
         // 有可能是自己发送的数据
         SChatItemPackage package;
         in >> package.ChatType >> package.UserChatData.Uuid
-            >> package.UserChatData.Name >> package.IPAddress;
+            >> package.UserChatData.Name >> package.IPAddress >> package.RoleType;
 
         switch (package.ChatType) {
         case AbstractChatListItem::Text:
         case AbstractChatListItem::File:
-            in >> package.RoleType >> package.UserChatData.Data;
+            in >> package.UserChatData.Data;
             break;
         case AbstractChatListItem::RequestUserInfo:
             // 如果接收到自己的请求信号就直接返回继续
@@ -181,19 +180,17 @@ void MessageManager::processPendingDatagrams()
             in >> package.HostAddress;
             break;
         case AbstractChatListItem::ReplyUserInfo:
-            // 如果接收到自己的应答信号就直接返回继续
-            if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
-                continue;
-            }
-
             in >> package.HostAddress;
             // 不要加break
         case AbstractChatListItem::UserJoin: {
-            QPixmap avatar;
-            in >> avatar;
-            if (!avatar.isNull()) {
-                IsDirExists(AppSettings::UserDir() + QStringLiteral("/Avatar"), true);
-                avatar.save(AppSettings::AvatarCacheFile(package.UserChatData.Uuid), "JPG", 99);
+            // 如果不是接收到自己的应答信号就保存图片
+            if (package.UserChatData.Uuid != User::Instance()->getUuid()) {
+                QPixmap avatar;
+                in >> avatar;
+                if (!avatar.isNull()) {
+                    IsDirExists(AppSettings::UserDir() + QStringLiteral("/Avatar"), true);
+                    avatar.save(AppSettings::AvatarCacheFile(package.UserChatData.Uuid), "JPG", 99);
+                }
             }
         } break;
         }

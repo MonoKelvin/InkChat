@@ -134,6 +134,8 @@ Q_SIGNALS:
 
     void failed(const QString& msg);
 
+    void chat(IChatObject* chatObj);
+
 private:
     /** 
      * @brief 用于消息收发的UDP套接字

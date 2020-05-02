@@ -84,6 +84,21 @@ QJsonObject IChatObject::toJson(void)
     return json;
 }
 
+void IChatObject::updateLocalData()
+{
+    const auto& fileName = AppSettings::ChatObjectCacheFile(mUuid);
+    if (!IsFileExists(fileName, true)) {
+        return;
+    }
+
+    QFile file(fileName);
+    if (file.open(QFile::WriteOnly | QFile::Text)) {
+        QJsonDocument jsonDoc(toJson());
+        file.write(jsonDoc.toJson(QJsonDocument::Compact));
+    }
+    file.close();
+}
+
 const QString IChatObject::generateUuid()
 {
     mUuid = QUuid::createUuid().toString(QUuid::Id128);

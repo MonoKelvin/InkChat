@@ -48,7 +48,7 @@ void MessageList::removeMessage(int index)
 
 void MessageList::insertMessage(int index, MessageItem* message)
 {
-    if (index >= 0 && index <= mMessages.size()) {
+    if (-1 == getIndexByChatObject(message->getChatObject())) {
         beginInsertRows(QModelIndex(), index, index);
         mMessages.insert(index, message);
         endInsertRows();
@@ -74,15 +74,15 @@ void MessageList::moveMessage(int from, int to)
     emit layoutChanged(QList<QPersistentModelIndex>(), VerticalSortHint);
 }
 
-bool MessageList::isChatObjectExists(IChatObject* chatObj)
+int MessageList::getIndexByChatObject(IChatObject* chatObj)
 {
     for (int i = 0; i < mMessages.size(); i++) {
         if (mMessages.at(i)->mChatObject.data() == chatObj) {
-            return true;
+            return i;
         }
     }
 
-    return false;
+    return -1;
 }
 
 void MessageList::setMessageTop(MessageItem* message, bool isTop, bool)
@@ -165,7 +165,7 @@ int MessageList::getCurrentSelectedIndex()
     return mMessages.indexOf(mCurrentSelectedItem);
 }*/
 
-int MessageList::ariseMessage(MessageItem* message)
+int MessageList::promoteMessage(MessageItem* message)
 {
     /**
      * 如果消息列表中有目标消息项
@@ -192,6 +192,28 @@ int MessageList::ariseMessage(MessageItem* message)
     return targetIndex;
 }
 
+int MessageList::loweredMessage(MessageItem* message, bool last)
+{
+    const int& sourceIndex = mMessages.indexOf(message);
+    const int& s = mMessages.size() - 1;
+
+    if (!message->mIsTop || sourceIndex == s) {
+        return sourceIndex;
+    }
+
+    int targetIndex = last ? s : sourceIndex;
+    for (; targetIndex < s; targetIndex++) {
+        // 找到第一个不是置顶的消息
+        if (!mMessages.at(targetIndex)->isTop()) {
+            break;
+        }
+    }
+
+    moveMessage(sourceIndex, targetIndex);
+
+    return targetIndex;
+}
+
 void MessageList::fetchMore(const QModelIndex& index)
 {
     Q_UNUSED(index)
@@ -201,7 +223,7 @@ void MessageList::fetchMore(const QModelIndex& index)
 
 void MessageList::load(void)
 {
-    MessageDatabase::Instance()->loadMessageItems(this);
+    MessageDatabase::Instance()->refreshMessageList(this);
 
     int pos = 0;
     for (int i = 0; i < mMessages.size(); i++) {

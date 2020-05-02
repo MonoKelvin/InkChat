@@ -43,19 +43,19 @@ public:
     //    MessageItem* queryMessage(const QString& str, const QDateTime& time);
 
     /**
-     * @brief 创建一个新的消息项，并保存到数据库
+     * @brief 加载消息项。如果给定的聊天对象没有缓存则再数据库建立索引
      * @param list 消息列表 @see MessageList
-     * @param uuid 消息对应的联系人
-     * @return bool 如果成功建立并保存到数据库中就返回MessageItem对象，且自动加载到列表中，
-     * 否则返回nullptr
+     * @param chatObj 消息对应的聊天对象
+     * @return MessageItem* 如果成功建立并保存到数据库中就返回MessageItem对象，且自动加
+     * 载到列表中，否则返回nullptr
      */
-    MessageItem* newMessageItem(MessageList* list, IChatObject* chatObj);
+    MessageItem* loadMessageItem(MessageList* list, IChatObject* chatObj);
 
     /**
-     * @brief 加载消息到列表中
+     * @brief 刷新消息列表
      * @param list 消息列表 @see MessageList
      */
-    void loadMessageItems(MessageList* list);
+    void refreshMessageList(MessageList* list);
 
     /**
      * @brief 获取缓存的局域网对象

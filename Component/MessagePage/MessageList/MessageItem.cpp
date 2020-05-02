@@ -85,9 +85,10 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 {
     if (index.isValid()) {
         // item 数据
-        const auto itemData = index.data(MessageItemRole).value<MessageItem*>();
+        const auto& itemData = index.data(MessageItemRole).value<MessageItem*>();
         // item 矩形区域
-        const QRect& rect = option.rect;
+        const auto& rect = option.rect;
+        const int& t = rect.top();
 
         painter->save();
         painter->setPen(Qt::NoPen);
@@ -101,7 +102,7 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         // 选中
         if (option.state.testFlag(QStyle::State_Selected)) {
             painter->setBrush(XTheme.PrimayColor1);
-            painter->drawRect(0, 0, 4, rect.height());
+            painter->drawRect(0, t, 4, rect.height());
         }
 
         // 置顶标识
@@ -116,51 +117,49 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         }
 
         // 绘制头像
-        const QRect avtRect(ESize::Narrow, (rect.height() - XTheme.AvatarSize) / 2, XTheme.AvatarSize, XTheme.AvatarSize);
+        const QRect avtRect(ESize::Narrow, t + (rect.height() - XTheme.AvatarSize) / 2, XTheme.AvatarSize, XTheme.AvatarSize);
         Avatar::DrawAvatar(painter, avtRect, itemData->mChatObject->getAvatar(), itemData->mChatObject->getNickName(), itemData->mChatObject->getOnlineState());
 
         // 字体
         painter->setFont(XTheme.StdFont);
 
-        const int ch = avtRect.center().y(); // 矩形中心线高度
-        const int timeWidth = GetFontPixelWidth(XTheme.StdFont, itemData->mTime); //时间字体的宽度
+        const int& ch = avtRect.center().y(); // 矩形中心线高度
 
         // 绘制消息数量
         QRect mcRect(rect.width(), ch, 0, 0);
         if (!itemData->mReadFlag) {
             const auto& msgCountStr = QString::number(itemData->mUnreadMsgCount);
 
-            mcRect.setTop(ch);
-            mcRect.setRight(rect.width() - ESize::Narrow);
-            mcRect.setHeight(GetFontPixelHeight(XTheme.StdFont));
-            mcRect.setWidth(GetFontPixelWidth(XTheme.StdFont, msgCountStr) + ESize::Narrow);
+            mcRect.setWidth(GetFontPixelWidth(XTheme.StdFont, msgCountStr) + ESize::Std);
+            mcRect.setHeight(qMin(18, mcRect.width()));
+            mcRect.moveTop(ch + ESize::Tiny);
+            mcRect.moveRight(rect.right() - ESize::Narrow);
 
-            painter->setPen(Qt::white);
+            // 背景
+            painter->setPen(Qt::NoPen);
             painter->setBrush(XTheme.PrimayColor1);
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->drawRoundedRect(mcRect, int(float(mcRect.height()) / mcRect.width() * 100), 100, Qt::RelativeSize);
+            painter->setRenderHint(QPainter::Antialiasing, false);
+
+            // 文字
+            painter->setPen(Qt::white);
             painter->drawText(mcRect, Qt::AlignCenter, msgCountStr);
-            painter->drawRoundedRect(mcRect, int((float(mcRect.width()) / mcRect.height()) * 100), 100);
         }
 
         // 绘制时间
-        const QRect timeRect(rect.width() - ESize::Std - timeWidth, ESize::Std, timeWidth, ch - ESize::Std);
-        painter->setPen(XTheme.SubTextColor);
+        const int& tw = GetFontPixelWidth(XTheme.StdFont, itemData->mTime); //时间字体的宽度
+        const QRect timeRect(rect.right() - ESize::Narrow - tw, t, tw, ch - t);
         painter->setBrush(Qt::NoBrush);
+        painter->setPen(XTheme.SubTextColor);
         painter->drawText(timeRect, Qt::AlignHCenter | Qt::AlignBottom, itemData->mTime);
 
         // 绘制消息概要
-        QRect msgRect;
-        msgRect.setLeft(avtRect.right() + ESize::Narrow);
-        msgRect.setTop(ch);
-        msgRect.setRight(mcRect.left() - ESize::Narrow);
-        msgRect.setBottom(rect.height() - ESize::Std);
+        const QRect msgRect(avtRect.right() + ESize::Narrow, ch, mcRect.left() - avtRect.right() - ESize::Narrow, ch - t);
         painter->drawText(msgRect, Qt::AlignLeft | Qt::AlignTop, GetElidedText(itemData->mMessage, XTheme.StdFont, msgRect.width()));
 
         // 绘制名称
-        QRect nameRect;
-        nameRect.setLeft(msgRect.left());
-        nameRect.setRight(timeRect.left() + ESize::Std);
-        nameRect.setTop(ESize::Std);
-        nameRect.setBottom(ch);
+        const QRect nameRect(msgRect.left(), t, timeRect.left() - msgRect.left() - ESize::Std, ch - t);
         painter->setFont(XTheme.SubTitleFont);
         painter->setPen(XTheme.MainTextColor);
         painter->drawText(nameRect, Qt::AlignLeft | Qt::AlignBottom, itemData->mChatObject->getNickName());

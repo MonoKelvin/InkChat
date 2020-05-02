@@ -43,7 +43,15 @@ public:
     }
 
     LanObject* getLanObjectByUuid(const QString& uuid);
-    IChatObject* getChatObjectByUuid(const QString& uuid);
+
+    /**
+     * @brief 通过uuid获取一个聊天对象
+     * @param uuid 聊天对象的uuid
+     * @param createIfNull 如果为true就当没有缓存时就创建一个陌生人对象，并指定该对象的
+     * uuid，但不会缓存改聊天对象的数据。
+     * @return 返回聊天对象指针
+     */
+    IChatObject* getChatObjectByUuid(const QString& uuid, bool createIfNull = false);
 
     static QPointer<User> Instance()
     {
@@ -52,7 +60,7 @@ public:
     }
 
 private:
-    IChatObject* dynamicLoadCacheData(const QString& uuid);
+    IChatObject* dynamicLoadCacheData(const QString& uuid, bool createIfNull = false);
 
 private:
     Q_DISABLE_COPY_MOVE(User)

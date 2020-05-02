@@ -181,6 +181,7 @@ public:
      * @brief 解析json数据，一般是来自数据库的数据
      * @param json json对象
      * @param cache 是否缓存数据
+     * @note 默认不获取 hostAddress 参数值
      */
     virtual void fromJson(const QJsonObject& json, bool cache = true);
 
@@ -188,6 +189,7 @@ public:
      * @brief 将数据转换成json格式
      * @param fetchIfNull 如果数据为空就先从数据库中获取，然后再返回，如果获取失败则返回空Json对象
      * @return QJsonObject json对象
+     * @note 默认不输出 hostAddress 参数值
      */
     virtual QJsonObject toJson(/*bool fetchIfNull = true*/);
 
@@ -198,9 +200,8 @@ public:
 
     /**
      * @brief 更新本地数据
-     * @return 更新成功返回true，否则返回false。默认返回true
      */
-    virtual bool updateLocalData() { return true; }
+    virtual void updateLocalData();
 
     inline const QString getUuid(void) const noexcept { return mUuid; }
     inline void setUuid(const QString& uuid)

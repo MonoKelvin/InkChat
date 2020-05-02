@@ -78,7 +78,7 @@ LanObject* User::getLanObjectByUuid(const QString& uuid)
     return static_cast<LanObject*>(getChatObjectByUuid(uuid));
 }
 
-IChatObject* User::getChatObjectByUuid(const QString& uuid)
+IChatObject* User::getChatObjectByUuid(const QString& uuid, bool createIfNull)
 {
     for (int i = 0; i < mMyChatObjects.size(); i++) {
         if (mMyChatObjects.at(i)->getUuid() == uuid) {
@@ -86,10 +86,10 @@ IChatObject* User::getChatObjectByUuid(const QString& uuid)
         }
     }
 
-    return dynamicLoadCacheData(uuid);
+    return dynamicLoadCacheData(uuid, createIfNull);
 }
 
-IChatObject* User::dynamicLoadCacheData(const QString& uuid)
+IChatObject* User::dynamicLoadCacheData(const QString& uuid, bool createIfNull)
 {
     QFile file(AppSettings::ChatObjectCacheFile(uuid));
 
@@ -108,7 +108,6 @@ IChatObject* User::dynamicLoadCacheData(const QString& uuid)
                 chatObj = new MyFriend(this);
                 break;
             }
-
             if (chatObj) {
                 chatObj->fromJson(doc.object());
                 mMyChatObjects.append(chatObj);
@@ -116,6 +115,12 @@ IChatObject* User::dynamicLoadCacheData(const QString& uuid)
         }
     }
     file.close();
+
+    if (createIfNull && chatObj == nullptr) {
+        chatObj = new IChatObject(this);
+        chatObj->setUuid(uuid);
+        mMyChatObjects.append(chatObj);
+    }
 
     return chatObj;
 }

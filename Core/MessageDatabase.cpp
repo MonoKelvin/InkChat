@@ -18,7 +18,7 @@ const QString SqlQueryMsgItems = QStringLiteral("select * from getmessageitems")
 // 查询用户的聊天记录
 const QString SqlQueryChatRecord = QStringLiteral("select type,uuid,time,data from chatrecord where msgId=(select id from message where uuid='%1') order by id desc limit %2,%3");
 // 插入一条通知消息
-const QString SqlInsertVoidMessageItem = QStringLiteral("insert into message (chat,uuid,roleType,md5) values('1',?,?,?)");
+const QString SqlInsertVoidMessageItem = QStringLiteral("insert into message (uuid,roleType,md5) values(?,?,?)");
 // 插入一条聊天记录
 const QString SqlInsertChatRecord = QStringLiteral("insert into chatrecord (msgId,type,uuid,time,data) values((select id from message where uuid=?),?,?,?,?)");
 // 更新阅读标志
@@ -61,13 +61,13 @@ QSqlError MessageDatabase::initDatabase()
     const auto SqlCreateMessageItemTable = QLatin1String(R"(
         create table message(
             id integer primary key autoincrement,
-            chat boolean default '0',
+            chat boolean default '1',
             uuid char(32) not null,
             roleType smallint,
             unreadMsgCount int default 0,
             readFlag boolean default '1',
             top boolean default '0',
-            md5 char(16) not null
+            md5 char(16)
         ))");
 
     // 聊天记录表
@@ -85,7 +85,7 @@ QSqlError MessageDatabase::initDatabase()
     // 消息视图
     const auto SqlCreateViewGetMsgItems = QLatin1String(R"(
             create view getmessageitems as select * from (
-            select m.uuid,roleType,unreadMsgCount,readFlag,time,data,top
+            select m.uuid as uuid,roleType,unreadMsgCount,readFlag,time,data,top
             from message as m left outer join chatrecord as c
             on c.id=(select max(id) from chatrecord where msgId=m.id)
             where chat='1') as x
@@ -108,32 +108,59 @@ QSqlError MessageDatabase::initDatabase()
     return QSqlError();
 }
 
-MessageItem* MessageDatabase::newMessageItem(MessageList* list, IChatObject* chatObj)
+MessageItem* MessageDatabase::loadMessageItem(MessageList* list, IChatObject* chatObj)
 {
     Q_ASSERT(nullptr != chatObj);
 
+    // 如果列表中已经存在就直接返回
+    {
+        const int& i = list->getIndexByChatObject(chatObj);
+        if (i >= 0) {
+            return list->getMessage(i);
+        }
+    }
+
     QSqlQuery query;
-    // uuid,roleType,md5
-    query.prepare(SqlInsertVoidMessageItem);
-    query.addBindValue(chatObj->getUuid());
-    query.addBindValue(IChatObject::LAN);
-    query.addBindValue(chatObj->getMD5());
-    if (!query.exec()) {
-        emit list->failed(tr("无法存储新的聊天数据，请尝试清理缓存！"));
+    if (!query.exec(SqlQueryMsgItems + QStringLiteral(" where uuid='%1'").arg(chatObj->getUuid()))) {
+        qDebug() << query.lastError() << __LINE__;
         return nullptr;
     }
 
-    // 更新本地数据
-    chatObj->updateLocalData();
-
     MessageItem* item = new MessageItem;
-    item->setChatObject(chatObj);
-    list->appendMessage(item);
+    item->mChatObject = chatObj;
 
+    // 有缓存，直接加载
+    if (query.next()) {
+        // uuid,roleType,unreadMsgCount,readFlag,time,data,top
+        item->mUnreadMsgCount = query.value(2).toInt();
+        item->mReadFlag = query.value(3).toBool();
+        item->mTime = GetMessageTime(query.value(4).toDateTime());
+        item->mMessage = query.value(5).toString();
+        item->mIsTop = query.value(6).toBool();
+    } else {
+        // uuid,roleType,md5
+        query.prepare(SqlInsertVoidMessageItem);
+        query.addBindValue(chatObj->getUuid());
+        query.addBindValue(chatObj->getRoleType());
+        query.addBindValue(chatObj->getMD5());
+
+        if (query.exec()) {
+            chatObj->updateLocalData();
+            item->mMessage = tr("[暂无最近消息]");
+        } else {
+            qDebug() << query.lastError() << __LINE__;
+            emit list->failed(tr("无法存储新的联系人信息，请尝试在[设置]中清理缓存！"));
+            delete item;
+            item = nullptr;
+            return nullptr;
+        }
+    }
+
+    list->appendMessage(item, true);
     return item;
 }
 
-void MessageDatabase::loadMessageItems(MessageList* list)
+void MessageDatabase::refreshMessageList(MessageList* list)
 {
     QSqlQuery query;
     if (!query.exec(SqlQueryMsgItems)) {
@@ -146,9 +173,7 @@ void MessageDatabase::loadMessageItems(MessageList* list)
         const auto& obj = User::Instance()->getChatObjectByUuid(query.value(0).toString());
 
         // 获取数据失败
-        if (nullptr == obj) {
-            continue;
-        } else if (list->isChatObjectExists(obj)) {
+        if (!obj || list->getIndexByChatObject(obj) >= 0) {
             continue;
         }
 
@@ -183,19 +208,25 @@ void MessageDatabase::detectLanEnvironment(MessageList* list)
 {
     LanObject* lan = LanObject::DetectLanEnvironment();
 
-    // 加载实时连接的局域网
-    if (lan) {
-        // 如果该局域网对象已经在聊天列表中就直接返回
-        if (list->isChatObjectExists(lan)) {
-            return;
-        }
-
-        // 如果有检测到局域网并且未被缓存，则分配一个uuid，再保存到数据库
+    // 检测到局域网并且局域网未显示到视图
+    if (lan && list->getIndexByChatObject(lan) == -1) {
+        // 如果未被缓存，则分配一个uuid，再保存到数据库
         if (lan->getUuid().isEmpty()) {
             lan->generateUuid();
         }
 
-        newMessageItem(list, lan);
+        QSqlQuery query;
+        query.prepare(SqlInsertVoidMessageItem);
+        // uuid,roleType,md5
+        query.addBindValue(lan->getUuid());
+        query.addBindValue(IChatObject::LAN);
+        query.addBindValue(lan->getMD5());
+        if (query.exec()) {
+            MessageItem* item = new MessageItem;
+            item->mChatObject = lan;
+            list->appendMessage(item);
+            lan->updateLocalData();
+        }
     }
 }
 

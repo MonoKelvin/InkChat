@@ -50,7 +50,7 @@ public:
     // 聊天对象的缓存文件
     inline static const QString ChatObjectCacheFile(const QString& uuid) noexcept
     {
-        return UserDataDir() + QStringLiteral("/Cache/") + uuid;
+        return UserDir() + QStringLiteral("/Cache/") + uuid;
     }
 
     /**

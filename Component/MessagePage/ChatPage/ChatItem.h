@@ -11,11 +11,11 @@
  * @brief UDP 传输时使用的 ChatItem 数据包
  */
 struct SChatItemPackage {
-    SUserBaseData UserChatData;
-    IChatObject::ERoleType RoleType;
+    SUserBaseData UserChatData; // 传输时聊天对象对应的用户数据，单用户时聊天对象即为用户
+    IChatObject::ERoleType RoleType; // 传输时的聊天对象
     QString IPAddress; // 聊天对象IP地址，如果是单用户则该值等于HostAddress
     QString HostAddress; // 用户主机地址
-    int ChatType;
+    int ChatType; // 聊天类型
 
     SChatItemPackage() = default;
 };

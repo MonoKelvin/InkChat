@@ -32,6 +32,15 @@ private:
 
     void buildMessageItemMenu(MessageItem* item);
 
+    ChatViewWidget* findChatViewByMessageItem(MessageItem* item) const;
+
+    /**
+     * @brief 通过消息包找到要处理的消息项
+     * @param package 消息包
+     * @return 如果找到则返回消息项行数，否则返回-1
+     */
+    int getMessageIndexByPackage(const SChatItemPackage& package);
+
 private Q_SLOTS:
 
     /**
@@ -48,6 +57,9 @@ private Q_SLOTS:
 
     // 当消息激活时，一般为点击进行聊天
     void onMessageItemActived(const QModelIndex& index);
+
+    // 当需要聊天时，一般直接打开消息项
+    void onChat(IChatObject* chatObj);
 
     void onReceived(const SChatItemPackage& package);
 

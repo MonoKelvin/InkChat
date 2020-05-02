@@ -16,7 +16,6 @@ public:
 
     void fromJson(const QJsonObject& json, bool cache = true) override;
     QJsonObject toJson() override;
-    bool updateLocalData() override;
 
     /**
      * @brief 设置成员状态
@@ -46,7 +45,7 @@ private:
     // 物理地址，通过和IPv4地址来表示一个唯一局域网对象
     QString mMacAddress;
 
-    /** 所有成员信息 */
+    /** 所有成员信息，结构中的Data参数必须保存的是主机地址 */
     QList<SUserBaseData> mMembers;
 };
 

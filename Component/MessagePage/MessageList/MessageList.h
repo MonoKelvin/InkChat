@@ -66,7 +66,7 @@ public:
      * @param message 给定的消息
      * @return 消息所在行数，消息不存在则返回-1
      */
-    inline int getRow(MessageItem* message) const
+    inline int getRow(MessageItem* message) const noexcept
     {
         return mMessages.indexOf(message);
     }
@@ -82,7 +82,7 @@ public:
         removeMessage(mMessages.indexOf(message));
     }
 
-    inline const QModelIndex itemIndex(MessageItem* message) const
+    inline const QModelIndex itemIndex(MessageItem* message) const noexcept
     {
         return index(getRow(message));
     }
@@ -104,18 +104,24 @@ public:
     /**
      * @brief 在最后添加一条消息
      * @param message 消息项
+     * @param sort 是否插入后进行排序
+     * TODO: 提供更多类型的排序
      */
-    inline void appendMessage(MessageItem* message)
+    inline void appendMessage(MessageItem* message, bool sort = false)
     {
-        return insertMessage(mMessages.size(), message);
+        insertMessage(mMessages.size(), message);
+
+        if (sort) {
+            promoteMessage(message);
+        }
     }
 
     /**
      * @brief 是否存在与指定聊天对象的消息项
      * @param chatObj 聊天对象实例
-     * @return 如果存在与指定聊天对象的消息项则返回true，否则返回false
+     * @return 如果存在与指定聊天对象的消息项的行数，否则返回-1
      */
-    bool isChatObjectExists(IChatObject* chatObj);
+    int getIndexByChatObject(IChatObject* chatObj);
 
     /**
      * @brief 设置消息项的是否置顶
@@ -170,7 +176,15 @@ public:
      * @return int 返回提升消息后的新行数
      * @warning 使用该方法时必须保证所有置顶消息在最上方
      */
-    int ariseMessage(MessageItem* message);
+    int promoteMessage(MessageItem* message);
+
+    /**
+     * @brief 取消置顶消息项。
+     * @param message 要取消置顶的消息。如果该消息未置顶，则不错任何操作
+     * @param last 是否直接放置到最后。如果为false则放置在所有置顶消息的临近下方
+     * @return 返回取消指定后消息的新行数
+     */
+    int loweredMessage(MessageItem* message, bool last = false);
 
 Q_SIGNALS:
     void saved();
