@@ -67,6 +67,7 @@ void IChatObject::fromJson(const QJsonObject& json, bool cache)
     //mID = json.value(QLatin1String("id")).toString().toUInt();
     mMD5 = json.value(QLatin1String("md5")).toString();
     mUuid = json.value(QLatin1String("uuid")).toString();
+    mHostAddress = json.value(QLatin1String("hostAddress")).toString();
     mRoleType = ERoleType(json.value(QLatin1String("roleType")).toInt());
     mNickName = json.value(QLatin1String("nickName")).toString();
     mSignature = json.value(QLatin1String("signature")).toString(tr("还没有任何简介"));
@@ -78,6 +79,7 @@ QJsonObject IChatObject::toJson(void)
     //json.insert(QLatin1String("id"), QString::number(mID));
     json.insert(QLatin1String("md5"), mMD5);
     json.insert(QLatin1String("uuid"), mUuid);
+    json.insert(QLatin1String("hostAddress"), mHostAddress);
     json.insert(QLatin1String("roleType"), mRoleType);
     json.insert(QLatin1String("nickName"), mNickName);
     json.insert(QLatin1String("signature"), mSignature);

@@ -172,6 +172,14 @@ void MainWindow::buildMessageItemMenu(MessageItem* item)
     connect(removeAction, &QAction::triggered, [this, item] {
         mMessageListModel->removeMessage(item);
         ui->messageList->update(ui->messageList->rect());
+
+        ChatViewWidget* cvw = findChatViewByMessageItem(item);
+        if (cvw) {
+            mChatPages.removeOne(cvw);
+            delete cvw;
+            cvw = nullptr;
+            onMessageItemActived(QModelIndex());
+        }
     });
 
     if (item->isTop()) {
@@ -198,36 +206,20 @@ ChatViewWidget* MainWindow::findChatViewByMessageItem(MessageItem* item) const
 
 int MainWindow::getMessageIndexByPackage(const SChatItemPackage& package)
 {
-    const int& len = mMessageListModel->rowCount();
-    if (package.RoleType & IChatObject::MultiPerson) {
-        // 多人聊天通过IP地址找到
+    const int len = mMessageListModel->rowCount();
+    if (package.RoleType & IChatObject::MultiPerson || package.UserChatData.Uuid == User::Instance()->getUuid()) {
         for (int i = 0; i < len; ++i) {
             if (package.IPAddress == mMessageListModel->getMessage(i)->getChatObject()->getHostAddress()) {
                 return i;
             }
         }
     } else {
-        // 单人聊天通过UUID找到
         for (int i = 0; i < len; ++i) {
             if (package.UserChatData.Uuid == mMessageListModel->getMessage(i)->getChatObject()->getUuid()) {
                 return i;
             }
         }
     }
-
-    // 如果没找到就看看是否有缓存，如果有就新建一个item并提升到顶部返回索引
-    /*const auto& chatObj = User::Instance()->getChatObjectByUuid(package.UserChatData.Uuid);
-    if (chatObj) {
-        // 构建临时消息
-        QScopedPointer<ChatItem> item(MessageManager::BuildChatItem(package.ChatType, package.UserChatData));
-        if (item.isNull()) {
-            return -1;
-        }
-
-        MessageDatabase::Instance()->newMessageItem(mMessageListModel, chatObj);
-        MessageDatabase::Instance()->saveAChatRecord(item.data(), chatObj->getUuid());
-    } else {
-    }*/
 
     return -1;
 }
@@ -254,6 +246,8 @@ void MainWindow::onMessageItemActived(const QModelIndex& index)
         if (mChatPages.at(i)->getChatListModel()->getChatObject() == msgItem->getChatObject()) {
             mChatPages.at(i)->setVisible(true);
             msgItem->setReadFlag(true);
+            msgItem->setUnreadMsgCount(0);
+            ui->messageList->update(mMessageListModel->itemIndex(msgItem));
             isChatPageExists = true;
 
             // 把最近使用的页面放置在最前
@@ -293,7 +287,7 @@ void MainWindow::onReceived(const SChatItemPackage& package)
      */
 
     // I
-    const int& i = getMessageIndexByPackage(package); // 返回-1表示不存在
+    const int i = getMessageIndexByPackage(package); // 返回-1表示不存在
 
     // 如果是用户的行为状态
     if (package.ChatType & AbstractChatListItem::UserBehavior && i != -1) {
@@ -329,7 +323,7 @@ void MainWindow::onReceived(const SChatItemPackage& package)
     }
 
     // 消息概要
-    const auto& brief = dealWithMessageBrief(package.RoleType, package.UserChatData.Data.toString());
+    const auto& brief = dealWithMessageBrief(package.ChatType, package.UserChatData.Data.toString());
 
     // II.i
     if (package.UserChatData.Uuid == User::Instance()->getUuid()) {
@@ -347,31 +341,37 @@ void MainWindow::onReceived(const SChatItemPackage& package)
         return;
     }
 
-    switch (package.ChatType) {
-    case AbstractChatListItem::File:
+    // 如果收到TCP类型的消息就新建TCP客户端来处理
+    if (package.ChatType & ChatItem::TCP_Type) {
         if (package.IPAddress == User::Instance()->getHostAddress()) {
             TcpClient* client = new TcpClient(this);
             client->connectToHost(package.IPAddress, item.data());
         }
-        break;
-    case AbstractChatListItem::Text:
-        break;
     }
 
     // I.i
     if (i == -1) {
-        // I.ii.a
+        // I.i.a & I.i.b
         const auto& chatObj = User::Instance()->getChatObjectByUuid(package.UserChatData.Uuid, true);
         if (chatObj) {
             chatObj->setNickName(package.UserChatData.Name);
-            chatObj->setHostAddress(package.HostAddress);
-            MessageDatabase::Instance()->loadMessageItem(mMessageListModel, chatObj);
+            chatObj->setHostAddress(package.IPAddress);
+
+            // 更新
+            const auto& msgItem = MessageDatabase::Instance()->loadMessageItem(mMessageListModel, chatObj);
+            msgItem->setReadFlag(false);
+            msgItem->setUnreadMsgCount(1);
+            msgItem->setMessage(brief);
+            msgItem->setTime(QDateTime::currentDateTime());
+            mMessageListModel->promoteMessage(msgItem);
+            ui->messageList->update(ui->messageList->rect());
+
             MessageDatabase::Instance()->saveAChatRecord(item.data(), chatObj->getUuid());
             chatObj->updateLocalData();
         }
     } else {
         const auto& msgItem = mMessageListModel->getMessage(i);
-        const int& tarRow = mMessageListModel->getRow(msgItem);
+        const int tarRow = mMessageListModel->getRow(msgItem);
 
         // 必须先保存，否则item可能已经被 take() 了
         MessageDatabase::Instance()->saveAChatRecord(item.data(), msgItem->getChatObject()->getUuid());
@@ -415,7 +415,7 @@ const QString MainWindow::dealWithMessageBrief(int type, const QString& message)
     case AbstractChatListItem::File:
         return (QStringLiteral("[文件]") + GetFileNameFromPath(message)).left(32);
     case AbstractChatListItem::Text:
-        return message.left(32);
+        return message.left(32).remove(QLatin1String("\n"));
     case AbstractChatListItem::UserJoin:
         return QStringLiteral("[新用户加入]");
     case AbstractChatListItem::UserLeft:

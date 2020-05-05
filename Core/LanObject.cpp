@@ -59,8 +59,9 @@ QJsonObject LanObject::toJson()
 
 void LanObject::setMemberBehavior(int type, const SUserBaseData& userData)
 {
-    const int& index = mMembers.indexOf(userData);
+    const int index = mMembers.indexOf(userData);
     switch (type) {
+    case AbstractChatListItem::ReplyUserInfo:
     case AbstractChatListItem::UserJoin:
         if (index == -1) {
             mMembers.append(userData);

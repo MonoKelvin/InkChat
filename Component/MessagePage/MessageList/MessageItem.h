@@ -63,12 +63,8 @@ public:
 
 Q_SIGNALS:
     void topChanged();
-    void dirtyChanged();
     void readFlagChanged();
     void unreadMsgCountChanged();
-
-private Q_SLOTS:
-    void onTopChanged();
 
 private:
     /** 是否置顶 */

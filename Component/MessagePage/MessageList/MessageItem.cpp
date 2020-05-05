@@ -50,26 +50,6 @@ void MessageItem::setTime(const QDateTime& time) noexcept
     mTime = GetMessageTime(time);
 }
 
-void MessageItem::onTopChanged()
-{
-    // 如果在线登录，就更新远程数据库，否则更新本地数据
-    /*if (AppSettings::OfflineUserName.isEmpty()) {
-        const auto postData = QStringLiteral("uid=%1&fid=%2&top=%3")
-                                  .arg(AppSettings::Instance()->getCurrentUserId())
-                                  .arg(mChatObject->getID())
-                                  .arg(mChatObject->getIsTop());
-
-    HttpRequest* request = new HttpRequest;
-    
-    // 发送请求，无论是否成功都继续执行
-    request->sendRequest(UpdateFriendUrl, HttpRequest::POST, postData);
-} else {
-    mChatObject->updateLocalData();
-}*/
-
-    mChatObject->updateLocalData();
-}
-
 //------------------------------------------------------------------------------
 // MessageItemDelegate
 //------------------------------------------------------------------------------
@@ -93,8 +73,8 @@ void MessageItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         painter->save();
         painter->setPen(Qt::NoPen);
 
-        // 鼠标移过或置顶
-        if (option.state.testFlag(QStyle::State_MouseOver) || itemData->mIsTop) {
+        // 鼠标移过
+        if (option.state.testFlag(QStyle::State_MouseOver)) {
             painter->setBrush(XTheme.TintColor);
             painter->drawRect(rect);
         }

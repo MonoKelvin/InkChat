@@ -48,8 +48,8 @@ public:
         RequestUserInfo = 0x000400, // 请求获取用户信息
         ReplyUserInfo = 0x000800, // 响应请求用户信息
 
-        UDP_Protocol = Text | RichText, // 需要进行UDP协议传输的类型
-        TCP_Protocol = File | Image | Video | Audio, // 需要进行TCP协议传输的类型
+        UDP_Type = Text | RichText, // 需要进行UDP协议传输的类型
+        TCP_Type = File | Image | Video | Audio, // 需要进行TCP协议传输的类型
         UserBehavior = UserJoin | UserLeft | RequestUserInfo | ReplyUserInfo, // 用户行为
 
         /** 用户数据无关 */

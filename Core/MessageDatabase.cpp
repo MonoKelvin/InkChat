@@ -114,7 +114,7 @@ MessageItem* MessageDatabase::loadMessageItem(MessageList* list, IChatObject* ch
 
     // 如果列表中已经存在就直接返回
     {
-        const int& i = list->getIndexByChatObject(chatObj);
+        const int i = list->getIndexByChatObject(chatObj);
         if (i >= 0) {
             return list->getMessage(i);
         }
@@ -145,7 +145,6 @@ MessageItem* MessageDatabase::loadMessageItem(MessageList* list, IChatObject* ch
         query.addBindValue(chatObj->getMD5());
 
         if (query.exec()) {
-            chatObj->updateLocalData();
             item->mMessage = tr("[暂无最近消息]");
         } else {
             qDebug() << query.lastError() << __LINE__;

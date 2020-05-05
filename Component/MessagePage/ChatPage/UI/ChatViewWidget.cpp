@@ -127,7 +127,7 @@ void ChatViewWidget::autoDetermineScrollToBottom()
     QModelIndex index;
 
     // 从上面依次搜索找到第一个item
-    for (int i = 2 * sp; i >= sp; --i) {
+    for (int i = sp + 1; i > 0; --i) {
         index = ui->chatView->indexAt(QPoint(sp + 1, i));
         if (index.isValid()) {
             // 如果用户浏览倒数第4条之前的聊天记录就不要滚动到最低部

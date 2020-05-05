@@ -85,7 +85,7 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     //item->setSendState(ChatItem::Succeed);
     view->appendItem(item);
 
-    if (type & ChatItem::TCP_Protocol) {
+    if (type & ChatItem::TCP_Type) {
         // 新建TCP服务器
         TcpServer* server = new TcpServer(this);
         if (!server->setFileToSend(data.toString(), item)) {
@@ -102,10 +102,10 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
     const auto& chatObj = view->mChatObject;
 
     out << type;
-    out << User::Instance()->getUuid();
-    out << User::Instance()->getNickName();
-    out << chatObj->getHostAddress();
-    out << chatObj->getRoleType();
+    out << User::Instance()->getUuid(); // 发送者uuid
+    out << User::Instance()->getNickName(); // 发送者昵称
+    out << chatObj->getHostAddress(); // 接收者主机/IP地址
+    out << chatObj->getRoleType(); // 接收者角色类型
     out << data;
 
     // 发送数据
