@@ -1,5 +1,0 @@
-INCLUDEPATH *= $$PWD
-
-HEADERS += \
-
-SOURCES += \

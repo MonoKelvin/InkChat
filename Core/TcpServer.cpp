@@ -1,5 +1,6 @@
 ﻿#include "TcpServer.h"
 
+#include <Configuation.h>
 #include <FileChatItem.h>
 #include <Utility.h>
 
@@ -7,6 +8,7 @@
 #include <QFileDialog>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QTimer>
 
 TcpServer::TcpServer(QObject* parent)
     : QObject(parent)
@@ -18,6 +20,7 @@ TcpServer::TcpServer(QObject* parent)
     mTcpServer = new QTcpServer(this);
 
     connect(mTcpServer, &QTcpServer::newConnection, this, &TcpServer::sendMessage);
+    connect(mTcpServer, &QTcpServer::acceptError, this, &TcpServer::deleteLater);
 
     mTcpServer->close();
 }
@@ -45,13 +48,9 @@ TcpServer::~TcpServer()
 bool TcpServer::setFileToSend(const QString& fileName, ChatItem* chatItem)
 {
     mFileToSend = new QFile(fileName);
-    if (!mFileToSend->open((QFile::ReadOnly))) {
-        deleteLater();
-        return false;
-    }
-
     // 开始监听
-    if (!mTcpServer->listen(QHostAddress::Any, LAN_TCP_PORT)) {
+    if (!mFileToSend->open((QFile::ReadOnly))
+        || !mTcpServer->listen(QHostAddress::Any, LAN_TCP_PORT)) {
         deleteLater();
         return false;
     }
@@ -81,7 +80,7 @@ void TcpServer::sendMessage()
     sendOut << qint64(0) << qint64(0);
 
     // 传输总字节数
-    //sendOut.device()->seek(0);
+    sendOut.device()->seek(0);
     sendOut << mTotalBytes;
 
     // 计算剩余要发送的数据
@@ -107,9 +106,8 @@ void TcpServer::updateProgress()
     switch (mChatItem->getChatType()) {
     case ChatItem::File:
         const auto& fci = static_cast<FileChatItem*>(mChatItem.data());
-        const auto& written = mTotalBytes - mRemainingBytes;
-        const auto& useTime = int(mTime.elapsed() / 1000);
-        fci->Speed = written / useTime;
+        const qint64 written = mTotalBytes - mRemainingBytes;
+        fci->Speed = float(written * 1000) / mTime.elapsed();
         fci->Percentage = static_cast<unsigned char>(written / mTotalBytes);
         break;
     }

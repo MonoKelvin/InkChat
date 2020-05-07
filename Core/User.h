@@ -59,6 +59,8 @@ public:
         return instance;
     }
 
+    void updateLocalData() override;
+
 private:
     IChatObject* dynamicLoadCacheData(const QString& uuid, bool createIfNull = false);
 

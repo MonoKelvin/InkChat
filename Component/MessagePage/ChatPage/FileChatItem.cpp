@@ -54,7 +54,7 @@ void FileChatItem::paintContent(QPainter* painter, const QRect& rect)
     QRect proRect(iconRect.right() + ESize::Std, bg.top() + 56, 145, 4);
     painter->setBrush(XTheme.getPrimarySubColor(1));
     DrawRoundRect(painter, proRect, 2, 2, 2, 2);
-    proRect.setWidth(int(Percentage * 1.55f));
+    proRect.setWidth(int(int(Percentage) * 1.55f));
     painter->setBrush(XTheme.PrimayColor1);
     DrawRoundRect(painter, proRect, 2, 2, 2, 2);
 

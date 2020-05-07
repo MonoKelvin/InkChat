@@ -120,7 +120,28 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="minePage"/>
+     <widget class="QWidget" name="settingPage">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <widget class="SettingsPage" name="settingsPage" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -132,6 +153,12 @@
    <class>Navigation</class>
    <extends>QWidget</extends>
    <header location="global">Navigation.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SettingsPage</class>
+   <extends>QWidget</extends>
+   <header location="global">SettingsPage.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

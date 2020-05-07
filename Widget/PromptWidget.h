@@ -39,12 +39,12 @@ protected:
      * @brief 构建UI方法
      * @param prompt 文本内容
      */
-    virtual void buildUI(const QString& prompt);
+    /*virtual */ void buildUI(const QString& prompt);
 
     /**
      * @brief 显示方法
      */
-    virtual void show();
+    /*virtual */ void show();
 
     void paintEvent(QPaintEvent*) override;
 };

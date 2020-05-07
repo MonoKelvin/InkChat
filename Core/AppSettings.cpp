@@ -26,9 +26,7 @@ const QString AppSettings::UserDir() noexcept
     return AppDataDir() + QStringLiteral("/0/") + User::Instance()->getNickName();
 }
 
-void AppSettings::SetIconTheme(const QString& themeName)
+void AppSettings::SetIconTheme(const QString& themeName) noexcept
 {
-    const auto theme = QStringLiteral("App/theme");
-    SetValue(theme, themeName);
     QIcon::setThemeName(themeName);
 }

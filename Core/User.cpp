@@ -89,6 +89,21 @@ IChatObject* User::getChatObjectByUuid(const QString& uuid, bool createIfNull)
     return dynamicLoadCacheData(uuid, createIfNull);
 }
 
+void User::updateLocalData()
+{
+    const auto& fileName = AppSettings::UserDataFile();
+    if (!IsFileExists(fileName, true)) {
+        return;
+    }
+
+    QFile file(fileName);
+    if (file.open(QFile::WriteOnly | QFile::Text)) {
+        QJsonDocument jsonDoc(toJson());
+        file.write(jsonDoc.toJson(QJsonDocument::Compact));
+    }
+    file.close();
+}
+
 IChatObject* User::dynamicLoadCacheData(const QString& uuid, bool createIfNull)
 {
     QFile file(AppSettings::ChatObjectCacheFile(uuid));

@@ -14,28 +14,35 @@
 #include <QMouseEvent>
 #include <QScrollBar>
 
-ChatViewWidget::ChatViewWidget(QWidget* parent)
+ChatViewWidget::ChatViewWidget(IChatObject* chatObj, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::ChatViewWidget)
+    , mLoader(nullptr)
 {
     ui->setupUi(this);
 
     mChatListModel = new ChatList(this);
-    mLoader = nullptr;
 
-    // 菜单
     STD_ICON_SETTER(ui->btnMenu, "menu");
-
-    // 弹出信息按钮
     STD_ICON_SETTER(ui->btnInfo, "layout_info");
+
+    // 取消文件传输
+    if (chatObj->getRoleType() & IChatObject::MultiPerson) {
+        ui->chatInputer->mBtnFile->setEnabled(false);
+#ifndef QT_NO_TOOLTIP
+        ui->chatInputer->mBtnFile->setToolTip(tr("暂不支持局域网发送文件"));
+#endif
+    }
+
+    // 标题
+    ui->lbTitle->setText(chatObj->getNickName());
 
     // 视图
     ui->chatView->setItemDelegate(new ChatItemDelegate(this));
     ui->chatView->setModel(mChatListModel);
     ui->chatView->viewport()->installEventFilter(this);
-    ui->chatView->verticalScrollBar()->setPageStep(5);
 
-    connect(ui->chatInputer, &ChatInputBox::foldup, this, &ChatViewWidget::autoDetermineScrollToBottom);
+    connect(ui->chatInputer, &ChatInputBox::expand, this, &ChatViewWidget::autoDetermineScrollToBottom);
     connect(ui->chatInputer, &ChatInputBox::send, this, &ChatViewWidget::sendChat);
     connect(ui->btnMenu, &QPushButton::clicked, this, &ChatViewWidget::builChatViewWidgetMenu);
     connect(ui->btnInfo, &QPushButton::clicked, this, &ChatViewWidget::openChatObjectInfo);
@@ -43,6 +50,9 @@ ChatViewWidget::ChatViewWidget(QWidget* parent)
     // 调整显示层
     ui->chatView->lower();
     lower();
+
+    mChatListModel->initLoad(chatObj);
+    ui->chatView->scrollToBottom();
 }
 
 ChatViewWidget::~ChatViewWidget()
@@ -51,11 +61,6 @@ ChatViewWidget::~ChatViewWidget()
     ui->btnInfo = nullptr;
 
     delete ui;
-}
-
-void ChatViewWidget::setTitle(const QString& name) noexcept
-{
-    ui->lbTitle->setText(name);
 }
 
 QListView* ChatViewWidget::getChatView(void) const

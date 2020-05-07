@@ -22,15 +22,17 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     mChatInputer->setObjectName(QStringLiteral("chatInputer"));
     mChatInputer->setCursor(Qt::PointingHandCursor);
     mChatInputer->setPlaceholderText(tr("输入你想说的话..."));
-    gridLayout->addWidget(mChatInputer, 1, 0, 1, 5);
+    gridLayout->addWidget(mChatInputer, 1, 0, 1, 4);
 
-    mBtnImage = new QPushButton(this);
-    STD_ICON_SETTER(mBtnImage, "image");
-    gridLayout->addWidget(mBtnImage, 0, 0, 1, 1);
+    mBtnText = new QPushButton(this);
+    mBtnText->setCheckable(true);
+    mBtnText->setChecked(true);
+    STD_ICON_SETTER(mBtnText, "edit");
+    gridLayout->addWidget(mBtnText, 0, 0, 1, 1);
 
-    mBtnVideo = new QPushButton(this);
-    STD_ICON_SETTER(mBtnVideo, "video");
-    gridLayout->addWidget(mBtnVideo, 0, 1, 1, 1);
+    mBtnEmoji = new QPushButton(this);
+    STD_ICON_SETTER(mBtnEmoji, "emoji");
+    gridLayout->addWidget(mBtnEmoji, 0, 1, 1, 1);
 
     mBtnFile = new QPushButton(this);
     STD_ICON_SETTER(mBtnFile, "file");
@@ -39,17 +41,12 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     gridLayout->addItem(hSpacer, 0, 3, 1, 1);
 
-    mBtnExpand = new QPushButton(this);
-    mBtnExpand->setCheckable(true);
-    STD_ICON_SETTER(mBtnExpand, "down");
-    gridLayout->addWidget(mBtnExpand, 0, 4, 1, 1);
-
     mBtnSend = new QPushButton(this->parentWidget());
     mBtnSend->setObjectName(QStringLiteral("btnSend"));
     SHADOW_ICON_SETTER(mBtnSend, "send", XTheme.getPrimarySubColor(1, 120));
     mBtnSend->raise();
 
-    connect(mBtnExpand, &QPushButton::toggled, this, &ChatInputBox::onFoldup);
+    connect(mBtnText, &QPushButton::toggled, this, &ChatInputBox::onExpand);
     connect(mBtnSend, &QPushButton::clicked, [this] {
         const auto& msg = mChatInputer->toPlainText();
         if (!msg.isEmpty()) {
@@ -68,34 +65,28 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     _oldH = height();
 }
 
-void ChatInputBox::onFoldup(bool enabled)
+void ChatInputBox::onExpand(bool enabled)
 {
     if (enabled) {
+        setFixedHeight(_oldH);
+
+        mBtnSend->setVisible(true);
+        mChatInputer->setVisible(true);
+        mBtnEmoji->setEnabled(true);
+
+        moveEvent(nullptr);
+    } else {
         setFixedHeight(mChatInputer->y());
 
         // 设置控件状态
         mBtnSend->setVisible(false);
         mChatInputer->setVisible(false);
-        mBtnImage->setEnabled(false);
-        mBtnVideo->setEnabled(false);
-        mBtnFile->setEnabled(false);
-        mBtnExpand->setIcon(QIcon::fromTheme(QStringLiteral("up")));
+        mBtnEmoji->setEnabled(false);
 
         parentWidget()->adjustSize();
-    } else {
-        setFixedHeight(_oldH);
-
-        mBtnSend->setVisible(true);
-        mChatInputer->setVisible(true);
-        mBtnImage->setEnabled(true);
-        mBtnVideo->setEnabled(true);
-        mBtnFile->setEnabled(true);
-        mBtnExpand->setIcon(QIcon::fromTheme(QStringLiteral("down")));
-
-        moveEvent(nullptr);
     }
 
-    emit foldup(enabled);
+    emit expand(enabled);
 }
 
 void ChatInputBox::moveEvent(QMoveEvent *event)

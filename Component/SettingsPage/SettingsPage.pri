@@ -1,5 +1,7 @@
 INCLUDEPATH *= $$PWD
 
-HEADERS += \
+HEADERS += $$PWD/SettingsPage.h
 
-SOURCES += \
+SOURCES += $$PWD/SettingsPage.cpp
+
+FORMS += $$PWD/settingspage.ui

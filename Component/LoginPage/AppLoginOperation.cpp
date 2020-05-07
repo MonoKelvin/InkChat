@@ -60,7 +60,7 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
         emit failed(tr("数据目录创建失败，用户名可能包含以下非法字符：\\/\"*?<>|"));
     } else if (name.trimmed().length() == 0) {
         emit failed(tr("用户名不可为空"));
-    } else if (isUserExists(name)) {
+    } else if (IsUserExists(name)) {
         emit failed(tr("用户名已经存在"));
     } else if (pwd.length() < 6 || pwd.length() > 16) {
         emit failed(tr("请输入6-16位的密码"));
@@ -79,12 +79,15 @@ void AppLoginOperation::signupRequest(const QVariantMap& mapping)
     }
 }
 
-bool AppLoginOperation::isUserExists(const QString& userName)
+bool AppLoginOperation::IsUserExists(const QString& userName, bool except)
 {
     const auto dirs = QDir(AppSettings::AppDataDir() + QStringLiteral("/0/")).entryList(QDir::Dirs);
 
     for (int i = 0; i < dirs.size(); i++) {
         if (userName.compare(dirs.at(i), Qt::CaseInsensitive) == 0) {
+            if (except && userName.compare(User::Instance()->getNickName(), Qt::CaseInsensitive) == 0) {
+                continue;
+            }
             return true;
         }
     }

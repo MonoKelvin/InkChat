@@ -12,6 +12,7 @@ TcpClient::TcpClient(QObject* parent)
 {
     mTcpClient = new QTcpSocket(this);
     connect(mTcpClient, &QTcpSocket::readyRead, this, &TcpClient::readMessage);
+    connect(mTcpClient, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &TcpClient::deleteLater);
 }
 
 TcpClient::~TcpClient()
@@ -27,7 +28,7 @@ TcpClient::~TcpClient()
 
 void TcpClient::connectToHost(const QString& hostAddr, ChatItem* item)
 {
-    const QString& name = item->getChatItemData().Data.toString();
+    const QString& name = GetFileNameFromPath(item->getChatItemData().Data.toString());
 
     mChatItem = item;
     mCachedFile = new QFile(AppSettings::FileCacheDir() + name);
@@ -49,8 +50,16 @@ void TcpClient::readMessage()
     constexpr qint64 syc = qint64(sizeof(qint64) * 2);
     if (mReceivedBytes <= syc) {
         if (mTotalBytes == 0 && mTcpClient->bytesAvailable() >= syc) {
-            in >> mTotalBytes;
-        } else if (!mCachedFile->open(QFile::WriteOnly)) {
+            if (mTotalBytes == 0) {
+                in >> mTotalBytes;
+            }
+            // 如果需要接收的字节数为0就直接返回
+            if (mTotalBytes == 0 || !mCachedFile->open(QFile::WriteOnly)) {
+                deleteLater();
+                return;
+            }
+        } else {
+            deleteLater();
             return;
         }
     }
@@ -68,8 +77,7 @@ void TcpClient::readMessage()
     switch (mChatItem->getChatType()) {
     case ChatItem::File:
         const auto& fci = static_cast<FileChatItem*>(mChatItem.data());
-        const auto& useTime = int(mTime.elapsed() / 1000);
-        fci->Speed = mReceivedBytes / useTime;
+        fci->Speed = float(mReceivedBytes * 1000) / mTime.elapsed();
         fci->Percentage = static_cast<unsigned char>(mReceivedBytes / mTotalBytes);
         break;
     }

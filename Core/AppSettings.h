@@ -23,6 +23,11 @@ public:
         return QCoreApplication::applicationDirPath();
     }
 
+    inline static const QString AppThemeDir() noexcept
+    {
+        return AppDir() + QStringLiteral("/App/Theme/");
+    }
+
     // APP数据文件夹
     inline static const QString AppDataDir() noexcept
     {
@@ -77,6 +82,12 @@ public:
     inline static const QString AvatarCacheFile(const QString& uuid) noexcept
     {
         return UserDir() + QStringLiteral("/Avatar/") + uuid;
+    }
+
+    // 用户头像（原图）文件
+    inline static const QString UserPrimitiveAvatar() noexcept
+    {
+        return UserDataDir() + QStringLiteral("/avatar");
     }
 
     // 聊天缓存图片文件夹
@@ -176,7 +187,7 @@ public:
      */
     static const QString UserDir() noexcept;
 
-    static void SetIconTheme(const QString& themeName);
+    static void SetIconTheme(const QString& themeName) noexcept;
 
     /** 离线标识，如果为true则系统处于离线状态 */
     static EAppState AppState;

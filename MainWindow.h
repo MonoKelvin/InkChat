@@ -47,7 +47,7 @@ private Q_SLOTS:
      * @brief 侦听所有失败消息的槽函数
      * @param msg 失败的返回消息
      */
-    void onFailed(const QString& msg);
+    void onFailed(const QString& msg) noexcept;
 
     /**
      * @brief 当消息列表弹出上下文菜单

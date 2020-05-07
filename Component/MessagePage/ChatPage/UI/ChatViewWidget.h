@@ -10,16 +10,15 @@ class ChatViewWidget;
 class ChatList;
 class QListView;
 class LoadingIndicator;
+class IChatObject;
 
 class ChatViewWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ChatViewWidget(QWidget* parent = nullptr);
+    explicit ChatViewWidget(IChatObject* chatObj, QWidget* parent = nullptr);
     ~ChatViewWidget() override;
-
-    void setTitle(const QString& name) noexcept;
 
     ChatList* getChatListModel(void) const noexcept
     {

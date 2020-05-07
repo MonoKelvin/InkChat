@@ -29,9 +29,10 @@ public:
     /**
      * @brief 检查给定用户名的用户是否存在
      * @param userName 要检查用户的用户名
+     * @param except 去除指定用户名userName的检索方式
      * @return 如果存在则返回true，否则返回false
      */
-    bool isUserExists(const QString& userName);
+    static bool IsUserExists(const QString& userName, bool except = false);
 };
 
 #endif // APPLOGINOPERATION_H

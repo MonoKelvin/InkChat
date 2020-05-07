@@ -22,6 +22,9 @@ typedef unsigned short Port;
 /** 定义默认TCP连接的端口号为2021 */
 #define LAN_TCP_PORT 2021
 
+/** TCP连接超时关闭连接的最大时间（单位ms） */
+#define TCP_TIMEOUT 10000
+
 /** 最大文件传输块（字节） */
 #define MAX_FILE_TRANSFER_BLOCK 65536
 

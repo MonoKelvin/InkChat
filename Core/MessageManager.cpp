@@ -45,6 +45,7 @@ ChatItem* MessageManager::BuildChatItem(int chatType, const SUserBaseData& chatD
     if (id != QMetaType::UnknownType) {
         chat = static_cast<ChatItem*>(QMetaType::create(id));
         if (chat) {
+            chat->setParent(Instance().data());
             chat->setChatItemData(chatData);
         }
     }
@@ -89,7 +90,7 @@ void MessageManager::sendMessage(ChatList* view, int type, const QVariant& data)
         // 新建TCP服务器
         TcpServer* server = new TcpServer(this);
         if (!server->setFileToSend(data.toString(), item)) {
-            emit failed(tr("发送失败，请重新尝试"));
+            emit failed(tr("文件读取失败或者当前有文件正在传送中，请稍后重试"));
             delete item;
             item = nullptr;
             server = nullptr;

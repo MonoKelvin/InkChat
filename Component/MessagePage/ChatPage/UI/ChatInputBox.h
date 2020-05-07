@@ -18,9 +18,9 @@ public:
 Q_SIGNALS:
     /**
      * @brief 信号：当折叠或展开输入面板时发送的信号
-     * @param enabled 是否折叠，true表示折叠，否则表示展开
+     * @param enabled 是否折叠，true表示展开，否则表示收起
      */
-    void foldup(bool enabled);
+    void expand(bool enabled);
 
     /**
      * @brief 当发送消息时
@@ -31,10 +31,10 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     /**
-     * @brief 收起消息输入框
-     * @param enabled 开关，传入true表示收起，false则表示展开
+     * @brief 展开消息输入框
+     * @param enabled 开关，传入true表示展开，false则表示收起
      */
-    void onFoldup(bool enabled);
+    void onExpand(bool enabled);
 
 protected:
     void moveEvent(QMoveEvent *event) override;
@@ -42,10 +42,10 @@ protected:
 
 private:
     /** 发送图片的按钮 */
-    QPushButton *mBtnImage;
+    QPushButton *mBtnText;
 
     /** 发送视频的按钮 */
-    QPushButton *mBtnVideo;
+    QPushButton *mBtnEmoji;
 
     /** 发送文件的按钮 */
     QPushButton *mBtnFile;
@@ -55,9 +55,6 @@ private:
 
     /** 发送按钮 */
     QPushButton* mBtnSend;
-
-    /** 收回\展开 输入框按钮 */
-    QPushButton* mBtnExpand;
 
 private:
     /** 在收起之前的高度 */
