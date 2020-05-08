@@ -18,7 +18,7 @@ void debugStyleSheet(QWidget* parent)
     btn->show();
     btn->resize(120, 40);
     QObject::connect(btn, &QPushButton::clicked, [&] {
-        QFile f("./App/Theme/light.qss");
+        QFile f(AppSettings::AppThemeDir() + AppSettings::Value("App/theme").toString() + ".qss");
         if (f.open(QFile::ReadOnly)) {
             qApp->setStyleSheet(f.readAll());
         }

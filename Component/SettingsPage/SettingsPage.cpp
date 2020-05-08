@@ -69,10 +69,11 @@ void SettingsPage::refreshStyleSheetList(const QString& path)
 void SettingsPage::onStyleSheetChanged(const QString& name)
 {
     AppSettings::SetValue(QStringLiteral("App/theme"), name);
-    QFile f(AppSettings::AppThemeDir() + name);
-    if (f.open(QFile::ReadOnly)) {
+    QFile f(AppSettings::AppThemeDir() + name + QStringLiteral(".qss"));
+    if (f.open(QFile::ReadOnly | QFile::Text)) {
         qApp->setStyleSheet(f.readAll());
     }
+    f.close();
 }
 
 void SettingsPage::onSubmit()

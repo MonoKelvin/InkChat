@@ -149,8 +149,8 @@ void ChatViewWidget::autoDetermineScrollToBottom()
 void ChatViewWidget::builChatViewWidgetMenu()
 {
     QMenu menu;
-    QAction* refreshAction = new QAction(ICON("refresh_black"), tr("刷新"), &menu);
-    QAction* clearAction = new QAction(ICON("trash_black"), tr("清屏"), &menu);
+    QAction* refreshAction = new QAction(ICON("refresh"), tr("刷新"), &menu);
+    QAction* clearAction = new QAction(ICON("trash"), tr("清屏"), &menu);
     QAction* removeAction = new QAction(ICON("remove"), tr("删除聊天记录"), &menu);
     menu.addAction(refreshAction);
     menu.addAction(clearAction);

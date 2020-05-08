@@ -1,14 +1,9 @@
 ﻿<RCC>
     <qresource prefix="/">
         <file>icons/index.theme</file>
-        <file>icons/24x24/add_friend.png</file>
-        <file>icons/24x24/advise.png</file>
         <file>icons/24x24/alert.png</file>
-        <file>icons/24x24/audio.png</file>
         <file>icons/24x24/check.png</file>
         <file>icons/24x24/close.png</file>
-        <file>icons/24x24/close_white.png</file>
-        <file>icons/24x24/delete_friend.png</file>
         <file>icons/24x24/down.png</file>
         <file>icons/24x24/download.png</file>
         <file>icons/24x24/emoji.png</file>
@@ -31,18 +26,14 @@
         <file>icons/24x24/read.png</file>
         <file>icons/24x24/remove.png</file>
         <file>icons/24x24/refresh.png</file>
-        <file>icons/24x24/refresh_black.png</file>
         <file>icons/24x24/search.png</file>
         <file>icons/24x24/send.png</file>
         <file>icons/24x24/settings.png</file>
-        <file>icons/24x24/sort.png</file>
         <file>icons/24x24/top.png</file>
         <file>icons/24x24/trash.png</file>
-        <file>icons/24x24/trash_black.png</file>
         <file>icons/24x24/unread.png</file>
         <file>icons/24x24/untop.png</file>
         <file>icons/24x24/up.png</file>
-        <file>icons/24x24/wifi_off.png</file>
         <file>icons/file_chatitem_64x.png</file>
     </qresource>
 </RCC>

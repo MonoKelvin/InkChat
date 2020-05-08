@@ -1,0 +1,417 @@
+/* Light Style for InkChat */
+/**
+ * - 亮色主题配色表 -
+ * 背景色：#242429
+ * 主蓝色：#4D7CFE
+ * 次蓝色：#373a41
+ * 主橘色：#FFAB2E
+ * 次橘色：#FFEDD5
+ * 主红色：#FE2B52
+ * 次红色：#FFD6DE
+ * 主字色：#a2a2a6
+ * 次字色：#585862
+ * 浅蓝色：#292b30
+ * 主绿色：#2BFF75
+ *
+ * - 字体 -
+ * 字体： 微软雅黑
+ * 主要字体样式：14px 主字色
+ * 次要字体样式：12px 次字色
+ * 标题字体样式：16px 次字色 加粗
+ * 用户名样式：16px 主字色
+ *
+ * !间距全用 5的倍数，控件大小全部偶数
+ *
+ * - 间距 -
+ * 小间距：5px
+ * 窄间距：10px
+ * 标准间距：15px
+ * 大间距：20px
+ *
+ * - 头像 -
+ * 尺寸：46px * 46px
+ *
+ * - 按钮 -
+ * 圆形按钮：40px * 40px
+ * 长方形按钮：auto * 36px
+ * 导航按钮：40px * 40px
+ *
+ * - 图标 -
+ * 标准图标：16px * 16px
+ * 消息控件中特殊图标：26px * 26px
+ *
+ * - 图标样式 -
+ * 未激活样式：次字色
+ * 激活样式：主蓝色
+ * 圆形图标按钮激活：原有色加深
+ *
+ * - 圆角 -
+ * 标准圆角：6px
+ * 聊天气泡圆角：10px
+ *
+ * !设置固定宽使用：min-width + max-width = x
+ * !单纯使用width无效，height也是一样
+ *
+ */
+
+* {
+    font-family: 'Microsoft YaHei';
+    font-size: 10pt;
+    background-color: #242429;
+    outline: none;
+    color: #a2a2a6;
+    /* border: 1px solid red; */
+    border: none;
+}
+
+/**********************/
+/**   Public Style    */
+/**********************/
+
+/** Menu */
+QMenu {
+    background-color: #242429;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border: 1px solid #292b30;
+}
+QMenu::item {
+    padding: 10px 25px 10px 5px;
+    border-left: 10px solid transparent;
+    margin: 1px;
+}
+QMenu::item:selected {
+    background-color: #292b30;
+}
+QMenu::separator {
+    height: 1px;
+    background: #292b30;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+QMenu::item:disabled {
+    color: #585862;
+}
+
+QLineEdit,
+QSpinBox,
+QComboBox {
+    background: #292b30;
+    border-radius: 6px;
+    padding: 0 10px;
+    min-height: 40px;
+}
+QComboBox::drop-down {
+    padding-right: 4px;
+    width: 30px;
+    border: none;
+}
+QComboBox::down-arrow {
+    image: url(./App/Icon/arrow_down.png);
+}
+QComboBox QAbstractItemView{
+    border: 1px solid #292b30;
+    padding: 4px 1px;
+}
+QComboBox QAbstractItemView::item {
+    height: 32px; /* 项的高度（ComboBox->setView(new QListView());后，该项才起作用） */
+}
+QComboBox QAbstractItemView::item:selected {
+    color: #fff;
+    background-color: #4d7cfe;
+}
+
+QSpinBox::down-button {
+    width: 0;
+}
+QSpinBox::up-button {
+    width: 0;
+}
+
+QLabel {
+    background-color: transparent;
+}
+
+QToolTip {
+    color: #a2a2a6;
+    border: 1px solid #292b30;
+    padding: 2px;
+}
+
+QTabWidget::pane {
+    border: 2px solid #292b30;
+}
+QTabBar::tab {
+    background: #292b30;
+    border-radius: 4px;
+    padding: 5px 14px;
+    margin: 5px;
+}
+QTabBar::tab:selected {
+    background: #4d7cfe;
+    color: #fff;
+}
+QTabBar::tab:selected {
+    border-color: #9b9b9b;
+    border-bottom-color: #c2c7cb;
+}
+
+/** QPlainTextEdit */
+QPlainTextEdit {
+    color: #a2a2a6;
+    border-radius: 6px;
+    padding: 6px;
+    background-color: #292b30;
+}
+
+/** ScrollBar Vertical */
+QScrollBar:vertical {
+    background: transparent;
+    max-width: 10px;
+}
+QScrollBar::handle:vertical {
+    background-color: #373a41;
+    min-height: 10px;
+}
+QScrollBar::handle:hover {
+    background-color: #4d7cfe;
+}
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical
+{
+    background:#292b30;
+}
+
+/** ScrollBar Horizontal */
+QScrollBar:horizontal {
+    background-color: #292b30;
+    max-height: 10px;
+}
+QScrollBar::handle:horizontal {
+    background-color: #373a41;
+    min-width: 10px;
+}
+QScrollBar::horizontal:hover {
+    background-color: #4d7cfe;
+}
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal
+{
+    background:#292b30;
+}
+
+QPushButton {
+    color: #fff;
+    min-height: 40px;
+    border-radius: 6px;
+    background-color: #4d7cfe;
+}
+QPushButton:hover {
+    background-color: #4261e6;
+}
+QPushButton:pressed {
+    background-color: #4771e6;
+}
+QPushButton:checked {
+    background-color: #292b30;
+}
+QPushButton[type='shadowIcon'] {
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    border-radius: 20px;
+}
+QPushButton:disabled {
+    background-color: #15151a;
+}
+
+#iconBtn {
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 24px;
+    max-height: 24px;
+    border-radius: 4px;
+    padding: 2px;
+    background: transparent;
+}
+#iconBtn:hover {
+    background-color: #292b30;
+}
+#iconBtn:pressed {
+    background-color: #292b30;
+}
+
+#title {
+    padding: 15px;
+    font-size: 13pt;
+    font-weight: bold;
+    color: #585862;
+}
+
+/************************/
+/** Custom Widget Style */
+/************************/
+
+/** Login Dialog */
+#showWidget {
+    background: #292b30;
+}
+LoginDialog #lbAppName {
+    font-size: 26pt;
+    font-weight: bold;
+}
+#lbDeveloper {
+    color: #585862;
+}
+#lbAppLogo {
+    image: url(:/Icons/AppIcons/BookStudy.png);
+}
+
+/** Navigation */
+Navigation {
+    border-right: 2px solid #292b30;
+}
+#navButton {
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    border-radius: 6px;
+    background-color: transparent;
+}
+#navButton:checked {
+    background: #373a41;
+}
+#lbUserName {
+    margin-bottom: 8px;
+}
+
+/** Message List */
+#messageList {
+    border-right: 2px solid #292b30;
+}
+#msgTitle {
+    /* min-height: 46px; */
+    padding: 15px;
+    font-size: 13pt;
+    font-weight: bold;
+    color: #585862;
+    background-color: #242429;
+    border-right: 2px solid #292b30;
+}
+#btnBackTop {
+    background-color: #4d7cfe;
+    border-radius: 20px;
+}
+
+/** Avatar */
+Avatar {
+    background-color: #373a41;
+    border-radius: 23px;
+    min-width: 46px;
+    min-height: 46px;
+    max-width: 46px;
+    max-height: 46px;
+}
+
+/** Chat List */
+ChatViewWidget #lbTitle {
+    font-size: 12pt;
+    font-weight: bold;
+    background-color: #242429;
+}
+ChatViewWidget QListView {
+    border-top: 2px solid #292b30;
+}
+#lbEmptyChat {
+    font-size: 14pt;
+    color: #585862;
+    font-weight: bold;
+    background-image: url('./App/Icon/empty_page.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-top: 230px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/** Member List */
+MemberViewWidget QListView {
+    margin-bottom: 6px;
+}
+MemberViewWidget #shadowWidget {
+    border: 1px solid #292b30;
+    border-radius: 6px;
+}
+#btnChat {
+    background: #a2a2a6;
+}
+#btnChat:hover {
+    background: #414549;
+}
+#btnChat:pressed {
+    background: #232629;
+}
+#btnChat:disabled {
+    background: #979797;
+}
+
+/** Chat Inpu tBox */
+ChatInputBox {
+    border-top: 2px solid #292b30;
+}
+ChatInputBox QPlainTextEdit {
+    font-size: 10pt;
+}
+#btnSend {
+    background-color: #4d7cfe;
+}
+#btnSend:hover {
+    background-color: #6e94ff;
+}
+#btnSend:pressed {
+    background-color: #3163ec;
+}
+
+/** Prompt Widget */
+PromptWidget {
+    border-radius: 4px;
+    background-color: #4d7cfe;
+}
+PromptWidget QLabel {
+    color: #242429;
+}
+#promptAlert {
+    background-color: #fe2a52;
+}
+
+/** Setings Page */
+#stackedWidget Avatar {
+    min-width: 100px;
+    min-height: 100px;
+    width: 100px;
+    height: 100px;
+}
+#leName {
+    margin-top: 20px;
+    color: #a2a2a6;
+    font-size: 14pt;
+    font-weight: bold;
+    background: transparent;
+}
+#lbUuid {
+    color: #585862;
+}
+#lbAppBrief {
+    font-weight: bold;
+    font-size: 13pt;
+}

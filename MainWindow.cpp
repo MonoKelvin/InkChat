@@ -125,7 +125,7 @@ void MainWindow::buildMessageItemMenu(MessageItem* item)
     QMenu menu;
     QAction* topAction = new QAction(&menu);
     QAction* readAction = new QAction(&menu);
-    QAction* removeAction = new QAction(QIcon::fromTheme(QStringLiteral("trash_black")), tr("从列表中移除"), &menu);
+    QAction* removeAction = new QAction(QIcon::fromTheme(QStringLiteral("trash")), tr("从列表中移除"), &menu);
     menu.addAction(topAction);
     menu.addAction(readAction);
     menu.addAction(removeAction);
