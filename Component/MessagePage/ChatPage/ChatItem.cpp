@@ -2,10 +2,13 @@
 
 #include <AppSettings.h>
 #include <AppTheme.h>
+#include <ChatList.h>
+#include <UI/ChatViewWidget.h>
 #include <User.h>
-
-#include <QPainter>
 #include <Widget/Avatar.h>
+
+#include <QListView>
+#include <QPainter>
 
 ChatItem::ChatItem(QObject* parent)
     : AbstractChatListItem(parent)
@@ -40,6 +43,17 @@ void ChatItem::setSendState(const ChatItem::ESendState &sendState)
 const QString ChatItem::getMessageTime()
 {
     return GetMessageTime(mTime);
+}
+
+void ChatItem::updataDisplay()
+{
+    const auto& cl = qobject_cast<ChatList*>(parent());
+    if (cl) {
+        const auto& cvw = qobject_cast<ChatViewWidget*>(cl->parent());
+        if (cvw) {
+            cvw->getChatView()->update(cvw->getChatListModel()->itemIndex(this));
+        }
+    }
 }
 
 const SUserBaseData ChatItem::getChatItemData() const noexcept

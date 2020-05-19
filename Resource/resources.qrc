@@ -1,28 +1,19 @@
 ﻿<RCC>
     <qresource prefix="/">
         <file>icons/index.theme</file>
-        <file>icons/24x24/alert.png</file>
         <file>icons/24x24/check.png</file>
         <file>icons/24x24/close.png</file>
         <file>icons/24x24/down.png</file>
-        <file>icons/24x24/download.png</file>
-        <file>icons/24x24/emoji.png</file>
         <file>icons/24x24/edit.png</file>
         <file>icons/24x24/eye_off.png</file>
         <file>icons/24x24/eye_open.png</file>
         <file>icons/24x24/file.png</file>
         <file>icons/24x24/info_card.png</file>
-        <file>icons/24x24/layout.png</file>
         <file>icons/24x24/layout_info.png</file>
-        <file>icons/24x24/lock.png</file>
-        <file>icons/24x24/mail.png</file>
         <file>icons/24x24/menu.png</file>
         <file>icons/24x24/message.png</file>
-        <file>icons/24x24/night.png</file>
-        <file>icons/24x24/notify.png</file>
         <file>icons/24x24/people.png</file>
         <file>icons/24x24/person.png</file>
-        <file>icons/24x24/play.png</file>
         <file>icons/24x24/read.png</file>
         <file>icons/24x24/remove.png</file>
         <file>icons/24x24/refresh.png</file>

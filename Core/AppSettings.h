@@ -28,6 +28,12 @@ public:
         return AppDir() + QStringLiteral("/App/Theme/");
     }
 
+    // 主题文件，name不包含路径和后缀
+    inline static const QString AppThemeFile(const QString& name) noexcept
+    {
+        return AppThemeDir() + name + QStringLiteral(".qss");
+    }
+
     // APP数据文件夹
     inline static const QString AppDataDir() noexcept
     {

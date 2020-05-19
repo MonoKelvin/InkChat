@@ -6,7 +6,6 @@
 
 FileChatItem::FileChatItem(QObject* parent)
     : ChatItem(parent)
-    , Speed(0.0f)
     , Percentage(0)
 {
 }
@@ -50,24 +49,34 @@ void FileChatItem::paintContent(QPainter* painter, const QRect& rect)
     const QRect iconRect(bg.left() + ESize::Std, bg.top() + 10, 50, 50);
     painter->drawPixmap(iconRect, QPixmap(QStringLiteral(":/icons/file_chatitem_64x.png")));
 
-    // 进度条
+    // 进度条背景
     QRect proRect(iconRect.right() + ESize::Std, bg.top() + 56, 145, 4);
     painter->setBrush(XTheme.getPrimarySubColor(1));
     DrawRoundRect(painter, proRect, 2, 2, 2, 2);
-    proRect.setWidth(int(int(Percentage) * 1.55f));
+    proRect.setWidth(int(int(Percentage) * 1.45f));
     painter->setBrush(XTheme.PrimayColor1);
     DrawRoundRect(painter, proRect, 2, 2, 2, 2);
 
     // 文件大小
-    const QRect sizeRect(proRect.right(), bg.top() + 35, 145, 21);
+    const QRect sizeRect(proRect.left(), bg.top() + 35, 145, 21);
     painter->setPen(XTheme.SubTextColor);
+    painter->setRenderHint(QPainter::Antialiasing, false);
     painter->drawText(sizeRect, Qt::AlignLeft | Qt::AlignVCenter, QStringLiteral("文件大小：") + GetReadableBytes(mFileInfo.size()));
 
+    // 其他内容
+    if (Percentage >= 100) {
+        if (getChatItemData().Uuid == User::Instance()->getUuid()) {
+            OtherInfo = tr("已发送");
+        } else {
+            OtherInfo = tr("已下载");
+        }
+    }
+    painter->drawText(sizeRect, Qt::AlignRight | Qt::AlignVCenter, OtherInfo);
+
     // 文件名
-    const QRect nameRect(proRect.right(), bg.top(), 145, 35);
+    const QRect nameRect(proRect.left(), bg.top(), 145, 35);
     painter->setPen(XTheme.PrimayColor1);
     painter->setFont(XTheme.StdFont);
-    painter->setRenderHint(QPainter::Antialiasing, false);
     painter->drawText(nameRect, Qt::AlignBottom | Qt::AlignLeft, GetElidedText(mFileInfo.fileName(), painter->font(), 145));
 
     painter->restore();
@@ -79,6 +88,17 @@ void FileChatItem::updateContentSize(const QStyleOptionViewItem& option)
 
     mContentSize.setWidth(240);
     mContentSize.setHeight(70 + ESize::Std);
+}
+
+void FileChatItem::onLoaded()
+{
+    if (mFileInfo.exists()) {
+        Percentage = 100;
+    } else {
+        if (getChatItemData().Uuid != User::Instance()->getUuid()) {
+            OtherInfo = tr("失效");
+        }
+    }
 }
 
 bool FileChatItem::openFileDir()

@@ -22,7 +22,7 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     mChatInputer->setObjectName(QStringLiteral("chatInputer"));
     mChatInputer->setCursor(Qt::PointingHandCursor);
     mChatInputer->setPlaceholderText(tr("输入你想说的话..."));
-    gridLayout->addWidget(mChatInputer, 1, 0, 1, 4);
+    gridLayout->addWidget(mChatInputer, 1, 0, 1, 3);
 
     mBtnText = new QPushButton(this);
     mBtnText->setCheckable(true);
@@ -30,16 +30,12 @@ ChatInputBox::ChatInputBox(QWidget* parent)
     STD_ICON_SETTER(mBtnText, "edit");
     gridLayout->addWidget(mBtnText, 0, 0, 1, 1);
 
-    mBtnEmoji = new QPushButton(this);
-    STD_ICON_SETTER(mBtnEmoji, "emoji");
-    gridLayout->addWidget(mBtnEmoji, 0, 1, 1, 1);
-
     mBtnFile = new QPushButton(this);
     STD_ICON_SETTER(mBtnFile, "file");
-    gridLayout->addWidget(mBtnFile, 0, 2, 1, 1);
+    gridLayout->addWidget(mBtnFile, 0, 1, 1, 1);
 
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    gridLayout->addItem(hSpacer, 0, 3, 1, 1);
+    gridLayout->addItem(hSpacer, 0, 2, 1, 1);
 
     mBtnSend = new QPushButton(this->parentWidget());
     mBtnSend->setObjectName(QStringLiteral("btnSend"));
@@ -72,7 +68,6 @@ void ChatInputBox::onExpand(bool enabled)
 
         mBtnSend->setVisible(true);
         mChatInputer->setVisible(true);
-        mBtnEmoji->setEnabled(true);
 
         moveEvent(nullptr);
     } else {
@@ -81,7 +76,6 @@ void ChatInputBox::onExpand(bool enabled)
         // 设置控件状态
         mBtnSend->setVisible(false);
         mChatInputer->setVisible(false);
-        mBtnEmoji->setEnabled(false);
 
         parentWidget()->adjustSize();
     }

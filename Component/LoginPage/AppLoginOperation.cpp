@@ -1,12 +1,10 @@
 ﻿#include "AppLoginOperation.h"
 
 #include <AppSettings.h>
-#include <MessageDatabase.h>
 
 #include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QWidget>
 
 AppLoginOperation::AppLoginOperation(QObject* parent)
     : ILoginOperation(parent)
@@ -31,9 +29,7 @@ void AppLoginOperation::loginRequest(const QVariantMap& mapping)
 
     QFile file(fileName);
     if (file.open(QFile::ReadOnly | QFile::Text)) {
-        // TODO: 解密
-
-        auto jsonDoc = QJsonDocument::fromJson(file.readAll());
+        auto jsonDoc = QJsonDocument::fromJson(QByteArray().fromBase64(file.readAll()));
         if (!jsonDoc.isNull() && jsonDoc.isObject()) {
             user->fromJson(jsonDoc.object());
             if (user->getPassword() == mapping.value(QStringLiteral("password"))

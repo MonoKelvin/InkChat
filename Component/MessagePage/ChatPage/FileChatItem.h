@@ -16,6 +16,7 @@ public:
 
     void paintContent(QPainter* painter, const QRect& rect) override;
     void updateContentSize(const QStyleOptionViewItem& option) override;
+    void onLoaded() override;
 
     /**
      * @brief 打开文件路径
@@ -26,7 +27,7 @@ public:
     void setChatItemData(const SUserBaseData& data) noexcept override;
 
 public:
-    float Speed;
+    QString OtherInfo;
     unsigned char Percentage;
 
 private:

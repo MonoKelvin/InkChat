@@ -96,6 +96,7 @@ public:
 
     inline void setData(const QVariant& data) noexcept { mData = data; }
     inline const QVariant& getData(void) const noexcept { return mData; }
+    inline QVariant* getData(void) noexcept { return &mData; }
 
 protected:
     /**

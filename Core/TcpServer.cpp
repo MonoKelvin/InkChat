@@ -106,9 +106,10 @@ void TcpServer::updateProgress()
     switch (mChatItem->getChatType()) {
     case ChatItem::File:
         const auto& fci = static_cast<FileChatItem*>(mChatItem.data());
-        const qint64 written = mTotalBytes - mRemainingBytes;
-        fci->Speed = float(written * 1000) / mTime.elapsed();
-        fci->Percentage = static_cast<unsigned char>(written / mTotalBytes);
+        const double written = mTotalBytes - mRemainingBytes;
+        fci->OtherInfo = GetReadableBytes(qint64(written * 1000 / mTime.elapsed())) + QStringLiteral("/s");
+        fci->Percentage = static_cast<unsigned char>(written / mTotalBytes * 100);
+        fci->updataDisplay();
         break;
     }
 }

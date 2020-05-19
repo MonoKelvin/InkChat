@@ -290,6 +290,7 @@ bool MessageDatabase::loadChatItems(ChatList* chatView)
         }
 
         item->setTime(query.value(2).toDateTime());
+        item->onLoaded();
         chatView->insertChat(0, item);
     }
 

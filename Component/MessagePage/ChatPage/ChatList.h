@@ -47,6 +47,11 @@ public:
         return mChats.indexOf(message);
     }
 
+    inline const QModelIndex itemIndex(AbstractChatListItem* item) const
+    {
+        return index(mChats.indexOf(item));
+    }
+
     /**
      * @brief 移除给定索引的聊天项
      * @param row 行索引，即聊天项所在行数

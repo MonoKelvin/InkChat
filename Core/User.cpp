@@ -43,16 +43,17 @@ void User::fromJson(const QJsonObject& json, bool cache)
 
         QFile file(fileName);
         if (!file.open(QFile::WriteOnly | QFile::Text)) {
+            file.close();
             throw tr("用户数据文件打开失败！");
         }
 
-        // TODO: ARS加密文件、MD5生成文件名
-
         QJsonDocument jsonDoc(json);
-        if (file.write(jsonDoc.toJson(QJsonDocument::Indented /*Compact*/)) == -1) {
+        if (file.write(jsonDoc.toJson(QJsonDocument::Compact).toBase64()) == -1) {
+            file.close();
             throw tr("用户数据文件写入失败！");
         }
 
+        file.close();
         cacheAvatar(AvatarSizeMax);
     }
 }

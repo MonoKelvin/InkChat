@@ -44,9 +44,6 @@ private:
     /** 发送图片的按钮 */
     QPushButton *mBtnText;
 
-    /** 发送视频的按钮 */
-    QPushButton *mBtnEmoji;
-
     /** 发送文件的按钮 */
     QPushButton *mBtnFile;
 

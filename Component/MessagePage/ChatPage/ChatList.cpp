@@ -49,6 +49,7 @@ void ChatList::insertChat(int row, AbstractChatListItem* item)
     mChats.insert(row, item);
     endInsertRows();
 
+    item->setParent(this);
     if (mChats.size() > 100) {
         removeChatItem(0);
     }

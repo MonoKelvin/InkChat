@@ -6,25 +6,9 @@
 
 #include <QApplication>
 #include <QFile>
-#include <QPushButton>
 
 // 全局主题样式
 AppTheme XTheme;
-
-// 实时调试样式表
-void debugStyleSheet(QWidget* parent)
-{
-    QPushButton* btn = new QPushButton("重新加载样式表", parent);
-    btn->show();
-    btn->resize(120, 40);
-    QObject::connect(btn, &QPushButton::clicked, [&] {
-        QFile f(AppSettings::AppThemeDir() + AppSettings::Value("App/theme").toString() + ".qss");
-        if (f.open(QFile::ReadOnly)) {
-            qApp->setStyleSheet(f.readAll());
-        }
-    });
-    btn->click();
-}
 
 int main(int argc, char *argv[])
 {
@@ -32,16 +16,21 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    AppSettings::SetIconTheme(QStringLiteral("light"));
-
     {
+        // 设置主题
+        const auto& theme = QStringLiteral("light");
+        AppSettings::SetIconTheme(theme);
+        QFile style(AppSettings::AppThemeFile(theme));
+        if (style.open(QFile::ReadOnly | QFile::Text)) {
+            a.setStyleSheet(style.readAll());
+        }
+        style.close();
+
         // 登录页面
         LoginDialog loginPage;
-        debugStyleSheet(&loginPage);
-
         loginPage.exec();
 
-        // 如果退出登录结束
+        // 如果退出登录
         if (loginPage.isExit()) {
             return 0;
         }
@@ -51,7 +40,6 @@ int main(int argc, char *argv[])
     // 主页面
     MainWindow w;
     w.show();
-    debugStyleSheet(&w);
 
     return a.exec();
 }

@@ -34,7 +34,13 @@ void TcpClient::connectToHost(const QString& hostAddr, ChatItem* item)
     mCachedFile = new QFile(AppSettings::FileCacheDir() + name);
     if (mCachedFile->exists()) {
         mCachedFile->setFileName(AppSettings::FileCacheDir() + GetDateTimeString() + name);
+    } else {
+        // 必须判断文件夹是否存在，否则传送文件将失败
+        IsDirExists(AppSettings::FileCacheDir(), true);
     }
+
+    // 更新文件路径
+    static_cast<SUserBaseData*>(item->getData()->data())->Data = mCachedFile->fileName();
 
     mTcpClient->abort();
     mTcpClient->connectToHost(hostAddr, LAN_TCP_PORT);
@@ -77,8 +83,9 @@ void TcpClient::readMessage()
     switch (mChatItem->getChatType()) {
     case ChatItem::File:
         const auto& fci = static_cast<FileChatItem*>(mChatItem.data());
-        fci->Speed = float(mReceivedBytes * 1000) / mTime.elapsed();
-        fci->Percentage = static_cast<unsigned char>(mReceivedBytes / mTotalBytes);
+        fci->OtherInfo = GetReadableBytes(qint64(float(mReceivedBytes * 1000) / mTime.elapsed())) + QStringLiteral("/s");
+        fci->Percentage = static_cast<unsigned char>(float(mReceivedBytes) / mTotalBytes * 100);
+        fci->updataDisplay();
         break;
     }
 }

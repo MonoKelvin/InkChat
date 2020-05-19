@@ -79,6 +79,18 @@ public:
      */
     virtual void updateContentSize(const QStyleOptionViewItem&) override = 0;
 
+    /**
+     * @brief 当被加载时调用
+     * @note 一般用于初始化消息
+     */
+    virtual void onLoaded(void) {}
+
+    /**
+     * @brief 更新item的显示
+     * @note 只有添加到聊天视图中的item才会被更新
+     */
+    void updataDisplay();
+
     inline virtual void setChatItemData(const SUserBaseData& data) noexcept
     {
         mData.setValue(data);
