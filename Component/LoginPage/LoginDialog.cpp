@@ -16,6 +16,8 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui(new Ui::LoginDialog)
 {
     ui->setupUi(this);
+    setWindowFlag(Qt::FramelessWindowHint);
+    resize(800, 480);
 
     // 让界面显示在屏幕中间位置
     QSize lt = QApplication::primaryScreen()->size() - this->size();

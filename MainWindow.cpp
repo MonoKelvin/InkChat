@@ -26,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    resize(1080, 640);
     setWindowTitle(QStringLiteral("InkChat-v%1 - %2").arg(CHAT_VERSION_STR).arg(User::Instance()->getNickName()));
 
     // 注册聊天控件，TODO: 添加更多

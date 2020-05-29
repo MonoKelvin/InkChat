@@ -40,8 +40,8 @@ void MessageList::removeMessage(int index)
 {
     if (index >= 0 && index < mMessages.size()) {
         beginRemoveRows(QModelIndex(), index, index);
-        const auto it = mMessages.begin() + index;
-        mMessages.erase(it, it + 1);
+        const auto& iter = mMessages.begin() + index;
+        mMessages.erase(iter, iter + 1);
         endRemoveRows();
     }
 }
